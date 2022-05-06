@@ -26,7 +26,7 @@ Installation instructions via Docker, pip, or manually are available in [INSTALL
 This is an example of calling variants in the Ashkenazim Trio.
 
 ## mity call
-First run `mity call` on three MT BAMs provided in [mity/test_in](https://github.com/KCCG/mity/blob/master/test_in).
+First run `mity call` on three MT BAMs provided in [mity/test_in](https://github.com/KCCG/mity/blob/master/test_in). CRAM files are supported.
 
 We recommend always using `--normalise`, or `mity report` won't work:
 ```bash
@@ -152,7 +152,7 @@ should interpret and validate tier 3 variant still holds.
 We would appreciate any feedback you may have on this.
 
 ## CRAM support
-mity currently does not support CRAM, but we plan to add this.
+CRAM support was added to `mity call` in v0.4.0.
 
 # Acknowledgements
 We would like to thank:

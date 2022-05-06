@@ -29,4 +29,5 @@ function docker {
   docker run drmjc/mity version
 }
 #test
-public && docker
+public
+wait 20 && docker

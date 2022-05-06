@@ -49,8 +49,8 @@ def tmp_mity_file_name():
 def create_prefix(file_name, prefix=None):
     """
     Most mity functions have an optional prefix. If a prefix is not specified,
-    then use the  file name (minus the .vcf.gz or .bam suffix) as the prefix.
-    :param file_name: The vcf, bam, bed filename
+    then use the  file name (minus the .vcf.gz, .bam or .cram suffix) as the prefix.
+    :param file_name: The vcf, bam, cram, bed filename
     :param prefix: The optional prefix. If None, then create a prefix from
     file_name, else return prefix
     :return: str prefix
@@ -61,6 +61,8 @@ def create_prefix(file_name, prefix=None):
         prefix = [os.path.basename(file_name).split(".vcf")[0], prefix][prefix is not None]
     elif ".bam" in file_name:
         prefix = [os.path.basename(file_name).split(".bam")[0], prefix][prefix is not None]
+    elif ".cram" in file_name:
+        prefix = [os.path.basename(file_name).split(".cram")[0], prefix][prefix is not None]
     else:
         raise ValueError("Unsupported file type")
     return prefix
@@ -332,7 +334,7 @@ def vcf_get_mt_contig(vcf):
 def bam_get_mt_contig(bam, as_string=False):
     """
     get the mitochondrial contig name and length from a BAM file
-    :param bam: path to a bam file
+    :param bam: path to a bam or cram file
     :return: a tuple of contig name as str and length as int
 
     >>> bam_get_mt_contig('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam', False)
@@ -355,9 +357,9 @@ def bam_get_mt_contig(bam, as_string=False):
 
 def bam_has_RG(bam):
     """
-    Does the BAM File have an @RG header? This is critical for mity to correctly call variants.
+    Does the BAM or CRAM File have an @RG header? This is critical for mity to correctly call variants.
 
-    :param bam: str: path to bam file
+    :param bam: str: path to bam or cram file
     :return: True/False
     >>> bam_has_RG('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam')
     """

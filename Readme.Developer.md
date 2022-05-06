@@ -186,7 +186,7 @@ samtools view -b -o NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.b
 
 # Docker
 ```
-version=0.3.1
+version=0.4.0
 docker build --tag=latest --tag=$version --tag=drmjc/mity:latest --tag=drmjc/mity:$version .
 docker push drmjc/mity            # equivalent to docker push drmjc/mity:latest
 docker push drmjc/mity:$version

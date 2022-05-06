@@ -11,7 +11,7 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=30, min_bq=24
             out_folder_path=".", region=None):
     """
     Run mity call.
-    :param bam_files: a list of bam_files
+    :param bam_files: a list of bam or cram files
     :param reference: the path to the reference genome file (fasta format)
     :param genome: the path to the reference genome file for gsort (genome format). Required if normalise=True
     :param prefix: The result filename prefix. If None, then the first bam_file prefix
@@ -34,13 +34,13 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=30, min_bq=24
 
     if len(bam_files) > 1 and prefix is None:
         raise ValueError(
-                "If there is more than one bam file, --prefix must be set")
+                "If there is more than one bam/cram file, --prefix must be set")
     
     check_missing_file(bam_files, die=True)
     prefix = create_prefix(bam_files[0], prefix)
 
     if not all(map(bam_has_RG, bam_files)):
-        logging.error("At least one BAM file lacks an @RG header")
+        logging.error("At least one BAM/CRAM file lacks an @RG header")
         exit(1)
 
     if normalise and genome is None:
