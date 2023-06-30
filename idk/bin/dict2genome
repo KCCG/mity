@@ -1,0 +1,9 @@
+#!/bin/bash
+# convert a picard-style .dict file to gsort's .genome format
+#
+# Mark Cowley, 2019-07-29
+function dict2genome {
+  grep "^@SQ" ${1} | cut -f 2,3 | sed 's/[SL]N://g' > ${1%\.dict}.genome
+  echo >&2 "converted ${1} to ${1%\.dict}.genome"
+}
+dict2genome "$1"
