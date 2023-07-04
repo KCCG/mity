@@ -1,8 +1,8 @@
-*.vcf.gz
-*.vcf.gz.tbi
+# *.vcf.gz
+# *.vcf.gz.tbi
 *DS_Store
-*.bam
-*.bai
+# *.bam
+# *.bai
 *.R
 venv
 *.iml
