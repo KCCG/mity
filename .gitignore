@@ -8,7 +8,7 @@ venv
 *.iml
 .idea
 mitylib/__pycache__
-build/*
+# build/*
 dist/*
 gsort
 lib/*
