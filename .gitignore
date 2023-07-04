@@ -13,4 +13,6 @@ dist/*
 gsort
 lib/*
 mity.egg-info/*
+mitywgs.egg-info/*
 pyvenv.cfg 
+requirements.txt

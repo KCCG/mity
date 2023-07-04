@@ -23,6 +23,8 @@ variables:
 extends:
   template: pipeline-stages-template.yml
   parameters:
-    tag:
-      "$(tag)"
-      # todo
+    tag: "$(tag)"
+    dockerRegistryServiceConnection: "$(dockerRegistryServiceConnection)"
+    imageRepository: "$(imageRepository)"
+    dockerfilePath: "$(dockerfilePath)"
+    vmImageName: "$(vmImageName)"

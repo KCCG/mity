@@ -44,7 +44,6 @@ setuptools.setup(
         'pysam',
         'pandas',
         'xlsxwriter',
-        'pyfastx',
         'scipy'
     ],
     python_requires='>=3.5.4',

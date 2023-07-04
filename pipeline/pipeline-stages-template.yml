@@ -1,15 +1,36 @@
 parameters:
   - name: vmImageName
-    type:
-      string
-      # todo
+    type: string
+  - name: imageRepository
+    type: string
+  - name: dockerfilePath
+    type: string
+  - name: dockerRegistryServiceConnection
+    type: string
+  - name: tag
+    type: string
+  - name: pypiServiceConnection
+    type: string
 
 stages:
+  - stage: PyPiPush
+    displayName: Push to PyPi repo 
+    jobs:
+      - job: PyPiPush
+        displayName: Push to PyPi repo
+        pool:
+          vmImage: ${{ parameters.vmImageName }}
+        steps:
+        - task: PyPIPublisher@0
+          inputs:
+            pypiConnection: ${{ parameters.pypiServiceConnection }}
+            packageDirectory: "$(Build.SourcesDirectory)"
+
   - stage: Build
     displayName: Build image
     jobs:
       - job: Build
-        displayName: Build
+      displayName: Build
         pool:
           vmImage: ${{ parameters.vmImageName }}
         steps:
