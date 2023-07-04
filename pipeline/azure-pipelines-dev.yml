@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - development
+
+pr: none
+
+resources:
+  - repo: self
+
+name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+variables:
+  tag: "$(Build.BuildNumber)"
+
+  # Docker details
+  # TODO: add docker details, change docker file to .prod
+  dockerRegistryServiceConnection: # service connection name to docker hub
+  imageRepository: # name of the repository in docker hub where you want this image saved
+  dockerfilePath: "$(Build.SourcesDirectory)/Dockerfile.prod" # docker file name
+
+  # Agent VM image name
+  vmImageName: "ubuntu-latest"
+
+extends:
+  template: pipeline-stages-template.yml
+  parameters:
+    tag:
+      "$(tag)"
+      # todo
