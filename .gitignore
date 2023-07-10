@@ -1,16 +1,19 @@
 # *.vcf.gz
 # *.vcf.gz.tbi
-*DS_Store
 # *.bam
 # *.bai
+
+*DS_Store
 *.R
 venv
 *.iml
 .idea
 mitylib/__pycache__
-# build/*
+build/*
 dist/*
 gsort
 lib/*
-mity.egg-info/*
+mitylib.egg-info/*
+*.egg-info/*
 pyvenv.cfg 
+requirements.txt

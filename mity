@@ -9,8 +9,8 @@ License: MIT
 """
 
 import logging
-import commands
-import util
+from mitylib import commands
+from mitylib import util
 import sys
 
 assert sys.version_info >= (3, 7, 4)

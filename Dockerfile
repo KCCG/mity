@@ -6,20 +6,12 @@ RUN apt-get update -yqq && \
     apt-get install -yqq \
         make build-essential libssl-dev zlib1g-dev libbz2-dev \
         libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
-        xz-utils tk-dev libffi-dev liblzma-dev python-openssl git tabix \
+        xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git tabix \
         freebayes && \
     apt-get clean
 
 # Install freebayes
 RUN \
-    # Clone and compile freebayes
-    # git config --global url.https://github.com/.insteadOf git://github.com/ && \
-    # cd /opt && \
-    # git clone --recursive --branch v1.2.0 git://github.com/ekg/freebayes.git && \
-    # cd freebayes && \
-    # make && \
-    # make install && \
-    # \
     # Install htslib
     cd /tmp && \
     wget "https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2" && \
@@ -40,8 +32,6 @@ RUN \
     make install && \
     rm -rf /tmp/bcftools-1.17
 
-# ENV PATH $PATH:/opt/freebayes/scripts/:/opt/freebayes/vcflib/scripts/:/opt
-
 # Install gsort
 RUN \
     cd /usr/local/bin && \
@@ -53,12 +43,9 @@ RUN \
     chmod +x gsort
 
 # Install mity from dev server (but first install the previous version to get the dependencies from pypi)
-#RUN pip install mitywgs==0.2.2
-#RUN pip install -i https://test.pypi.org/simple/ mitywgs==0.2.2rc2
-
-# Install mity
 RUN pip install mitywgs==0.4.0
+RUN pip install -i https://test.pypi.org/simple/ mitywgs-test
 
 WORKDIR /home
 
-ENTRYPOINT [ "mity" ]
+ENTRYPOINT [ "mitylib/mity" ]
