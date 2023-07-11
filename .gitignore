@@ -17,3 +17,4 @@ mitylib.egg-info/*
 *.egg-info/*
 pyvenv.cfg 
 requirements.txt
+.python-version

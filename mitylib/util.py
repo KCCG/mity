@@ -9,10 +9,6 @@ import pysam
 import inspect
 from glob import glob
 
-config = configparser.ConfigParser()
-config.read('config.ini')
-util_config = config['util']
-
 def tabix(f):
     """
     Generate a tabix index for a bgzipped file
@@ -72,7 +68,7 @@ def create_prefix(file_name, prefix=None):
     return prefix
 
 
-def write_vcf(new_vcf, out_file, genome_file=util_config['genomefile']):
+def write_vcf(new_vcf, out_file, genome_file='mitylib/reference/b37d5.genome'):
     """
     write a vcf object to vcf.gz file with tbi index.
 
@@ -92,7 +88,7 @@ def write_vcf(new_vcf, out_file, genome_file=util_config['genomefile']):
     # bcftools_sort_vcf(f, out_file)
 
 
-def gsort_vcf(f, out_file, genome_file=util_config['genomefile'], remove_unsorted_vcf=False):
+def gsort_vcf(f, out_file, genome_file='mitylib/reference/b37d5.genome', remove_unsorted_vcf=False):
     """
     use gsort to sort the records in a VCF file according to a .genome file.
 
@@ -134,7 +130,7 @@ def bcftools_sort_vcf(f, out_file, remove_unsorted_vcf=False):
     if remove_unsorted_vcf:
         os.remove(f)
 
-def write_merged_vcf(new_vcf, out_file, genome_file=util_config['genomefile']):
+def write_merged_vcf(new_vcf, out_file, genome_file='mitylib/reference/b37d5.genome'):
     """
     write a vcf object to vcf.gz file with tbi index.
 
@@ -206,10 +202,10 @@ def check_dependencies(f='verchew.ini'):
     :param f: an INI formatted file. see verchew [https://verchew.readthedocs.io/en/latest/]
     :return:
     """
-    verchew = configparser.ConfigParser()
-    verchew.read(f)
-    for section in verchew.sections():
-        dependency = verchew[section]['cli']
+    config = configparser.ConfigParser()
+    config.read(f)
+    for section in config.sections():
+        dependency = config[section]['cli']
         check_dependency(dependency)
 
 
@@ -265,17 +261,17 @@ def select_reference_fasta(reference, custom_reference_fa=None):
     :return the path to the reference genome as a str.
 
     >>> select_reference_fasta('hg19', None)
-    '../res/reference/hg19.chrM.fa'
-    >>> select_reference_fasta('hg19', '../res/reference/hs37d5.MT.fa')
-    '../res/reference/hs37d5.MT.fa'
+    'reference/hg19.chrM.fa'
+    >>> select_reference_fasta('hg19', 'mitylib/reference/hs37d5.MT.fa')
+    'reference/hs37d5.MT.fa'
     >>> select_reference_fasta('hg19', 'nonexistent.fa')
-    '../res/reference/hg19.chrM.fa'
+    'reference/hg19.chrM.fa'
 
     """
     if custom_reference_fa is not None and os.path.exists(custom_reference_fa):
         res = custom_reference_fa
     else:
-        ref_dir = os.path.join(get_mity_dir(), util_config['reference_path'])
+        ref_dir = os.path.join(get_mity_dir(), 'reference')
         res = glob('{}/{}.*.fa'.format(ref_dir, reference))
         logging.debug(",".join(res))
         assert len(res) == 1
@@ -295,17 +291,17 @@ def select_reference_genome(reference, custom_reference_genome=None):
     :return the path to the reference .genome file as a str.
 
     >>> select_reference_genome('hg19', None)
-    '../res/reference/hg19.genome'
+    'reference/hg19.genome'
     >>> select_reference_genome('hg19', 'mitylib/reference/hs37d5.MT.fa')
-    '../res/reference/hs37d5.genome'
+    'reference/hs37d5.genome'
     >>> select_reference_genome('hg19', 'nonexistent.fa')
-    '../res/reference/hg19.genome'
+    'reference/hg19.genome'
 
     """
     if custom_reference_genome is not None and os.path.exists(custom_reference_genome):
         res = custom_reference_genome
     else:
-        ref_dir = os.path.join(get_mity_dir(), util_config['reference_path'])
+        ref_dir = os.path.join(get_mity_dir(), 'reference')
         logging.debug("Looking for .genome file in " + ref_dir)
         res = glob('{}/{}.genome'.format(ref_dir, reference))
         logging.debug(",".join(res))
@@ -314,7 +310,7 @@ def select_reference_genome(reference, custom_reference_genome=None):
     return res
 
 def get_mity_dir():
-    path = os.path.dirname(sys.modules['mity'].__file__)
+    path = os.path.dirname(sys.modules['mitylib'].__file__)
     return path
 
 def vcf_get_mt_contig(vcf):
@@ -373,6 +369,7 @@ def bam_has_RG(bam):
 def get_annot_file(f):
     #mitylibdir = os.path.dirname(inspect.getfile(mitylib))
     #mitylibdir = os.path.dirname(mitylib.__file__)
-    p = os.path.join(get_mity_dir(), util_config['annot_path'], f)
+    mitylibdir = get_mity_dir()
+    p = os.path.join(mitylibdir, "annot", f)
     assert os.path.exists(p)
     return p

@@ -11,8 +11,7 @@ import argparse
 import logging
 
 from . import (call, normalise, report, merge)
-# from ._version import __version__
-import configparser
+from ._version import __version__
 from .util import select_reference_fasta
 from .util import select_reference_genome
 
@@ -23,8 +22,6 @@ def public(fn):
     __all__.append(fn.__name__)
     return fn
 
-config = configparser.ConfigParser()
-__version__ = config['version']['version']
 
 usage = __doc__.split('\n\n\n', maxsplit=1)
 usage[-1] += "Version: " + __version__

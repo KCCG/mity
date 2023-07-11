@@ -6,7 +6,7 @@ RUN apt-get update -yqq && \
     apt-get install -yqq \
         make build-essential libssl-dev zlib1g-dev libbz2-dev \
         libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
-        xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git tabix \
+        xz-utils tk-dev libffi-dev liblzma-dev python-openssl git tabix \
         freebayes && \
     apt-get clean
 
@@ -44,8 +44,8 @@ RUN \
 
 # Install mity from dev server (but first install the previous version to get the dependencies from pypi)
 RUN pip install mitywgs==0.4.0
-RUN pip install -i https://test.pypi.org/simple/ mitywgs-test
+RUN pip install -i https://test.pypi.org/simple/ mitywgs-test==0.4.7
 
 WORKDIR /home
 
-ENTRYPOINT [ "mitylib/mity" ]
+ENTRYPOINT [ "mity" ]

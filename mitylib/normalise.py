@@ -4,15 +4,10 @@ import sys
 import gzip
 import re
 import logging
-import configparser
 from .util import write_vcf
 from scipy.stats import binom
 from math import isinf
 import numpy as np
-
-config = configparser.ConfigParser()
-config.read('config.ini')
-normalise_config = config['normalise']
 
 def unchanged(List):
     # check that all numbers in the list are the same
@@ -1258,7 +1253,7 @@ def update_header(col_names, header_lines, p, SB_range=[0.1, 0.9], min_MQMR=30, 
     header_lines.append([col_names])
 
 
-def do_normalise(vcf, out_file=None, p=0.002, SB_range=[0.1,0.9], min_MQMR=30, min_AQR=20, chromosome=None, genome=normalise_config['genome_file']):
+def do_normalise(vcf, out_file=None, p=0.002, SB_range=[0.1,0.9], min_MQMR=30, min_AQR=20, chromosome=None, genome="mitylib/reference/hs37d5.genome"):
     """
     Normalise and FILTER a mity VCF file.
 

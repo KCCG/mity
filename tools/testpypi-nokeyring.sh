@@ -10,7 +10,7 @@ version=$(grep version mitylib/_version.py | cut -f2 -d = | sed 's/[\", ]//g')
 twine check dist/mitywgs-test-${version}*
 
 function test {
-  twine upload -r testpypi --non-interactive -u trentzz dist/mitywgs-test-${version}*
+  twine upload -r testpypi -u trentzz dist/mitywgs-test-${version}*
 }
 
 test

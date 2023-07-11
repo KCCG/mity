@@ -3,11 +3,8 @@ import sys
 import subprocess
 import logging
 import os.path
-import configparser
 from .util import tabix, check_missing_file, create_prefix, bam_get_mt_contig, bam_has_RG
 from .normalise import do_normalise as vcfnorm
-
-config = configparser.ConfigParser()
 
 def do_call(bam_files, reference, genome=None, prefix=None, min_mq=30, min_bq=24,
             min_af=0.01, min_ac=4, p=0.002, normalise=True, 
