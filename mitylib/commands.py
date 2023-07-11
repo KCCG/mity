@@ -30,7 +30,6 @@ AP = argparse.ArgumentParser(description=usage[0], epilog=usage[1], formatter_cl
 AP_subparsers = AP.add_subparsers(
         help="mity sub-commands (use with -h for more info)")
 
-# TODO: --debug flag
 AP.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
 
 # call -------------------------------------------------------------------------
@@ -38,10 +37,6 @@ AP.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
 do_call = public(call.do_call)
 
 def _cmd_call(args):
-    if True:
-        # TODO: why does this not turn on debugging output? It needs to be turned on in `mity:L20` to work
-        logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-        #logging.getLogger('mitylib').setLevel(level=logging.DEBUG)
 
     """Call mitochondrial variants"""
     logging.info("mity version %s", __version__)
@@ -218,8 +213,6 @@ def print_version(_args):
 
 P_version = AP_subparsers.add_parser('--version', help=print_version.__doc__)
 P_version.set_defaults(func=print_version)
-
-# debug mode -------------------------------------------------------------------
 
 
 def return_AP():

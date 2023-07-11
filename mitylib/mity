@@ -22,10 +22,10 @@ if __name__ == '__main__':
 
     debug_mode = args.debug
 
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     if debug_mode:
+        print("Debug mode activated.")
         logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-    else:
-        logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     if len(vars(args)) == 0:
         logging.info("usage: mity -h")

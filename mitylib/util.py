@@ -18,7 +18,7 @@ config = configparser.ConfigParser()
 config.read([get_mity_dir() + "/config.ini", get_mity_dir() + "/verchew.ini"])
 GENOME_FILE = config.get('PATHS', 'GENOME_FILE')
 ANNOT_DIR = config.get('PATHS', 'ANNOT_DIR')
-REF_DIR = config.get('PATHS', 'GENOME_FILE')
+REF_DIR = config.get('PATHS', 'REF_DIR')
 
 
 def tabix(f):
