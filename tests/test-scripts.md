@@ -1,7 +1,7 @@
 # Test Scripts
 
 ```
-docker run -w "$PWD" -v "$PWD":"$PWD" mity-test-0.4.7 call \
+docker run -w "$PWD" -v "$PWD":"$PWD" mity-test-0.4.8 call \
 --prefix ashkenazim \
 --out-folder-path tests/ashkenazim-trio/output \
 --region MT:1-500 \

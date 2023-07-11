@@ -40,7 +40,6 @@ setuptools.setup(
     },
     packages=setuptools.find_packages(),
     install_requires=[
-        'pyvcf',
         'pysam',
         'pandas',
         'xlsxwriter',
@@ -48,7 +47,7 @@ setuptools.setup(
         'scipy'
     ],
     python_requires='>=3.5.4',
-    package_data={'mitylib': ['verchew.ini', 'annot/*', 'reference/*']},
+    package_data={'mitylib': ['config.ini', 'verchew.ini', 'annot/*', 'reference/*']},
     include_package_data=True,
-    scripts=["mity"]
+    scripts=["mitylib/mity"]
 )

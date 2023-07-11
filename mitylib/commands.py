@@ -30,6 +30,9 @@ AP = argparse.ArgumentParser(description=usage[0], epilog=usage[1], formatter_cl
 AP_subparsers = AP.add_subparsers(
         help="mity sub-commands (use with -h for more info)")
 
+# TODO: --debug flag
+AP.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
+
 # call -------------------------------------------------------------------------
 
 do_call = public(call.do_call)
@@ -213,9 +216,14 @@ def print_version(_args):
     print(__version__)
 
 
-P_version = AP_subparsers.add_parser('version', help=print_version.__doc__)
+P_version = AP_subparsers.add_parser('--version', help=print_version.__doc__)
 P_version.set_defaults(func=print_version)
 
+# debug mode -------------------------------------------------------------------
+
+
+def return_AP():
+    return AP
 
 def parse_args(args=None):
     """Parse the command line."""

@@ -1,7 +1,0 @@
-#!/home/t2/mity/mity/bin/python3
-# EASY-INSTALL-DEV-SCRIPT: 'mitywgs-test==0.4.6','mity'
-__requires__ = 'mitywgs-test==0.4.6'
-__import__('pkg_resources').require('mitywgs-test==0.4.6')
-__file__ = '/home/t2/mity/mity/mity'
-with open(__file__) as f:
-    exec(compile(f.read(), __file__, 'exec'))

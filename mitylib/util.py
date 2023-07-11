@@ -4,10 +4,22 @@ import os
 import subprocess
 import sys
 import tempfile
-import vcf as pyvcf
 import pysam
 import inspect
 from glob import glob
+
+# MITYLIB DIRECTORY
+def get_mity_dir():
+    path = os.path.dirname(sys.modules['mitylib'].__file__)
+    return path
+
+# CONFIG PARSER
+config = configparser.ConfigParser()
+config.read([get_mity_dir() + "/config.ini", get_mity_dir() + "/verchew.ini"])
+GENOME_FILE = config.get('PATHS', 'GENOME_FILE')
+ANNOT_DIR = config.get('PATHS', 'ANNOT_DIR')
+REF_DIR = config.get('PATHS', 'GENOME_FILE')
+
 
 def tabix(f):
     """
@@ -68,7 +80,7 @@ def create_prefix(file_name, prefix=None):
     return prefix
 
 
-def write_vcf(new_vcf, out_file, genome_file='mitylib/reference/b37d5.genome'):
+def write_vcf(new_vcf, out_file, genome_file=GENOME_FILE):
     """
     write a vcf object to vcf.gz file with tbi index.
 
@@ -88,7 +100,7 @@ def write_vcf(new_vcf, out_file, genome_file='mitylib/reference/b37d5.genome'):
     # bcftools_sort_vcf(f, out_file)
 
 
-def gsort_vcf(f, out_file, genome_file='mitylib/reference/b37d5.genome', remove_unsorted_vcf=False):
+def gsort_vcf(f, out_file, genome_file=GENOME_FILE, remove_unsorted_vcf=False):
     """
     use gsort to sort the records in a VCF file according to a .genome file.
 
@@ -130,7 +142,7 @@ def bcftools_sort_vcf(f, out_file, remove_unsorted_vcf=False):
     if remove_unsorted_vcf:
         os.remove(f)
 
-def write_merged_vcf(new_vcf, out_file, genome_file='mitylib/reference/b37d5.genome'):
+def write_merged_vcf(new_vcf, out_file, genome_file=GENOME_FILE):
     """
     write a vcf object to vcf.gz file with tbi index.
 
@@ -148,21 +160,23 @@ def write_merged_vcf(new_vcf, out_file, genome_file='mitylib/reference/b37d5.gen
             myfile.write(vcf_line + '\n')
     gsort_vcf(f, out_file, genome_file=genome_file)
 
-def create_genome_file(vcf_file, genome_file):
-    """
-    gsort (https://github.com/brentp/gsort) requires a '.genome'
-    file to tell it how to sort the vcf records. This function creates a
-    '.genome' file in the same order as the contig lines in the vcf header.
+# REMOVE: This function isn't called anywhere???
+# def create_genome_file(vcf_file, genome_file):
+#     """
+#     gsort (https://github.com/brentp/gsort) requires a '.genome'
+#     file to tell it how to sort the vcf records. This function creates a
+#     '.genome' file in the same order as the contig lines in the vcf header.
 
-    :param vcf_file: a vcf file with the correct contig names
-    :param genome_file: the resulting .genome file
-    :return: None. this creates a '.genome' file
-    """
-
-    vcf = pyvcf.Reader(filename=vcf_file)
-    with open(genome_file, mode='wt', encoding='utf-8') as genome_file:
-        for contig in vcf.contigs.keys():
-            genome_file.write('\t'.join(vcf.contigs[contig]))
+#     :param vcf_file: a vcf file with the correct contig names
+#     :param genome_file: the resulting .genome file
+#     :return: None. this creates a '.genome' file
+#     """
+    
+#     vcf = pysam.VariantFile(vcf_file)
+#     with open(genome_file, mode='wt', encoding='utf-8') as genome_file:
+#         for contig in vcf.header.contigs:
+#             contig_info = [contig.get('ID', ''), contig.get('length', '')]
+#             genome_file.write('\t'.join(str(x) for x in contig_info))
 
 def check_dependency(dep, exit=True):
     """
@@ -183,7 +197,7 @@ def check_dependency(dep, exit=True):
     try:
         res = subprocess.run(['which', dep], capture_output=True, check=True, encoding="UTF8")
         found = True
-        logging.info("Found dependency: " + str(res.stdout).strip())
+        logging.debug("Found dependency: " + str(res.stdout).strip())
         if dep == "gsort":
             # There is a potential name clash with gnu sort on linux
             res = subprocess.check_output('gsort --help | grep -c GENOME', shell=True)
@@ -196,17 +210,16 @@ def check_dependency(dep, exit=True):
     return found
 
 
-def check_dependencies(f='verchew.ini'):
+def check_dependencies():
     """
     Check that all of the dependencies that are listed in the INI format exist.
     :param f: an INI formatted file. see verchew [https://verchew.readthedocs.io/en/latest/]
     :return:
     """
-    config = configparser.ConfigParser()
-    config.read(f)
     for section in config.sections():
-        dependency = config[section]['cli']
-        check_dependency(dependency)
+        if (section != 'PATHS'):
+            dependency = config[section]['cli']
+            check_dependency(dependency)
 
 
 def make_hgvs(pos, ref, alt):
@@ -271,7 +284,7 @@ def select_reference_fasta(reference, custom_reference_fa=None):
     if custom_reference_fa is not None and os.path.exists(custom_reference_fa):
         res = custom_reference_fa
     else:
-        ref_dir = os.path.join(get_mity_dir(), 'reference')
+        ref_dir = os.path.join(get_mity_dir(), REF_DIR)
         res = glob('{}/{}.*.fa'.format(ref_dir, reference))
         logging.debug(",".join(res))
         assert len(res) == 1
@@ -301,7 +314,7 @@ def select_reference_genome(reference, custom_reference_genome=None):
     if custom_reference_genome is not None and os.path.exists(custom_reference_genome):
         res = custom_reference_genome
     else:
-        ref_dir = os.path.join(get_mity_dir(), 'reference')
+        ref_dir = os.path.join(get_mity_dir(), REF_DIR)
         logging.debug("Looking for .genome file in " + ref_dir)
         res = glob('{}/{}.genome'.format(ref_dir, reference))
         logging.debug(",".join(res))
@@ -309,9 +322,7 @@ def select_reference_genome(reference, custom_reference_genome=None):
         res = res[0]
     return res
 
-def get_mity_dir():
-    path = os.path.dirname(sys.modules['mitylib'].__file__)
-    return path
+
 
 def vcf_get_mt_contig(vcf):
     """
@@ -322,13 +333,15 @@ def vcf_get_mt_contig(vcf):
     >>> vcf_get_mt_contig('./151016_FR07959656.dedup.realigned.recalibrated.chrMT.dedup.realigned.recalibrated.chrMT.mity.vcf.gz')
     ('MT', 16569)
     """
-    r = pyvcf.Reader(filename=vcf, compressed=True)
-    chroms = r.contigs.keys()
-    mito_contig = {'MT', 'chrM'}.intersection(chroms)
+
+    r = pysam.VariantFile(vcf, 'r', require_index=True)
+    chroms = r.header.contigs
+
+    mito_contig = set(['MT', 'chrM']).intersection(chroms)
     assert len(mito_contig) == 1
     mito_contig = ''.join(mito_contig)
 
-    return r.contigs[mito_contig].id, r.contigs[mito_contig].length
+    return r.header.contigs[mito_contig].name, r.header.contigs[mito_contig].length
 
 
 def bam_get_mt_contig(bam, as_string=False):
@@ -370,6 +383,6 @@ def get_annot_file(f):
     #mitylibdir = os.path.dirname(inspect.getfile(mitylib))
     #mitylibdir = os.path.dirname(mitylib.__file__)
     mitylibdir = get_mity_dir()
-    p = os.path.join(mitylibdir, "annot", f)
+    p = os.path.join(mitylibdir, ANNOT_DIR, f)
     assert os.path.exists(p)
     return p

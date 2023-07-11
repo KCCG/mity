@@ -1,4 +1,4 @@
-# Install
+# INSTALL
 
 ## Installing via Docker
 
@@ -58,7 +58,7 @@ chmod +x gsort
 export PATH=.:$PATH
 ```
 
-Install mity globally with:
+Install mity globally with: 
 ```
 export PYTHONPATH=/usr/local/lib/python3.7/dist-packages:/usr/lib/python3/dist-packages
 pip3 install mitywgs

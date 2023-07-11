@@ -9,6 +9,8 @@ venv
 *.iml
 .idea
 mitylib/__pycache__
+*/output/*
+bin/*
 build/*
 dist/*
 gsort

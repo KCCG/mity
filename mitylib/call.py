@@ -6,8 +6,15 @@ import os.path
 from .util import tabix, check_missing_file, create_prefix, bam_get_mt_contig, bam_has_RG
 from .normalise import do_normalise as vcfnorm
 
-def do_call(bam_files, reference, genome=None, prefix=None, min_mq=30, min_bq=24,
-            min_af=0.01, min_ac=4, p=0.002, normalise=True, 
+# CONSTANTS
+MIN_MQ=30
+MIN_BQ=24
+MIN_AF=0.01
+MIN_AC=4
+P_VAL=0.002
+
+def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_bq=MIN_BQ,
+            min_af=MIN_AF, min_ac=MIN_AC, p=P_VAL, normalise=True, 
             out_folder_path=".", region=None):
     """
     Run mity call.
