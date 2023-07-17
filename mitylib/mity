@@ -15,24 +15,17 @@ import sys
 
 assert sys.version_info >= (3, 7, 4)
 
-if __name__ == '__main__':
+def main():
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     util.check_dependencies()
 
     args = commands.parse_args()
 
-    debug_mode = args.debug
-
-    logging.basicConfig(level=logging.INFO, format="%(message)s")
-    if debug_mode:
-        print("Debug mode activated.")
-        logging.basicConfig(level=logging.DEBUG, format="%(message)s")
-
     if len(vars(args)) == 0:
         logging.info("usage: mity -h")
     else:
-        try:
-            func = args.func
-        except AttributeError:
-            AP = commands.return_AP()
-            AP.error("too few arguments")
-        func(args)
+        args.func(args)
+
+
+if __name__ == '__main__':
+    main()

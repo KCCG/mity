@@ -27,10 +27,11 @@ usage = __doc__.split('\n\n\n', maxsplit=1)
 usage[-1] += "Version: " + __version__
 
 AP = argparse.ArgumentParser(description=usage[0], epilog=usage[1], formatter_class=argparse.RawTextHelpFormatter)
+
+# subparser    -----------------------------------------------------------------
+
 AP_subparsers = AP.add_subparsers(
         help="mity sub-commands (use with -h for more info)")
-
-AP.add_argument('-d', '--debug', action='store_true', help='Enable debug mode')
 
 # call -------------------------------------------------------------------------
 
@@ -46,12 +47,13 @@ def _cmd_call(args):
     genome = select_reference_genome(args.reference, None)
     args.reference = select_reference_fasta(args.reference, None)
 
-    call.do_call(args.bam, args.reference, genome, args.prefix, args.min_mq,
+    call.do_call(args.debug, args.bam, args.reference, genome, args.prefix, args.min_mq,
                  args.min_bq, args.min_af, args.min_ac, args.p, args.normalise,
                  args.out_folder_path, args.region)
 
 
 P_call = AP_subparsers.add_parser('call', help=_cmd_call.__doc__)
+P_call.add_argument('-d', '--debug', action='store_true', help="Enter debug mode", required=False)
 P_call.add_argument('bam', action='append', nargs='+',
                     help='BAM files to run the analysis on.')
 P_call.add_argument('--reference', choices=['hs37d5', 'hg19', 'hg38', 'mm10'],
@@ -105,8 +107,6 @@ P_call.add_argument('--region', action='store', type=str,
                          'If unset will call variants in entire MT genome as specified in BAM header. '
                          "Default: Entire MT genome. ",
                     dest="region")
-P_call.add_argument('--debug', action='store_true',
-                    help='Verbose output for debugging?')
 P_call.add_argument('--bam-file-list', action='store', type=str,
                     default=None,
                     help='A text file of BAM files to be processed. The path to each file should be on one row per Region of MT genome to call variants in. '
@@ -127,10 +127,11 @@ def _cmd_normalise(args):
 
     genome = select_reference_genome(args.reference, None)
 
-    normalise.do_normalise(args.vcf, args.outfile, p=args.p, SB_range=[0.1, 0.9], genome=genome)
+    normalise.do_normalise(args.debug, args.vcf, args.outfile, p=args.p, SB_range=[0.1, 0.9], genome=genome)
 
 
 P_normalise = AP_subparsers.add_parser('normalise', help=_cmd_normalise.__doc__)
+P_normalise.add_argument('-d', '--debug', action='store_true', help="Enter debug mode", required=False)
 P_normalise.add_argument('vcf', action='store',
                          help="vcf.gz file from running mity")
 P_normalise.add_argument('--outfile', action='store', required=True,
@@ -155,10 +156,11 @@ def _cmd_report(args):
     """Generate mity report"""
     logging.info("mity %s", __version__)
     logging.info("Generating mity report")
-    report.do_report(args.vcf, args.prefix, args.min_vaf, args.out_folder_path)
+    report.do_report(args.debug, args.vcf, args.prefix, args.min_vaf, args.out_folder_path)
 
 
 P_report = AP_subparsers.add_parser('report', help=_cmd_report.__doc__)
+P_report.add_argument('-d', '--debug', action='store_true', help="Enter debug mode", required=False)
 P_report.add_argument('--prefix', action='store',
                       help='Output files will be named with PREFIX')
 P_report.add_argument('--min_vaf', action='store', type=float, default=0, help=
@@ -185,7 +187,7 @@ def _cmd_merge(args):
 
     genome = select_reference_genome(args.reference, None)
 
-    merge.do_merge(args.mity_vcf, args.nuclear_vcf, args.prefix, genome)
+    merge.do_merge(args.debug, args.mity_vcf, args.nuclear_vcf, args.prefix, genome)
 
 P_merge = AP_subparsers.add_parser('merge', help=_cmd_merge.__doc__)
 P_merge.add_argument('--mity_vcf', action='store', required=True,
@@ -201,8 +203,8 @@ P_merge.add_argument('--reference', choices=['hs37d5', 'hg19', 'hg38', 'mm10'],
 # P_merge.add_argument('--custom_reference', action='store',
 #                      default="", required=False,
 #                      help='The path to a custom reference genome file in uncompressed fasta format')
+P_merge.add_argument('-d', '--debug', action='store_true', help="Enter debug mode", required=False)
 P_merge.set_defaults(func=_cmd_merge)
-
 
 # version ----------------------------------------------------------------------
 
@@ -211,12 +213,10 @@ def print_version(_args):
     print(__version__)
 
 
-P_version = AP_subparsers.add_parser('--version', help=print_version.__doc__)
+P_version = AP_subparsers.add_parser('version', help=print_version.__doc__)
 P_version.set_defaults(func=print_version)
 
-
-def return_AP():
-    return AP
+# parse_args -------------------------------------------------------------------
 
 def parse_args(args=None):
     """Parse the command line."""

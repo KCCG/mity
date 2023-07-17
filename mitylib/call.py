@@ -13,7 +13,10 @@ MIN_AF=0.01
 MIN_AC=4
 P_VAL=0.002
 
-def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_bq=MIN_BQ,
+# LOGGING
+logger = logging.getLogger(__name__)
+
+def do_call(debug, bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_bq=MIN_BQ,
             min_af=MIN_AF, min_ac=MIN_AC, p=P_VAL, normalise=True, 
             out_folder_path=".", region=None):
     """
@@ -34,6 +37,13 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_b
     :param region: Which region to analyse? If None, then the whole MT will be analysed.
     :return:
     """
+
+    if debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Entered debug mode.")
+    else:
+        logger.setLevel(logging.INFO)
+
     bam_files = bam_files[0] 
     #####
     # Checks
@@ -47,11 +57,11 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_b
     prefix = create_prefix(bam_files[0], prefix)
 
     if not all(map(bam_has_RG, bam_files)):
-        logging.error("At least one BAM/CRAM file lacks an @RG header")
+        logger.error("At least one BAM/CRAM file lacks an @RG header")
         exit(1)
 
     if normalise and genome is None:
-        logging.error("A genome file should be supplied if mity call normalize=True")
+        logger.error("A genome file should be supplied if mity call normalize=True")
         exit(1)
 
     if not os.path.exists(out_folder_path):
@@ -72,7 +82,7 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_b
                ' --min-base-quality ' + str(min_bq) + ' --min-alternate-fraction ' + \
                str(min_af) + ' --min-alternate-count ' + str(min_ac) + \
                ' --out-folder-path ' + str(out_folder_path) + ' --region ' + region
-    logging.debug("mity commandline: " + str(mity_cmd))
+    logger.debug("mity commandline: " + str(mity_cmd))
 
     if normalise:
         mity_cmd = mity_cmd + ' --normalise --p ' + str(p)
@@ -81,11 +91,11 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_b
 
     mity_cmd = mity_cmd + '"'
     mity_cmd = mity_cmd.replace("/", "\/")
-    logging.debug(mity_cmd)
+    logger.debug(mity_cmd)
 
     # overwrite a redundant freebayes header line with the mity command line
     sed_cmd = "sed 's/^##phasing=none/{}/g'".format(mity_cmd)
-    logging.debug(sed_cmd)
+    logger.debug(sed_cmd)
 
     freebayes_call = ('set -o pipefail && freebayes -f {} {} '
                       '--min-mapping-quality {} '
@@ -97,22 +107,28 @@ def do_call(bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ, min_b
                       ).format(reference, bam_str, min_mq, min_bq, min_af, min_ac, region)
     freebayes_call = freebayes_call + ('| sed "s/##source/##freebayesSource/" | sed "s/##commandline/##freebayesCommandline/" | {} | bgzip > {} ').format(sed_cmd, unnormalised_vcf_path)
 
-    logging.info("Running FreeBayes in sensitive mode")
-    logging.debug(freebayes_call)
+    logger.info("Running FreeBayes in sensitive mode")
+    logger.debug(freebayes_call)
     res = subprocess.run(freebayes_call, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, executable='/bin/bash')
-    logging.debug("Freebayes result code: {}".format(res.returncode))
+    logger.debug("Freebayes result code: {}".format(res.returncode))
 
     if res.returncode != 0:
-        logging.error("FreeBayes failed: {}".format(res.stderr))
+        logger.error("FreeBayes failed: {}".format(res.stderr))
         exit(1)
 
     if os.path.isfile(unnormalised_vcf_path):
-        logging.debug("Finished running FreeBayes")
+        logger.debug("Finished running FreeBayes")
     
     if normalise:
-        logging.debug("Normalising and Filtering variants")
+        logger.debug("Normalising and Filtering variants")
+
+        # Sets the normalise debug flag to true if mity call was called with --debug
+        debug_normalise = False
+        if debug:
+            debug_normalise = True
+
         try:
-            vcfnorm(vcf=unnormalised_vcf_path, out_file=output_file_name, p=p, genome=genome)
+            vcfnorm(debug_normalise, vcf=unnormalised_vcf_path, out_file=output_file_name, p=p, genome=genome)
         finally:
             os.remove(unnormalised_vcf_path)
     else:

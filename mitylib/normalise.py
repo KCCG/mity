@@ -27,6 +27,9 @@ config = configparser.ConfigParser()
 config.read(get_mity_dir() + "/config.ini")
 GENOME_FILE = config.get('PATHS', 'GENOME_FILE')
 
+# LOGGING
+logger = logging.getLogger(__name__)
+
 
 def unchanged(List):
     # check that all numbers in the list are the same
@@ -1027,7 +1030,7 @@ def add_filter(variant_list, min_DP=MIN_DP, SB_range=[SB_RANGE_LO, SB_RANGE_HI],
     :param min_AQR: minimum MQMR, where MQMR is the "Mean mapping quality of observed reference alleles"
     :return: a
     """
-    # @TODO: refactor this to use pyvcf
+    # @TODO: refactor this to use pysam
 
     # print(variant_list)
     # sys.exit()
@@ -1271,7 +1274,7 @@ def update_header(col_names, header_lines, p, SB_range=[0.1, 0.9], min_MQMR=30, 
     header_lines.append([col_names])
 
 
-def do_normalise(vcf, out_file=None, p=P_VAL, SB_range=[SB_RANGE_LO, SB_RANGE_HI], min_MQMR=MIN_MQMR, min_AQR=MIN_AQR, chromosome=None, genome=GENOME_FILE):
+def do_normalise(debug, vcf, out_file=None, p=P_VAL, SB_range=[SB_RANGE_LO, SB_RANGE_HI], min_MQMR=MIN_MQMR, min_AQR=MIN_AQR, chromosome=None, genome=GENOME_FILE):
     """
     Normalise and FILTER a mity VCF file.
 
@@ -1297,13 +1300,20 @@ def do_normalise(vcf, out_file=None, p=P_VAL, SB_range=[SB_RANGE_LO, SB_RANGE_HI
     :returns: Nothing. This creates a vcf.gz named out_file
     :rtype: None
     """
+
+    if debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Entered debug mode.")
+    else:
+        logger.setLevel(logging.INFO)
+
     if out_file is None:
         out_file = vcf.replace(".vcf.gz", ".norm.vcf.gz")
 
     file = gzip.open(vcf, 'rt')
 
     # split the header and the variants into two seperate lists
-    # @TODO: refactor this to use pyvcf
+    # @TODO: refactor this to use pysam
     logging.debug('Splitting header and variants')
     col_names = None
     header_lines = []
