@@ -1,0 +1,131 @@
+##fileformat=VCFv4.2
+##fileDate=20230612
+##freebayesSource=freeBayes v1.2.0
+##reference=/usr/local/lib/python3.7/site-packages/mitylib/reference/hs37d5.MT.fa
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+##contig=<ID=NC_007605,length=171823>
+##contig=<ID=hs37d5,length=35477943>
+##mityCommandline="mity call --reference /usr/local/lib/python3.7/site-packages/mitylib/reference/hs37d5.MT.fa --prefix ashkenazim --min-mapping-quality 30 --min-base-quality 24 --min-alternate-fraction 0.01 --min-alternate-count 4 --out-folder-path pysam_test_out --region MT:1-500 test_in/HG002.hs37d5.2x250.small.MT.RG.bam test_in/HG003.hs37d5.2x250.small.MT.RG.bam test_in/HG004.hs37d5.2x250.small.MT.RG.bam"
+##freebayesCommandline="freebayes -f /usr/local/lib/python3.7/site-packages/mitylib/reference/hs37d5.MT.fa -b test_in/HG004.hs37d5.2x250.small.MT.RG.bam -b test_in/HG003.hs37d5.2x250.small.MT.RG.bam -b test_in/HG002.hs37d5.2x250.small.MT.RG.bam --min-mapping-quality 30 --min-base-quality 24 --min-alternate-fraction 0.01 --min-alternate-count 4 --ploidy 2 --region MT:1-500"
+##ALT=<ID=NON_REF,Description="Represents any possible alternative allele at this location">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth; some reads may have been filtered">
+##INFO=<ID=MQM,Number=A,Type=Float,Description="Mean mapping quality of observed alternate alleles">
+##INFO=<ID=MQMR,Number=1,Type=Float,Description="Mean mapping quality of observed reference alleles">
+##INFO=<ID=QA,Number=A,Type=Integer,Description="Alternate allele quality sum in phred">
+##INFO=<ID=QR,Number=1,Type=Integer,Description="Reference allele quality sum in phred">
+##INFO=<ID=SAF,Number=A,Type=Integer,Description="Total number of alternate observations on the forward strand">
+##INFO=<ID=SAR,Number=A,Type=Integer,Description="Total number of alternate observations on the reverse strand">
+##INFO=<ID=SBA,Number=1,Type=Float,Description="Strand bias of the alternate reads, SBA=SAF/(SAF+SAR)">
+##INFO=<ID=SBR,Number=1,Type=Float,Description="Strand bias of the reference reads, SBR=SRF/(SRF+SRR)">
+##INFO=<ID=SRF,Number=1,Type=Integer,Description="Number of reference observations on the forward strand">
+##INFO=<ID=SRR,Number=1,Type=Integer,Description="Number of reference observations on the reverse strand">
+##INFO=<ID=TYPE,Number=1,Type=String,Description="normalised := when the variant has been normalised, complex := when the new reference and alternate length are still > 1 after normalising">
+##FILTER=<ID=POS,Description="Variant falls in the blacklist of positions: MT:302-319, MT:3105-3108">
+##FILTER=<ID=SBR,Description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)">
+##FILTER=<ID=SBA,Description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)">
+##FILTER=<ID=MQMR,Description="For all alleles MQMR<30">
+##FILTER=<ID=AQR,Description="For all alleles AQR<20">
+##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
+##FORMAT=<ID=AO,Number=1,Type=String,Description="Alternate observations">
+##FORMAT=<ID=AQA,Number=A,Type=Float,Description="Average base quality of the alternate reads, AQA=QA/AO">
+##FORMAT=<ID=AQR,Number=A,Type=Float,Description="Average base quality of the reference reads, AQR=QR/RO">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth, AO+RO">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype. Variants with less than 4 alt reads are 0/0, then variants with VAF < 0.95 are 0/1, and variants with VAF >= 0.95 are 1/1">
+##FORMAT=<ID=QA,Number=A,Type=Integer,Description="Alternate allele quality sum in phred">
+##FORMAT=<ID=QR,Number=1,Type=Integer,Description="Reference allele quality sum in phred">
+##FORMAT=<ID=RO,Number=1,Type=String,Description="Reference observations">
+##FORMAT=<ID=VAF,Number=A,Type=Float,Description="Allele frequency in the range (0,1] - the ratio of the number of alternate reads to reference reads">
+##FORMAT=<ID=q,Number=A,Type=Float,Description="Phred scaled binomial probability of seeing AO reads from DP, assuming a noise floor of p=0.002. ">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	HG004	HG002	HG003
+MT	73	.	A	G	3220.0	PASS	DP=53653;MQM=69.9973;MQMR=69.9994;QA=598698;QR=1456809;SAF=8505;SAR=7164;SRF=18965;SRR=19019;SBR=0.499;SBA=0.543	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/0:17026:17024,2:17024:653369:38.379:2:66:33.0:0.0001:0.0	0/0:20956:20955,1:20955:803275:38.333:1:27:27.0:0.0:0.0	0/1:15671:5,15666:5:165:33.0:15666:598605:38.21:0.9997:3220.0
+MT	114	.	C	T	3220.0	PASS	DP=65169;MQM=69.9994;MQMR=70;QA=759656;QR=1750954;SAF=10715;SAR=9005;SRF=23163;SRR=22286;SBR=0.51;SBA=0.543	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/0:20293:20290,3:20290:782258:38.554:3:115:38.333:0.0001:0.0	0/0:25151:25149,2:25149:968351:38.505:2:70:35.0:0.0001:0.0	0/1:19725:10,19715:10:345:34.5:19715:759471:38.522:0.9995:3220.0
+MT	152	.	T	C	3220.0	PASS	DP=74939;MQM=70;MQMR=70;QA=350179;QR=2534658;SAF=4860;SAR=4243;SRF=33430;SRR=32406;SBR=0.508;SBA=0.534	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/1:22712:22707,5:22707:875104:38.539:5:161:32.2:0.0002:0.0	0/0:28357:28357,0:28357:1092108:38.513:0:0:0:0.0:0.0	0/1:23870:14772,9098:14772:567446:38.414:9098:350018:38.472:0.3811:3220.0
+MT	195	.	T	C	3220.0	PASS	DP=76366;MQM=70;MQMR=70;QA=191457;QR=2727557;SAF=2329;SAR=2667;SRF=33901;SRR=37469;SBR=0.475;SBA=0.466	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/1:22239:17250,4989:17250:659354:38.223:4989:191233:38.331:0.2243:3220.0	0/1:27779:27774,5:27774:1062100:38.241:5:170:34.0:0.0002:0.0	0/0:26348:26346,2:26346:1006103:38.188:2:54:27.0:0.0001:0.0
+MT	263	.	A	G	3220.0	PASS	DP=62052;MQM=70;MQMR=70;QA=2332855;QR=305;SAF=28916;SAR=33127;SRF=4;SRR=5;SBR=0.444;SBA=0.466	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/1:17105:1,17104:1:27:27.0:17104:640903:37.471:0.9999:3220.0	0/1:21174:5,21169:5:170:34.0:21169:794551:37.534:0.9998:3220.0	0/1:23773:3,23770:3:108:36.0:23770:897401:37.754:0.9999:3220.0
+MT	309	.	CTCCCCCGCTTCT	CCTCCCCCCGCTTCT	3220.0	SBA;POS	DP=15927;MQM=70;MQMR=70;QA=547698;QR=510;SAF=300;SAR=15613;SRF=3;SRR=11;TYPE=complex;SBR=0.214;SBA=0.019	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	1/1:7133:0,7133:0:0:0:7133:244990:34.346:1.0:3220.0	1/1:8758:0,8758:0:0:0:8758:301970:34.479:1.0:3220.0	0/1:36:14,22:14:510:36.429:22:738:33.545:0.6111:527.23
+MT	315	.	CGCTTCT	CCGCTTCT	3220.0	POS	DP=9207;MQM=70;MQMR=70;QA=305458;QR=510;SAF=608;SAR=8585;SRF=3;SRR=11;TYPE=complex;SBR=0.214;SBA=0.066	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	1/1:9:0,9:0:0:0:9:287:31.889:1.0:269.9	1/1:7:0,7:0:0:0:7:219:31.286:1.0:215.92	0/1:9191:14,9177:14:510:36.429:9177:304952:33.23:0.9985:3220.0
+MT	456	.	C	T	3220.0	PASS	DP=55596;MQM=70;MQMR=70;QA=1203575;QR=869760;SAF=17976;SAR=14561;SRF=10005;SRR=13054;SBR=0.434;SBA=0.552	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/1:14278:8,14270:8:241:30.125:14270:527499:36.966:0.9994:3220.0	0/1:18280:17,18263:17:510:30.0:18263:675928:37.011:0.9991:3220.0	0/1:23038:23034,4:23034:869009:37.727:4:148:37.0:0.0002:0.0
+MT	497	.	C	T	3220.0	PASS	DP=62896;MQM=70;MQMR=70;QA=729442;QR=1538585;SAF=11062;SAR=9258;SRF=23010;SRR=19566;SBR=0.54;SBA=0.544	GT:DP:AD:RO:QR:AQR:AO:QA:AQA:VAF:q	0/0:18668:18665,3:18665:674513:36.138:3:86:28.667:0.0002:0.0	0/0:23778:23776,2:23776:860442:36.19:2:67:33.5:0.0001:0.0	0/1:20450:135,20315:135:3630:26.889:20315:729289:35.899:0.9934:3220.0

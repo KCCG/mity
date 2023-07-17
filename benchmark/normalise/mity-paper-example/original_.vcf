@@ -1,0 +1,10 @@
+##fileformat=VCFv4.2
+##reference=/home/torz/tfiles/cci/mity/mity-fork/mitylib/reference/hs37d5.MT.fa
+##contig=<ID=MT,length=16569>
+##INFO=<ID=TYPE,Number=A,Type=String,Description="The type of allele, either sp, mnp, ins, del, or complex.">
+##FORMAT=<ID=GT,Number=1,Type=String, Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=RO,Number=1,Type=Integer,Description="Reference allele observation count">
+##FORMAT=<ID=AO,Number=A,Type=Integer,Description="Alternate allele observation count">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	B49
+MT	3240	.	CAGA	TAGG,CAGG	.	.	TYPE=complex,sp	GT:DP:RO:AO	0/1:930:822:1,107
