@@ -1363,3 +1363,9 @@ def debug_print_vcf_lines(x):
     for line in x:
         print(*line, sep='\t')
     sys.exit()
+
+def main():
+    do_normalise(True, 'benchmark/normalise/ashkenazim-trio/mity_call.vcf.gz', 'benchmark/normalise/ashkenazim-trio/mity_maunal_normalise.vcf.gz', P_VAL, SB_range=[0.1,0.9], genome=GENOME_FILE)
+
+if __name__ == '__main__':
+    main()
