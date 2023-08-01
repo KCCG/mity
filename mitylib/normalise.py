@@ -5,9 +5,31 @@ import gzip
 import re
 import logging
 from .util import write_vcf
+from .util import get_mity_dir
 from scipy.stats import binom
 from math import isinf
 import numpy as np
+import configparser
+
+# CONSTANTS
+P_VAL = 0.002
+SB_RANGE_LO = 0.1 
+SB_RANGE_HI = 0.9
+MIN_MQMR = 30
+MIN_AQR = 20
+MIN_DP = 15
+
+BLACKLIST = list(range(302, 319))
+BLACKLIST = BLACKLIST + [3105, 3106, 3107, 3108]
+
+# CONFIG PARSER
+config = configparser.ConfigParser()
+config.read(get_mity_dir() + "/config.ini")
+GENOME_FILE = config.get('PATHS', 'GENOME_FILE')
+
+# LOGGING
+logger = logging.getLogger(__name__)
+
 
 def unchanged(List):
     # check that all numbers in the list are the same
@@ -330,7 +352,7 @@ def split_MNP(variant_list):
 # variant_list is a list of sublists, each sublist is  line in the vcf
 # variant_list is a list, with no multiallelic variants
 # Eg variant_list = [['MT', 73.0, '.', 'A', 'G', '148165', '.', 'DP=5912...], ['MT', 146.0, '.', 'T', 'C', '198193', '.', 'DP=7697;...], ['MT', '182', '.', 'C', 'T', '6.00899e-14', '.', 'DP=7955;...]]
-def combine_lines(variant_list, p=0.002):
+def combine_lines(variant_list, p=P_VAL):
     # make dictionary with keys chromosome, position and alternate
 
     # print(variant_list)
@@ -956,7 +978,7 @@ def combine_lines(variant_list, p=0.002):
     return (new_vcf)
 
 
-def mity_qual(AO, DP, p=0.002):
+def mity_qual(AO, DP, p=P_VAL):
     """
     Compute variant quality
     :param AO: (int) number of alternative reads
@@ -996,7 +1018,7 @@ def mity_qual(AO, DP, p=0.002):
         q = float(3220)
     return q
 
-def add_filter(variant_list, min_DP=15, SB_range=[0.1, 0.9], min_MQMR=30, min_AQR=20):
+def add_filter(variant_list, min_DP=MIN_DP, SB_range=[SB_RANGE_LO, SB_RANGE_HI], min_MQMR=MIN_MQMR, min_AQR=MIN_AQR):
     """
     FILTER out poor quality variants in a VCF.
     If one samples in the vcf passes, then they all pass in the FILTER column.
@@ -1008,15 +1030,14 @@ def add_filter(variant_list, min_DP=15, SB_range=[0.1, 0.9], min_MQMR=30, min_AQ
     :param min_AQR: minimum MQMR, where MQMR is the "Mean mapping quality of observed reference alleles"
     :return: a
     """
-    # @TODO: refactor this to use pyvcf
+    # @TODO: refactor this to use pysam
 
     # print(variant_list)
     # sys.exit()
 
     #############################################
     ##### HARD CODED FILTER VALUES
-    blacklist = list(range(302, 319))
-    blacklist = blacklist + [3105, 3106, 3107, 3108]
+    blacklist = BLACKLIST
 
     new_vcf = []
 
@@ -1253,7 +1274,7 @@ def update_header(col_names, header_lines, p, SB_range=[0.1, 0.9], min_MQMR=30, 
     header_lines.append([col_names])
 
 
-def do_normalise(vcf, out_file=None, p=0.002, SB_range=[0.1,0.9], min_MQMR=30, min_AQR=20, chromosome=None, genome="mitylib/reference/hs37d5.genome"):
+def do_normalise(debug, vcf, out_file=None, p=P_VAL, SB_range=[SB_RANGE_LO, SB_RANGE_HI], min_MQMR=MIN_MQMR, min_AQR=MIN_AQR, chromosome=None, genome=GENOME_FILE):
     """
     Normalise and FILTER a mity VCF file.
 
@@ -1279,13 +1300,20 @@ def do_normalise(vcf, out_file=None, p=0.002, SB_range=[0.1,0.9], min_MQMR=30, m
     :returns: Nothing. This creates a vcf.gz named out_file
     :rtype: None
     """
+
+    if debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Entered debug mode.")
+    else:
+        logger.setLevel(logging.INFO)
+
     if out_file is None:
         out_file = vcf.replace(".vcf.gz", ".norm.vcf.gz")
 
     file = gzip.open(vcf, 'rt')
 
     # split the header and the variants into two seperate lists
-    # @TODO: refactor this to use pyvcf
+    # @TODO: refactor this to use pysam
     logging.debug('Splitting header and variants')
     col_names = None
     header_lines = []

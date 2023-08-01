@@ -6,9 +6,19 @@ nuclear VCF are replaces with the mity variants, and the headers are merged
 import sys
 import gzip
 import logging
+import configparser
 from .util import write_merged_vcf
 from .util import create_prefix
 from .util import vcf_get_mt_contig
+from .util import get_mity_dir
+
+# CONFIG PARSER
+config = configparser.ConfigParser()
+config.read(get_mity_dir() + "/config.ini")
+GENOME_FILE = config.get('PATHS', 'GENOME_FILE')
+
+# LOGGING
+logger = logging.getLogger(__name__)
 
 def check_vcf_merge_compatibility(mity_vcf, hc_vcf):
     """
@@ -18,16 +28,21 @@ def check_vcf_merge_compatibility(mity_vcf, hc_vcf):
     h = vcf_get_mt_contig(hc_vcf)
     return m == h
 
-def do_merge(mity_vcf, hc_vcf, prefix=None, genome='mitylib/reference/b37d5.genome'):
+def do_merge(debug, mity_vcf, hc_vcf, prefix=None, genome=GENOME_FILE):
+    if debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Entered debug mode.")
+    else:
+        logger.setLevel(logging.INFO)
 
     if not check_vcf_merge_compatibility(mity_vcf, hc_vcf):
-        logging.error("The VCF files use mitochondrial contigs")
+        logger.error("The VCF files use mitochondrial contigs")
         sys.exit()
 
     prefix = create_prefix(hc_vcf, prefix)
     outfile = prefix + ".mity.vcf.gz"
 
-    logging.debug("importing hc_vcf: " + hc_vcf)
+    logger.debug("importing hc_vcf: " + hc_vcf)
     hc_file = gzip.open(hc_vcf, 'rt')
     
     # split the header and the variants into two separate lists
@@ -45,7 +60,7 @@ def do_merge(mity_vcf, hc_vcf, prefix=None, genome='mitylib/reference/b37d5.geno
     hc_col_names = hc_header[-1]
     del hc_header[-1]
 
-    logging.debug("importing mity_vcf: " + mity_vcf)
+    logger.debug("importing mity_vcf: " + mity_vcf)
     mity_file = gzip.open(mity_vcf, 'rt')
     
     # split the header and the variants into two separate lists
