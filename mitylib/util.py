@@ -160,24 +160,6 @@ def write_merged_vcf(new_vcf, out_file, genome_file=GENOME_FILE):
             myfile.write(vcf_line + '\n')
     gsort_vcf(f, out_file, genome_file=genome_file)
 
-# REMOVE: This function isn't called anywhere???
-# def create_genome_file(vcf_file, genome_file):
-#     """
-#     gsort (https://github.com/brentp/gsort) requires a '.genome'
-#     file to tell it how to sort the vcf records. This function creates a
-#     '.genome' file in the same order as the contig lines in the vcf header.
-
-#     :param vcf_file: a vcf file with the correct contig names
-#     :param genome_file: the resulting .genome file
-#     :return: None. this creates a '.genome' file
-#     """
-    
-#     vcf = pysam.VariantFile(vcf_file)
-#     with open(genome_file, mode='wt', encoding='utf-8') as genome_file:
-#         for contig in vcf.header.contigs:
-#             contig_info = [contig.get('ID', ''), contig.get('length', '')]
-#             genome_file.write('\t'.join(str(x) for x in contig_info))
-
 def check_dependency(dep, exit=True):
     """
     Check if a dependency exists.
