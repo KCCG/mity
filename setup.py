@@ -7,14 +7,14 @@ with open("mitylib/_version.py", "r") as fh:
     version = fh.read().replace("__version__ = ", "").strip('""\n')
 
 setuptools.setup(
-    name="mitywgs",
+    name="mitywgs-test",
     version=version,
     description="A sensitive Mitochondrial variant detection pipeline from WGS data",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/KCCG/mity",
-    author="Clare Puttick",
-    author_email="clare.puttick@gmail.com",
+    author="test test",
+    author_email="test.test@test.com",
     license="MIT",
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -40,14 +40,13 @@ setuptools.setup(
     },
     packages=setuptools.find_packages(),
     install_requires=[
-        'pyvcf',
         'pysam',
         'pandas',
         'xlsxwriter',
         'scipy'
     ],
     python_requires='>=3.5.4',
-    package_data={'mitylib': ['verchew.ini', 'annot/*', 'reference/*']},
+    package_data={'mitylib': ['config.ini', 'verchew.ini', 'annot/*', 'reference/*']},
     include_package_data=True,
-    scripts=["mity"]
+    scripts=["mitylib/mity"]
 )

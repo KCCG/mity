@@ -6,6 +6,9 @@ import os.path
 import xlsxwriter
 from .util import check_missing_file, create_prefix, make_hgvs, get_annot_file
 
+# LOGGING
+logger = logging.getLogger(__name__)
+
 def make_table(variants, samples, vep_headers, impact_dict, min_vaf):
     table = []
     n_sample = len(samples)
@@ -334,7 +337,7 @@ def find_index(string, pattern):
     return [i for i, ltr in enumerate(string) if ltr == pattern]
 
 
-def do_report(vcf, prefix=None, min_vaf=0.0, out_folder_path = "."):
+def do_report(debug, vcf, prefix=None, min_vaf=0.0, out_folder_path = "."):
     """
     Create a mity report
     :param vcf: the path to a vcf file
@@ -342,6 +345,12 @@ def do_report(vcf, prefix=None, min_vaf=0.0, out_folder_path = "."):
     :param min_vaf: only include vairants with vaf > min_vaf in the report
     :return:
     """
+    if debug:
+        logger.setLevel(logging.DEBUG)
+        logger.debug("Entered debug mode.")
+    else:
+        logger.setLevel(logging.INFO)
+
     vcf = vcf[0]
     
     if len(vcf) == 0:
