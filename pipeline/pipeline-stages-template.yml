@@ -33,7 +33,7 @@ stages:
     displayName: Build image
     jobs:
     - job: Build
-    displayName: Build
+      displayName: Build
       pool:
         vmImage: ${{ parameters.vmImageName }}
       steps:
