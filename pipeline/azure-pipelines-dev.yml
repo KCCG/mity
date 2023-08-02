@@ -8,7 +8,7 @@ pr: none
 resources:
   - repo: self
 
-name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+name: $(Date:yyyy).$(Date:MMdd)$(Rev:.r)
 variables:
   tag: "$(Build.BuildNumber)"
 
