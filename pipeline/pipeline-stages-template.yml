@@ -41,6 +41,7 @@ stages:
         displayName: Build an image
         env:
           TAG: ${{ parameters.tag }}
+          VERSION: ${{ parameters.tag }}
         inputs:
           command: build
           repository: ${{ parameters.imageRepository }}
