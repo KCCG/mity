@@ -16,29 +16,44 @@ stages:
   - stage: PyPiPush
     displayName: Push to PyPi repo 
     jobs:
-      - job: PyPiPush
-        displayName: Push to PyPi repo
-        pool:
-          vmImage: ${{ parameters.vmImageName }}
-        steps:
-        - task: PyPIPublisher@0
-          inputs:
-            pypiConnection: ${{ parameters.pypiServiceConnection }}
-            packageDirectory: "$(Build.SourcesDirectory)"
+    - job: PyPiPush
+      displayName: Push to PyPi repo
+      pool:
+        vmImage: ${{ parameters.vmImageName }}
+      steps:
+      - task: PyPIPublisher@0
+        displayName: Compile and push to PyPI
+        env:
+          VERSION: ${{ parameters.tag }}
+        inputs:
+          pypiConnection: ${{ parameters.pypiServiceConnection }}
+          packageDirectory: "$(Build.SourcesDirectory)"
 
   - stage: Build
     displayName: Build image
     jobs:
-      - job: Build
-      displayName: Build
-        pool:
-          vmImage: ${{ parameters.vmImageName }}
-        steps:
-          - task: Docker@2
-            displayName: Build and Push an image to container registry
-            inputs:
-              command: buildAndPush
-              repository: ${{ parameters.imageRepository }}
-              dockerfile: ${{ parameters.dockerfilePath }}
-              containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
-              tags: ${{ parameters.tag }}
+    - job: Build
+    displayName: Build
+      pool:
+        vmImage: ${{ parameters.vmImageName }}
+      steps:
+      - task: Docker@2
+        displayName: Build an image
+        env:
+          TAG: ${{ parameters.tag }}
+        inputs:
+          command: build
+          repository: ${{ parameters.imageRepository }}
+          dockerfile: ${{ parameters.dockerfilePath }}
+          containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
+          tags: ${{ parameters.tag }}
+          arguments: >
+            --build-arg TAG
+      - task: Docker@2
+        displayName: Push an image to container registry
+        inputs:
+          command: push
+          repository: ${{ parameters.imageRepository }}
+          dockerfile: ${{ parameters.dockerfilePath }}
+          containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
+          tags: ${{ parameters.tag }}

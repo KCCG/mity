@@ -1,6 +1,8 @@
 # Use an official Python runtime as a parent image
 FROM python:3.10.6-slim
 
+ARG TAG
+
 # Install freebayes dependencies
 RUN apt-get update -yqq && \
     apt-get install -yqq \
@@ -41,7 +43,7 @@ RUN \
       | wget -O gsort -qi - && \
     chmod +x gsort
 
-RUN pip install mitywgs==0.4.0
+RUN pip install mitywgs==${TAG}
 
 WORKDIR /home
 

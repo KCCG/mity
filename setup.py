@@ -1,10 +1,10 @@
 import setuptools
+import os
+
+version = os.environ['VERSION']
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
-
-with open("mitylib/_version.py", "r") as fh:
-    version = fh.read().replace("__version__ = ", "").strip('""\n')
 
 setuptools.setup(
     name="mitywgs-test",
