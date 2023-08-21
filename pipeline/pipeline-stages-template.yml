@@ -21,6 +21,12 @@ stages:
       pool:
         vmImage: ${{ parameters.vmImageName }}
       steps:
+      - task: CmdLine@2
+        inputs:
+          script: |
+            touch mitylib/_version.py
+            echo "__version__ = \"${{ parameters.tag }}\"" > mitylib/_version.py
+        env: 
       - task: PyPIPublisher@0
         displayName: Compile and push to PyPI
         env:

@@ -1,7 +1,8 @@
 import setuptools
 import os
 
-version = os.environ['VERSION']
+with open("mitylib/_version.py", "r") as fh:
+    version = fh.read().replace("__version__ = ", "").strip('""\n')
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
