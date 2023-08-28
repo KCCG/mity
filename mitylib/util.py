@@ -97,7 +97,6 @@ def write_vcf(new_vcf, out_file, genome_file=GENOME_FILE):
         for vcf_line in new_vcf:
             myfile.write('\t'.join([str(elem) for elem in vcf_line]) + '\n')
     gsort_vcf(f, out_file, genome_file=genome_file)
-    # bcftools_sort_vcf(f, out_file)
 
 
 def gsort_vcf(f, out_file, genome_file=GENOME_FILE, remove_unsorted_vcf=False):
@@ -117,26 +116,6 @@ def gsort_vcf(f, out_file, genome_file=GENOME_FILE, remove_unsorted_vcf=False):
     logging.debug(gsort_cmd)
 
     subprocess.run(gsort_cmd, shell=True)
-    logging.debug("Tabix indexing {}".format(out_file))
-    tabix(out_file)
-    if remove_unsorted_vcf:
-        os.remove(f)
-
-def bcftools_sort_vcf(f, out_file, remove_unsorted_vcf=False):
-    """
-    use bcftools sort to sort the records in a VCF file.
-
-    :param f: the path to an unsorted vcf.gz file
-    :param out_file: the path to a resulting sorted vcf.gz file
-    :param remove_unsorted_vcf: if True, then the input file 'f' will be deleted.
-    :return: nothing
-    """
-    logging.debug("Sorting, bgzipping {} -> {}".format(f, out_file))
-    bcftools_sort_cmd = "bcftools sort {} -O z -o {} 2>&1 >/dev/null".format(f, out_file)
-
-    logging.debug(bcftools_sort_cmd)
-
-    subprocess.run(bcftools_sort_cmd, shell=True)
     logging.debug("Tabix indexing {}".format(out_file))
     tabix(out_file)
     if remove_unsorted_vcf:

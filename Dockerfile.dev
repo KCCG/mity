@@ -10,27 +10,6 @@ RUN apt-get update -yqq && \
         freebayes && \
     apt-get clean
 
-RUN \
-    # Install htslib
-    cd /tmp && \
-    wget "https://github.com/samtools/htslib/releases/download/1.17/htslib-1.17.tar.bz2" && \
-    tar -vxjf htslib-1.17.tar.bz2 && \
-    cd htslib-1.17 && \
-    ./configure --disable-bz2 --disable-lzma && \
-    make && \
-    make install && \
-    rm -rf /tmp/htslib-1.17 && \
-    \
-    # Install bcftools
-    cd /tmp && \
-    wget "https://github.com/samtools/bcftools/releases/download/1.17/bcftools-1.17.tar.bz2" && \
-    tar -vxjf bcftools-1.17.tar.bz2 && \
-    cd bcftools-1.17 && \
-    ./configure --disable-bz2 --disable-lzma && \
-    make && \
-    make install && \
-    rm -rf /tmp/bcftools-1.17
-
 # Install gsort
 RUN \
     cd /usr/local/bin && \
