@@ -29,7 +29,7 @@ def add_headers(input_vcf):
     return new_header
 
 
-def add_filter(input_vcf, min_DP=MIN_DP, SB_range_lo=SB_RANGE_LO, SB_range_hi=SB_RANGE_HI, min_MQMR=MIN_MQMR, min_AQR=MIN_AQR):
+def add_filter(input_vcf, all_pass=False, min_DP=MIN_DP, SB_range_lo=SB_RANGE_LO, SB_range_hi=SB_RANGE_HI, min_MQMR=MIN_MQMR, min_AQR=MIN_AQR):
     # setting headers
     new_header = input_vcf.header
 
@@ -83,8 +83,18 @@ def add_filter(input_vcf, min_DP=MIN_DP, SB_range_lo=SB_RANGE_LO, SB_range_hi=SB
         if variant.pos in BLACKLIST:
             variant.filter.add("POS")
         
-        # currently requires all samples to pass the filter, (different from mity normalise)
-        # TODO: add options for only requiring one sample to pass vs all vs percentage
+        # filter dictionary
+        # each value represents the number of samples that pass each field
+        # starts with all samples passing
+        num_samples = len(variant.samples.values())
+        filter_dict = {
+            "SBR": num_samples,
+            "MQMR": num_samples,
+            "AQR": num_samples,
+            "SBA": num_samples
+        }
+
+        # testing samples
         for sample in variant.samples.values():
             # AQR: note this is supposed to be added to the format + samples section
             if int(sample["RO"]) > 0:
@@ -94,17 +104,34 @@ def add_filter(input_vcf, min_DP=MIN_DP, SB_range_lo=SB_RANGE_LO, SB_range_hi=SB
 
             if sample["RO"] > min_DP:
                 if not SB_range_lo <= SBR <= SB_range_hi:
-                    variant.filter.add("SBR")
+                    filter_dict["SBR"] -= 1
                 if variant.info["MQMR"] < min_MQMR:
-                    variant.filter.add("MQMR")
+                    filter_dict["MQMR"] -= 1
                 if AQR < min_AQR:
-                    variant.filter.add("AQR")
+                    filter_dict["AQR"] -= 1
             if sample["AO"][0] > min_DP:
                 if not SB_range_lo <= SBA <= SB_range_hi:
-                    variant.filter.add("SBA")
+                    filter_dict["SBA"] -= 1
 
-        # if no other filters have been added to filter, then the variant passes
-        if len(variant.filter.values()) == 0:
+        # assigning fitler values
+        pass_flag = True
+
+        # all samples must pass each test
+        if (all_pass):
+            for (field, num_passing_samples) in filter_dict.items():
+                if num_passing_samples != num_samples:
+                    variant.filter.add(field)
+                    pass_flag = False
+
+        # only one sample has to pass each test
+        else:
+            for (field, num_passing_samples) in filter_dict.items():
+                if num_passing_samples == 0:
+                    variant.filter.add(field)
+                    pass_flag = False
+
+        # setting passing filter
+        if pass_flag:
             variant.filter.add("PASS")
 
         output_vcf.write(variant)
