@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-      - refs/tags/release-v*
+      - refs/tags/*.*.*
 
 pr: none
 
