@@ -29,8 +29,6 @@ stages:
         env: 
       - task: PyPIPublisher@0
         displayName: Compile and push to PyPI
-        env:
-          VERSION: ${{ parameters.tag }}
         inputs:
           pypiConnection: ${{ parameters.pypiServiceConnection }}
           packageDirectory: "$(Build.SourcesDirectory)"
@@ -47,7 +45,6 @@ stages:
         displayName: Build an image
         env:
           TAG: ${{ parameters.tag }}
-          VERSION: ${{ parameters.tag }}
         inputs:
           command: build
           repository: ${{ parameters.imageRepository }}
@@ -56,7 +53,6 @@ stages:
           tags: ${{ parameters.tag }}
           arguments: >
             --build-arg TAG
-            --build-arg VERSION
       - task: Docker@2
         displayName: Push an image to container registry
         inputs:
