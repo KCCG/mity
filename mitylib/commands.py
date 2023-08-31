@@ -126,16 +126,19 @@ def _cmd_normalise(args):
     logging.info("Normalising and FILTERing mitochondrial vcf.gz file")
 
     genome = select_reference_genome(args.reference, None)
+    args.reference = select_reference_fasta(args.reference, None)
 
-    normalise.do_normalise(args.debug, args.vcf, args.outfile, p=args.p, SB_range=[0.1, 0.9], genome=genome)
+    normalise.do_normalise(args.debug, args.vcf, args.reference, genome, args.outfile, args.allsamples, p=args.p)
 
 
 P_normalise = AP_subparsers.add_parser('normalise', help=_cmd_normalise.__doc__)
 P_normalise.add_argument('-d', '--debug', action='store_true', help="Enter debug mode", required=False)
 P_normalise.add_argument('vcf', action='store',
                          help="vcf.gz file from running mity")
-P_normalise.add_argument('--outfile', action='store', required=True,
+P_normalise.add_argument('-o', '--outfile', action='store', required=True,
                          help="output VCF file in bgzip compressed format")
+P_normalise.add_argument('--allsamples', action='store_true', required=False,
+                         help="PASS in the filter requires all samples to pass instead of just one")
 P_normalise.add_argument('--p', action='store', type=float,
                          default=0.002,
                          help='Minimum noise level. This is used to calculate QUAL score'

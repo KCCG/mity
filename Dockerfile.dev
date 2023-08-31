@@ -45,7 +45,7 @@ RUN \
 # RUN pip install mitywgs==0.4.0
 # mitywgs 0.4.0 requires pyvcf which doesn't allow testing of python 3.10.6 so here I'm installing dependencies manually
 RUN pip install pandas xlsxwriter pyfastx scipy pysam
-RUN pip install -i https://test.pypi.org/simple/ mitywgs-test==0.4.39
+RUN pip install -i https://test.pypi.org/simple/ mitywgs-test==0.4.45
 
 WORKDIR /home
 

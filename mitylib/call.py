@@ -67,8 +67,8 @@ def do_call(debug, bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ
     if not os.path.exists(out_folder_path):
         os.makedirs(out_folder_path)
 
-    output_file_name = os.path.join(out_folder_path, prefix + ".mity.vcf.gz")
-    unnormalised_vcf_path = os.path.join(out_folder_path, prefix + ".unnormalised.vcf.gz")
+    mity_normalise_output_file = os.path.join(out_folder_path, prefix + ".mity.normalise.vcf.gz")
+    mity_call_output_file = os.path.join(out_folder_path, prefix + ".mity.call.vcf.gz")
 
     # if given BAM files A, B, C; freebayes will put samples C, B, A in the VCF file; reverse this odd behaviour
     bam_str = " ".join(['-b ' + bam_file for bam_file in reversed(bam_files)])
@@ -105,7 +105,7 @@ def do_call(debug, bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ
                       '--ploidy 2 '
                       '--region {} '
                       ).format(reference, bam_str, min_mq, min_bq, min_af, min_ac, region)
-    freebayes_call = freebayes_call + ('| sed "s/##source/##freebayesSource/" | sed "s/##commandline/##freebayesCommandline/" | {} | bgzip > {} ').format(sed_cmd, unnormalised_vcf_path)
+    freebayes_call = freebayes_call + ('| sed "s/##source/##freebayesSource/" | sed "s/##commandline/##freebayesCommandline/" | {} | bgzip > {} ').format(sed_cmd, mity_call_output_file)
 
     logger.info("Running FreeBayes in sensitive mode")
     logger.debug(freebayes_call)
@@ -116,7 +116,7 @@ def do_call(debug, bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ
         logger.error("FreeBayes failed: {}".format(res.stderr))
         exit(1)
 
-    if os.path.isfile(unnormalised_vcf_path):
+    if os.path.isfile(mity_call_output_file):
         logger.debug("Finished running FreeBayes")
     
     if normalise:
@@ -128,9 +128,8 @@ def do_call(debug, bam_files, reference, genome=None, prefix=None, min_mq=MIN_MQ
             debug_normalise = True
 
         try:
-            vcfnorm(debug_normalise, vcf=unnormalised_vcf_path, out_file=output_file_name, p=p, genome=genome)
+            vcfnorm(debug_normalise, vcf=mity_call_output_file, reference_fasta=reference, output_file=mity_normalise_output_file, allsamples=False, p=p, genome=genome)
         finally:
-            os.remove(unnormalised_vcf_path)
+            os.remove(mity_call_output_file)
     else:
-        os.rename(unnormalised_vcf_path, output_file_name)
-        tabix(output_file_name)
+        tabix(mity_call_output_file)
