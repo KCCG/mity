@@ -80,25 +80,6 @@ def create_prefix(file_name, prefix=None):
     return prefix
 
 
-def write_vcf(new_vcf, out_file, genome_file=GENOME_FILE):
-    """
-    write a vcf object to vcf.gz file with tbi index.
-
-    This differs from write_merged_vcf, as mity merge doesn't split each VCF
-    line on tabs, whereas mity normalise does
-
-    :param new_vcf: new_vcf is a list of lists, created by normalise
-    :param out_file: the resulting filename. this should end in vcf.gz
-    :return: None. This function writes a vcf.gz and vcf.gz.tbi file.
-    """
-    f = tmp_mity_file_name()
-    logging.debug("Writing uncompressed vcf to " + f)
-    with open(f, mode='wt', encoding='utf-8') as myfile:
-        for vcf_line in new_vcf:
-            myfile.write('\t'.join([str(elem) for elem in vcf_line]) + '\n')
-    gsort_vcf(f, out_file, genome_file=genome_file)
-
-
 def gsort_vcf(f, out_file, genome_file=GENOME_FILE, remove_unsorted_vcf=False):
     """
     use gsort to sort the records in a VCF file according to a .genome file.
