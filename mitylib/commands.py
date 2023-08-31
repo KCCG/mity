@@ -59,9 +59,6 @@ P_call.add_argument('bam', action='append', nargs='+',
 P_call.add_argument('--reference', choices=['hs37d5', 'hg19', 'hg38', 'mm10'],
                     default="hs37d5", required=False,
                     help='reference genome version to use. default: hs37d5')
-# P_call.add_argument('--custom_reference', action='store',
-#                     default="", required=False,
-#                     help='The path to a custom reference genome file in uncompressed fasta format')
 P_call.add_argument('--prefix', action='store',
                     help='Output files will be named with PREFIX')
 P_call.add_argument('--min-mapping-quality', action='store', type=int,
@@ -183,6 +180,7 @@ P_report.set_defaults(func=_cmd_report)
 
 do_merge = public(merge.do_merge)
 
+
 def _cmd_merge(args):
     """Merging mity VCF with nuclear VCF"""
     logging.info("mity %s", __version__)
@@ -203,9 +201,6 @@ P_merge.add_argument('--prefix', action='store',
 P_merge.add_argument('--reference', choices=['hs37d5', 'hg19', 'hg38', 'mm10'],
                      default="hs37d5", required=False,
                      help='reference genome version to use. default: hs37d5')
-# P_merge.add_argument('--custom_reference', action='store',
-#                      default="", required=False,
-#                      help='The path to a custom reference genome file in uncompressed fasta format')
 P_merge.add_argument('-d', '--debug', action='store_true', help="Enter debug mode", required=False)
 P_merge.set_defaults(func=_cmd_merge)
 
