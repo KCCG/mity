@@ -1,4 +1,5 @@
 import pysam
+import pysam.bcftools
 from math import isinf
 import numpy as np
 from scipy.stats import binom
@@ -185,12 +186,18 @@ def add_info_values(variant):
 
     return variant
 
-def do_normalise(input_vcf, all_pass=False, min_DP=MIN_DP, SBR_lo=SB_RANGE_LO, SBR_hi=SB_RANGE_HI, min_MQMR=MIN_MQMR, min_AQR=MIN_AQR):
-    # setting headers
+def do_normalise(vcf, all_pass=False, min_DP=MIN_DP, SBR_lo=SB_RANGE_LO, SBR_hi=SB_RANGE_HI, min_MQMR=MIN_MQMR, min_AQR=MIN_AQR):
+    normalised_vcf = vcf.replace(".vcf.gz", ".norm.vcf")
+    reference_fasta = "../../../mitylib/reference/hs37d5.MT.fa"
+    # The "-o" option doesn't get passed to pysam's bcftools wrapper.
+    with open(normalised_vcf, "w") as f:
+        print(pysam.bcftools.norm("-f", reference_fasta, "-m-both", vcf), end="", file=f)
+    
+    # vcf files
+    input_vcf = pysam.VariantFile(normalised_vcf)
     new_header = add_headers(input_vcf)
-
-    # output vcf file
-    output_vcf = pysam.VariantFile('filtered.vcf', 'w', header=new_header)
+    filtered_vcf = vcf.replace(".vcf.gz", ".filtered.vcf")
+    output_vcf = pysam.VariantFile(filtered_vcf, 'w', header=new_header)
     
     for variant in input_vcf.fetch():
         variant = add_info_values(variant)
@@ -201,7 +208,7 @@ def do_normalise(input_vcf, all_pass=False, min_DP=MIN_DP, SBR_lo=SB_RANGE_LO, S
     input_vcf.close()
 
 def main():
-    input_vcf = pysam.VariantFile('bcftools_normalise_test.vcf')
+    input_vcf = "ashkenazim.mity.vcf.gz"
     do_normalise(input_vcf, min_DP=MIN_DP, SBR_lo=SB_RANGE_LO, SBR_hi=SB_RANGE_HI, min_MQMR=MIN_MQMR, min_AQR=MIN_AQR)
 
 if __name__ == '__main__':

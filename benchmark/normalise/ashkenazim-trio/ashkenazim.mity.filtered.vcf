@@ -145,7 +145,7 @@
 ##FORMAT=<ID=QA,Number=A,Type=Integer,Description="Sum of quality of the alternate observations">
 ##FORMAT=<ID=MIN_DP,Number=1,Type=Integer,Description="Minimum depth in gVCF output block.">
 ##bcftools_normVersion=1.17 (pysam)+htslib-1.17
-##bcftools_normCommand=norm -f ../../../mitylib/reference/hs37d5.MT.fa -m-both -o /tmp/tmpc8qmi5ti ashkenazim.mity.vcf.gz; Date=Thu Aug 31 02:11:08 2023
+##bcftools_normCommand=norm -f ../../../mitylib/reference/hs37d5.MT.fa -m-both -o /tmp/tmpaizrnd73 ashkenazim.mity.vcf.gz; Date=Thu Aug 31 02:12:48 2023
 ##FILTER=<ID=POS,Description="Variant falls in the blacklist of positions: MT:302-319, MT:3105-3108">
 ##FILTER=<ID=SBR,Description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)">
 ##FILTER=<ID=SBA,Description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)">
