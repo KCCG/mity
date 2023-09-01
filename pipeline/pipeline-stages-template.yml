@@ -1,0 +1,62 @@
+parameters:
+  - name: vmImageName
+    type: string
+  - name: imageRepository
+    type: string
+  - name: dockerfilePath
+    type: string
+  - name: dockerRegistryServiceConnection
+    type: string
+  - name: tag
+    type: string
+  - name: pypiServiceConnection
+    type: string
+
+stages:
+  - stage: PyPiPush
+    displayName: Push to PyPi repo 
+    jobs:
+    - job: PyPiPush
+      displayName: Push to PyPi repo
+      pool:
+        vmImage: ${{ parameters.vmImageName }}
+      steps:
+      - task: CmdLine@2
+        inputs:
+          script: |
+            touch mitylib/_version.py
+            echo "__version__ = \"${{ parameters.tag }}\"" > mitylib/_version.py
+      - task: PyPIPublisher@0
+        displayName: Compile and push to PyPI
+        inputs:
+          pypiConnection: ${{ parameters.pypiServiceConnection }}
+          packageDirectory: "$(Build.SourcesDirectory)"
+
+  - stage: Build
+    displayName: Build image
+    jobs:
+    - job: Build
+      displayName: Build
+      pool:
+        vmImage: ${{ parameters.vmImageName }}
+      steps:
+      - task: Docker@2
+        displayName: Build an image
+        env:
+          TAG: ${{ parameters.tag }}
+        inputs:
+          command: build
+          repository: ${{ parameters.imageRepository }}
+          dockerfile: ${{ parameters.dockerfilePath }}
+          containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
+          tags: ${{ parameters.tag }}
+          arguments: >
+            --build-arg TAG
+      - task: Docker@2
+        displayName: Push an image to container registry
+        inputs:
+          command: push
+          repository: ${{ parameters.imageRepository }}
+          dockerfile: ${{ parameters.dockerfilePath }}
+          containerRegistry: ${{ parameters.dockerRegistryServiceConnection }}
+          tags: ${{ parameters.tag }}

@@ -1,10 +1,11 @@
 import setuptools
-
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+import os
 
 with open("mitylib/_version.py", "r") as fh:
     version = fh.read().replace("__version__ = ", "").strip('""\n')
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
     name="mitywgs-test",
@@ -43,7 +44,6 @@ setuptools.setup(
         'pysam',
         'pandas',
         'xlsxwriter',
-        'pyfastx',
         'scipy'
     ],
     python_requires='>=3.5.4',

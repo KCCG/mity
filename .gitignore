@@ -3,20 +3,30 @@
 # *.bam
 # *.bai
 
+# mitylib files
+mitylib/__pycache__
+mitylib/_version.py
+
+# pip compile stuff
+requirements.txt
+
+# folders
+lib/*
+*/output/*
+bin/*
+build/*
+dist/*
+
+# other
 *DS_Store
 *.R
 venv
 *.iml
 .idea
-mitylib/__pycache__
-*/output/*
-bin/*
-build/*
-dist/*
 gsort
-lib/*
+pyvenv.cfg 
+.python-version
+
+# egg
 mitylib.egg-info/*
 *.egg-info/*
-pyvenv.cfg 
-requirements.txt
-.python-version
