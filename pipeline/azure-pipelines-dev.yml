@@ -1,0 +1,34 @@
+trigger:
+  branches:
+    include:
+      - development
+
+pr: none
+
+resources:
+  - repo: self
+
+name: $(Date:yyyy).$(Date:MMdd)$(Rev:.r)
+variables:
+  tag: "$(Build.BuildNumber)"
+
+  # Docker details
+  dockerRegistryServiceConnection: "$(dockerhub-service-connection)"
+  imageRepository: "$(image-repository)"
+  dockerfilePath: "$(Build.SourcesDirectory)/Dockerfile.dev" # docker file name
+
+  # PyPi Details
+  pypiServiceConnection: "$(pypi-service-connection)"
+
+  # Agent VM image name
+  vmImageName: "ubuntu-latest"
+
+extends:
+  template: pipeline-stages-template.yml
+  parameters:
+    tag: "$(tag)"
+    dockerRegistryServiceConnection: "$(dockerRegistryServiceConnection)"
+    imageRepository: "$(imageRepository)"
+    dockerfilePath: "$(dockerfilePath)"
+    vmImageName: "$(vmImageName)"
+    pypiServiceConnection: "$(pypiServiceConnection)"
