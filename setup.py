@@ -14,8 +14,8 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/KCCG/mity",
-    author="test test",
-    author_email="test.test@test.com",
+    author="Mark Cowley",
+    author_email="mcowley@ccia.org.au",
     license="MIT",
     classifiers=[
         'Development Status :: 4 - Beta',
