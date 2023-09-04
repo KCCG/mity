@@ -5,7 +5,6 @@
 
 # mitylib files
 mitylib/__pycache__
-mitylib/_version.py
 
 # pip compile stuff
 requirements.txt
