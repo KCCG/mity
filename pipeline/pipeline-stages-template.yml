@@ -11,6 +11,8 @@ parameters:
     type: string
   - name: pypiServiceConnection
     type: string
+  - name: packageName
+    type: string
 
 stages:
   - stage: PyPiPush
@@ -24,8 +26,8 @@ stages:
       - task: CmdLine@2
         inputs:
           script: |
-            touch mitylib/_version.py
-            echo "__version__ = \"${{ parameters.tag }}\"" > mitylib/_version.py
+            sed -i -e s/\{VERSION\}/${{ parameters.tag }}/ mitylib/_version.py
+            sed -i -e s/\{NAME\}/${{ parameters.packageName }}/ setup.py
       - task: PyPIPublisher@0
         displayName: Compile and push to PyPI
         inputs:

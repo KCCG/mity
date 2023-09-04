@@ -10,6 +10,7 @@ resources:
 
 name: $(Date:yyyy).$(Date:MMdd)$(Rev:.r)
 variables:
+  packageName: "$(package-name)"
   tag: "$(Build.BuildNumber)"
 
   # Docker details
@@ -26,6 +27,7 @@ variables:
 extends:
   template: pipeline-stages-template.yml
   parameters:
+    packageName: "$(packageName)"
     tag: "$(tag)"
     dockerRegistryServiceConnection: "$(dockerRegistryServiceConnection)"
     imageRepository: "$(imageRepository)"
