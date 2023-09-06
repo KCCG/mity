@@ -1,0 +1,4 @@
+[[annotation]]
+file="mitylib/annot/mitomap_panel_annotations.csv.gz"
+fields = ["locus_mitomap","num_references_mitomap","variant_amino_acid_change_mitomap","codon_position_mitomap","codon_number_mitomap","disease_mitomap","num_disease_references_mitomap","RNA_mitomap","homoplasmy_mitomap","heteroplasmy_mitomap","status_mitomap","disease_amino_acid_change_mitomap","GenBank_frequency_mitomap","commercial_panels"]
+ops=["self","self","self","self","self","self","self","self","self","self","self","self","self","self"]
