@@ -1,0 +1,198 @@
+##fileformat=VCFv4.2
+##contig=<ID=1,length=249250621>
+##contig=<ID=2,length=243199373>
+##contig=<ID=3,length=198022430>
+##contig=<ID=4,length=191154276>
+##contig=<ID=5,length=180915260>
+##contig=<ID=6,length=171115067>
+##contig=<ID=7,length=159138663>
+##contig=<ID=8,length=146364022>
+##contig=<ID=9,length=141213431>
+##contig=<ID=10,length=135534747>
+##contig=<ID=11,length=135006516>
+##contig=<ID=12,length=133851895>
+##contig=<ID=13,length=115169878>
+##contig=<ID=14,length=107349540>
+##contig=<ID=15,length=102531392>
+##contig=<ID=16,length=90354753>
+##contig=<ID=17,length=81195210>
+##contig=<ID=18,length=78077248>
+##contig=<ID=19,length=59128983>
+##contig=<ID=20,length=63025520>
+##contig=<ID=21,length=48129895>
+##contig=<ID=22,length=51304566>
+##contig=<ID=X,length=155270560>
+##contig=<ID=Y,length=59373566>
+##contig=<ID=MT,length=16569>
+##contig=<ID=GL000207.1,length=4262>
+##contig=<ID=GL000226.1,length=15008>
+##contig=<ID=GL000229.1,length=19913>
+##contig=<ID=GL000231.1,length=27386>
+##contig=<ID=GL000210.1,length=27682>
+##contig=<ID=GL000239.1,length=33824>
+##contig=<ID=GL000235.1,length=34474>
+##contig=<ID=GL000201.1,length=36148>
+##contig=<ID=GL000247.1,length=36422>
+##contig=<ID=GL000245.1,length=36651>
+##contig=<ID=GL000197.1,length=37175>
+##contig=<ID=GL000203.1,length=37498>
+##contig=<ID=GL000246.1,length=38154>
+##contig=<ID=GL000249.1,length=38502>
+##contig=<ID=GL000196.1,length=38914>
+##contig=<ID=GL000248.1,length=39786>
+##contig=<ID=GL000244.1,length=39929>
+##contig=<ID=GL000238.1,length=39939>
+##contig=<ID=GL000202.1,length=40103>
+##contig=<ID=GL000234.1,length=40531>
+##contig=<ID=GL000232.1,length=40652>
+##contig=<ID=GL000206.1,length=41001>
+##contig=<ID=GL000240.1,length=41933>
+##contig=<ID=GL000236.1,length=41934>
+##contig=<ID=GL000241.1,length=42152>
+##contig=<ID=GL000243.1,length=43341>
+##contig=<ID=GL000242.1,length=43523>
+##contig=<ID=GL000230.1,length=43691>
+##contig=<ID=GL000237.1,length=45867>
+##contig=<ID=GL000233.1,length=45941>
+##contig=<ID=GL000204.1,length=81310>
+##contig=<ID=GL000198.1,length=90085>
+##contig=<ID=GL000208.1,length=92689>
+##contig=<ID=GL000191.1,length=106433>
+##contig=<ID=GL000227.1,length=128374>
+##contig=<ID=GL000228.1,length=129120>
+##contig=<ID=GL000214.1,length=137718>
+##contig=<ID=GL000221.1,length=155397>
+##contig=<ID=GL000209.1,length=159169>
+##contig=<ID=GL000218.1,length=161147>
+##contig=<ID=GL000220.1,length=161802>
+##contig=<ID=GL000213.1,length=164239>
+##contig=<ID=GL000211.1,length=166566>
+##contig=<ID=GL000199.1,length=169874>
+##contig=<ID=GL000217.1,length=172149>
+##contig=<ID=GL000216.1,length=172294>
+##contig=<ID=GL000215.1,length=172545>
+##contig=<ID=GL000205.1,length=174588>
+##contig=<ID=GL000219.1,length=179198>
+##contig=<ID=GL000224.1,length=179693>
+##contig=<ID=GL000223.1,length=180455>
+##contig=<ID=GL000195.1,length=182896>
+##contig=<ID=GL000212.1,length=186858>
+##contig=<ID=GL000222.1,length=186861>
+##contig=<ID=GL000200.1,length=187035>
+##contig=<ID=GL000193.1,length=189789>
+##contig=<ID=GL000194.1,length=191469>
+##contig=<ID=GL000225.1,length=211173>
+##contig=<ID=GL000192.1,length=547496>
+##contig=<ID=NC_007605,length=171823>
+##contig=<ID=hs37d5,length=35477943>
+##FILTER=<ID=AQR,Description="For all alleles AQR<20">
+##FILTER=<ID=MQMR,Description="For all alleles MQMR<30">
+##FILTER=<ID=PASS,Description="All filters passed">
+##FILTER=<ID=POS,Description="Variant falls in the blacklist of positions: MT:302-319, MT:3105-3108">
+##FILTER=<ID=SBA,Description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)">
+##FILTER=<ID=SBR,Description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)">
+##INFO=<ID=AB,Number=A,Type=Float,Description="Allele balance at heterozygous sites: a number between 0 and 1 representing the ratio of reads showing the reference allele to all reads, considering only reads from individuals called as heterozygous">
+##INFO=<ID=ABP,Number=A,Type=Float,Description="Allele balance probability at heterozygous sites: Phred-scaled upper-bounds estimate of the probability of observing the deviation between ABR and ABA given E(ABR/ABA) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=AC,Number=A,Type=Integer,Description="Total number of alternate alleles in called genotypes">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Estimated allele frequency in the range (0,1]">
+##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of alleles in called genotypes">
+##INFO=<ID=AO,Number=A,Type=Integer,Description="Count of full observations of this alternate haplotype.">
+##INFO=<ID=CIGAR,Number=A,Type=String,Description="The extended CIGAR representation of each alternate allele, with the exception that '=' is replaced by 'M' to ease VCF parsing.  Note that INDEL alleles do not have the first matched base (which is provided by default, per the spec) referred to by the CIGAR.">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total read depth at the locus">
+##INFO=<ID=DPB,Number=1,Type=Float,Description="Total read depth per bp at the locus; bases in reads overlapping / bases in haplotype">
+##INFO=<ID=DPRA,Number=A,Type=Float,Description="Alternate allele depth ratio.  Ratio between depth in samples with each called alternate allele and those without.">
+##INFO=<ID=Description,Number=1,Type=String,Description="calculated by self of overlapping values in column 7 from annot/mito_dna_func_loc.bed.gz">
+##INFO=<ID=END,Number=1,Type=Integer,Description="Last position (inclusive) in gVCF output record.">
+##INFO=<ID=EPP,Number=A,Type=Float,Description="End Placement Probability: Phred-scaled upper-bounds estimate of the probability of observing the deviation between EL and ER given E(EL/ER) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=EPPR,Number=1,Type=Float,Description="End Placement Probability for reference observations: Phred-scaled upper-bounds estimate of the probability of observing the deviation between EL and ER given E(EL/ER) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=GENE,Number=1,Type=String,Description="calculated by self of overlapping values in column 4 from annot/gtf_annotations.bed.gz">
+##INFO=<ID=GENE_BIOTYPE,Number=1,Type=String,Description="calculated by self of overlapping values in column 5 from annot/gtf_annotations.bed.gz">
+##INFO=<ID=GTI,Number=1,Type=Integer,Description="Number of genotyping iterations required to reach convergence or bailout.">
+##INFO=<ID=GenBank_frequency_mitomap,Number=1,Type=String,Description="GenBank frequency from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=LEN,Number=A,Type=Integer,Description="allele length">
+##INFO=<ID=MEANALT,Number=A,Type=Float,Description="Mean number of unique non-reference allele observations per sample with the corresponding alternate alleles.">
+##INFO=<ID=MGRB_AC,Number=A,Type=Integer,Description="MGRB AC (from annot/mgrb_variants.vcf.gz)">
+##INFO=<ID=MGRB_AN,Number=1,Type=Integer,Description="MGRB AN (from annot/mgrb_variants.vcf.gz)">
+##INFO=<ID=MGRB_FILTER,Number=1,Type=String,Description="MGRB Filter (from annot/mgrb_variants.vcf.gz)">
+##INFO=<ID=MGRB_frequency,Number=A,Type=Float,Description="MGRB Frequency (from annot/mgrb_variants.vcf.gz)">
+##INFO=<ID=MIN_DP,Number=1,Type=Integer,Description="Minimum depth in gVCF output block.">
+##INFO=<ID=MQM,Number=A,Type=Float,Description="Mean mapping quality of observed alternate alleles">
+##INFO=<ID=MQMR,Number=1,Type=Float,Description="Mean mapping quality of observed reference alleles">
+##INFO=<ID=Map_Locus,Number=1,Type=String,Description="calculated by self of overlapping values in column 4 from annot/mito_dna_func_loc.bed.gz">
+##INFO=<ID=MitoTip_interpretation,Number=1,Type=String,Description="MitoTip Interpretation (from annot/mitotip_score_fixed_del.vcf.gz)">
+##INFO=<ID=MitoTip_percentile,Number=1,Type=Float,Description="MitoTip Percentile (from annot/mitotip_score_fixed_del.vcf.gz)">
+##INFO=<ID=MitoTip_score,Number=1,Type=Float,Description="MitoTip Score (from annot/mitotip_score_fixed_del.vcf.gz)">
+##INFO=<ID=NS,Number=1,Type=Integer,Description="Number of samples with data">
+##INFO=<ID=NUMALT,Number=1,Type=Integer,Description="Number of unique non-reference alleles in called genotypes at this position.">
+##INFO=<ID=ODDS,Number=1,Type=Float,Description="The log odds ratio of the best genotype combination to the second-best.">
+##INFO=<ID=PAIRED,Number=A,Type=Float,Description="Proportion of observed alternate alleles which are supported by properly paired read fragments">
+##INFO=<ID=PAIREDR,Number=1,Type=Float,Description="Proportion of observed reference alleles which are supported by properly paired read fragments">
+##INFO=<ID=PAO,Number=A,Type=Float,Description="Alternate allele observations, with partial observations recorded fractionally">
+##INFO=<ID=PQA,Number=A,Type=Float,Description="Alternate allele quality sum in phred for partial observations">
+##INFO=<ID=PQR,Number=1,Type=Float,Description="Reference allele quality sum in phred for partial observations">
+##INFO=<ID=PRO,Number=1,Type=Float,Description="Reference allele observation count, with partial observations recorded fractionally">
+##INFO=<ID=QA,Number=A,Type=Integer,Description="Alternate allele quality sum in phred">
+##INFO=<ID=QR,Number=1,Type=Integer,Description="Reference allele quality sum in phred">
+##INFO=<ID=RNA_mitomap,Number=1,Type=String,Description="RNA from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=RO,Number=1,Type=Integer,Description="Count of full observations of the reference haplotype.">
+##INFO=<ID=RPL,Number=A,Type=Float,Description="Reads Placed Left: number of reads supporting the alternate balanced to the left (5') of the alternate allele">
+##INFO=<ID=RPP,Number=A,Type=Float,Description="Read Placement Probability: Phred-scaled upper-bounds estimate of the probability of observing the deviation between RPL and RPR given E(RPL/RPR) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=RPPR,Number=1,Type=Float,Description="Read Placement Probability for reference observations: Phred-scaled upper-bounds estimate of the probability of observing the deviation between RPL and RPR given E(RPL/RPR) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=RPR,Number=A,Type=Float,Description="Reads Placed Right: number of reads supporting the alternate balanced to the right (3') of the alternate allele">
+##INFO=<ID=RUN,Number=A,Type=Integer,Description="Run length: the number of consecutive repeats of the alternate allele in the reference genome">
+##INFO=<ID=SAF,Number=A,Type=Integer,Description="Number of alternate observations on the forward strand">
+##INFO=<ID=SAP,Number=A,Type=Float,Description="Strand balance probability for the alternate allele: Phred-scaled upper-bounds estimate of the probability of observing the deviation between SAF and SAR given E(SAF/SAR) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=SAR,Number=A,Type=Integer,Description="Number of alternate observations on the reverse strand">
+##INFO=<ID=SBA,Number=1,Type=Float,Description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)">
+##INFO=<ID=SBR,Number=1,Type=Float,Description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)">
+##INFO=<ID=SRF,Number=1,Type=Integer,Description="Number of reference observations on the forward strand">
+##INFO=<ID=SRP,Number=1,Type=Float,Description="Strand balance probability for the reference allele: Phred-scaled upper-bounds estimate of the probability of observing the deviation between SRF and SRR given E(SRF/SRR) ~ 0.5, derived using Hoeffding's inequality">
+##INFO=<ID=SRR,Number=1,Type=Integer,Description="Number of reference observations on the reverse strand">
+##INFO=<ID=TYPE,Number=A,Type=String,Description="The type of allele, either snp, mnp, ins, del, or complex.">
+##INFO=<ID=anticodon,Number=1,Type=String,Description="calculated by self of overlapping values in column 4 from annot/anticodon_positions.bed.gz">
+##INFO=<ID=codon_number_mitomap,Number=1,Type=String,Description="Codon number from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=codon_position_mitomap,Number=1,Type=String,Description="Codon position from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=commercial_panels,Number=1,Type=String,Description="Commercial panels from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=disease_amino_acid_change_mitomap,Number=1,Type=String,Description="Disease amino acid change from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=disease_mitomap,Number=1,Type=String,Description="Disease from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=heteroplasmy_mitomap,Number=1,Type=String,Description="Heteroplasmy from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=homoplasmy_mitomap,Number=1,Type=String,Description="Homoplasmy from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=locus_mitomap,Number=1,Type=String,Description="Locus from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=num_disease_references_mitomap,Number=1,Type=Integer,Description="Number of disease references from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=num_references_mitomap,Number=1,Type=Integer,Description="Number of references from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=phylotree_haplotype,Number=1,Type=String,Description="Phylotree Haplotype (from annot/haplotype_data.vcf.gz)">
+##INFO=<ID=phylotree_mut,Number=1,Type=String,Description="Phylotree Mutation (from annot/haplotype_data.vcf.gz)">
+##INFO=<ID=status_mitomap,Number=1,Type=String,Description="Status from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##INFO=<ID=variant_amino_acid_change_mitomap,Number=1,Type=String,Description="Variant amino acid change from Mitomap (from annot/mitomap_panel_annotations.vcf.gz)">
+##FORMAT=<ID=AD,Number=R,Type=Integer,Description="Number of observation for each allele">
+##FORMAT=<ID=AO,Number=A,Type=Integer,Description="Alternate allele observation count">
+##FORMAT=<ID=AQA,Number=A,Type=Float,Description="Average base quality of the alternate reads, AQA=QA/AO">
+##FORMAT=<ID=AQR,Number=A,Type=Float,Description="Average base quality of the reference reads, AQR=QR/RO">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=GL,Number=G,Type=Float,Description="Genotype Likelihood, log10-scaled likelihoods of the data given the called genotype for each possible genotype generated from the reference and alternate alleles given the sample ploidy">
+##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype Quality, the Phred-scaled marginal (or unconditional) probability of the called genotype">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=MIN_DP,Number=1,Type=Integer,Description="Minimum depth in gVCF output block.">
+##FORMAT=<ID=QA,Number=A,Type=Integer,Description="Sum of quality of the alternate observations">
+##FORMAT=<ID=QR,Number=1,Type=Integer,Description="Sum of quality of the reference observations">
+##FORMAT=<ID=RO,Number=1,Type=Integer,Description="Reference allele observation count">
+##FORMAT=<ID=VAF,Number=A,Type=Float,Description="Allele frequency in the range (0,1] - the ratio of the number of alternate reads to reference reads">
+##FORMAT=<ID=q,Number=A,Type=Float,Description="Phred scaled binomial probability of seeing AO reads from DP, assuming a noise floor of p=0.002.">
+##fileDate=20230831
+##freebayesSource=freeBayes v1.3.5
+##reference=/usr/local/lib/python3.10/site-packages/mitylib/reference/hs37d5.MT.fa
+##mityCommandline="mity call --reference /usr/local/lib/python3.10/site-packages/mitylib/reference/hs37d5.MT.fa --prefix ashkenazim --min-mapping-quality 30 --min-base-quality 24 --min-alternate-fraction 0.01 --min-alternate-count 4 --out-folder-path tests/ashkenazim-trio/output --region MT:1-500 --normalise --p 0.002 tests/ashkenazim-trio/input/HG002.hs37d5.2x250.small.MT.RG.bam tests/ashkenazim-trio/input/HG003.hs37d5.2x250.small.MT.RG.bam tests/ashkenazim-trio/input/HG004.hs37d5.2x250.small.MT.RG.bam"
+##freebayesCommandline="freebayes -f /usr/local/lib/python3.10/site-packages/mitylib/reference/hs37d5.MT.fa -b tests/ashkenazim-trio/input/HG004.hs37d5.2x250.small.MT.RG.bam -b tests/ashkenazim-trio/input/HG003.hs37d5.2x250.small.MT.RG.bam -b tests/ashkenazim-trio/input/HG002.hs37d5.2x250.small.MT.RG.bam --min-mapping-quality 30 --min-base-quality 24 --min-alternate-fraction 0.01 --min-alternate-count 4 --ploidy 2 --region MT:1-500"
+##bcftools_normVersion=1.17 (pysam)+htslib-1.17
+##bcftools_normCommand=norm -f /usr/local/lib/python3.10/site-packages/mitylib/reference/hs37d5.MT.fa -m-both -o /tmp/tmpckplqje6 tests/ashkenazim-trio/output/ashkenazim.mity.call.vcf.gz; Date=Thu Aug 31 07:19:56 2023
+##vcfanno=0.3.3
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	HG002	HG003	HG004
+MT	73	.	A	G	490901.0	PASS	AB=0;ABP=0;AC=2;AF=0.333333;AN=6;AO=15669;CIGAR=1X;DP=53661;DPB=53661;DPRA=0;EPP=248.52;EPPR=9.16067;GTI=0;LEN=1;MEANALT=2.66667;MQM=69.9973;MQMR=69.9994;NS=3;NUMALT=1;ODDS=13199.9;PAIRED=0.616057;PAIREDR=0.593697;PAO=0;PQA=0;PQR=0;PRO=0;QA=598698;QR=1456809;RO=37984;RPL=35;RPP=33724.5;RPPR=80661.7;RPR=15634;RUN=1;SAF=8505;SAP=252.223;SAR=7164;SRF=18965;SRP=3.177;SRR=19019;TYPE=snp;SBR=0.499;SBA=0.543;phylotree_mut=A73G!;phylotree_haplotype="H13a2b3;MGRB_AN=5690;MGRB_AC=3195;MGRB_frequency=0.5615;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ]";locus_mitomap=MT-HV2;num_references_mitomap=146;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=.;num_disease_references_mitomap=0;RNA_mitomap=.;homoplasmy_mitomap=.;heteroplasmy_mitomap=.;status_mitomap=.;disease_amino_acid_change_mitomap=.;GenBank_frequency_mitomap=23631;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	0/0:20957:20955,1:20955:803275:1:27:0,-6305.99,-72286.1:38.3333:0:-0:27	1/1:15676:5,15666:5:165:15666:598605:-53854.7,-4702.6,0:33:0.9994:3220:38.21	0/0:17028:17024,2:17024:653369:2:66:0,-5119.41,-58792.2:38.3793:0.0001:0:33
+MT	114	.	C	T	674178.0	PASS	AB=0;ABP=0;AC=2;AF=0.333333;AN=6;AO=19720;CIGAR=1X;DP=65177;DPB=65177;DPRA=0;EPP=124.875;EPPR=113.833;GTI=0;LEN=1;MEANALT=2.66667;MQM=69.9994;MQMR=70;NS=3;NUMALT=1;ODDS=17121.3;PAIRED=0.650203;PAIREDR=0.630861;PAO=0;PQA=0;PQR=0;PRO=0;QA=759656;QR=1750954;RO=45449;RPL=5719;RPP=7555.98;RPPR=8911.69;RPR=14001;RUN=1;SAF=10715;SAP=324.998;SAR=9005;SRF=23163;SRP=39.7579;SRR=22286;TYPE=snp;SBR=0.51;SBA=0.543;phylotree_mut=C114T;phylotree_haplotype="C4c2;MGRB_AN=5690;MGRB_AC=48;MGRB_frequency=0.0084359;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ],H-strand origins";locus_mitomap=MT-CR.MT-HV2.MT-OHR;num_references_mitomap=0;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=BD-associated;num_disease_references_mitomap=1;RNA_mitomap=.;homoplasmy_mitomap=+;heteroplasmy_mitomap=-;status_mitomap=Reported;disease_amino_acid_change_mitomap=noncoding;GenBank_frequency_mitomap=144;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	0/0:25153:25149,2:25149:968351:2:70:0,-7564.88,-87137.6:38.5046:0.0001:-0:35	1/1:19726:10,19715:10:345:19715:759471:-68315.3,-5906.81,0:34.5:0.9994:3220:38.522	0/0:20298:20290,3:20290:782258:3:115:0,-6098.44,-70386.6:38.5539:0.0001:0:38.333
+MT	152	.	T	C	240092.0	PASS	AB=0.381084;ABP=2935.39;AC=1;AF=0.166667;AN=6;AO=9103;CIGAR=1X;DP=74957;DPB=74957;DPRA=0.821201;EPP=142.613;EPPR=1296.36;GTI=0;LEN=1;MEANALT=3;MQM=70;MQMR=70;NS=3;NUMALT=1;ODDS=24092;PAIRED=0.680325;PAIREDR=0.670955;PAO=0;PQA=0;PQR=0;PRO=0;QA=350179;QR=2534658;RO=65836;RPL=4234;RPP=99.1975;RPPR=29.8454;RPR=4869;RUN=1;SAF=4860;SAP=93.8216;SAR=4243;SRF=33430;SRP=37.5955;SRR=32406;TYPE=snp;SBR=0.508;SBA=0.534;phylotree_mut=T152C!;phylotree_haplotype="A11;MGRB_AN=5690;MGRB_AC=1198;MGRB_frequency=0.2105;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ],H-strand origins";locus_mitomap=MT-HV2.MT-OHR;num_references_mitomap=0;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=.;num_disease_references_mitomap=0;RNA_mitomap=.;homoplasmy_mitomap=.;heteroplasmy_mitomap=.;status_mitomap=.;disease_amino_acid_change_mitomap=.;GenBank_frequency_mitomap=8284;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	0/0:28367:28357,0:28357:1092108:0:0:0,-8536.31,-98281:38.5128:0:0:0	0/1:23874:14772,9098:14772:567446:9098:350018:-24313.2,0,-43880.1:38.4136:0.3811:3220:38.472	0/0:22716:22707,5:22707:875104:5:161:0,-6822.51,-78737.9:38.539:0.0002:0:32.2
+MT	195	.	T	C	89200.4	PASS	AB=0.224285;ABP=14690.5;AC=1;AF=0.166667;AN=6;AO=4996;CIGAR=1X;DP=76379;DPB=76379;DPRA=0;EPP=4.57501;EPPR=27.4364;GTI=0;LEN=1;MEANALT=2.66667;MQM=70;MQMR=70;NS=3;NUMALT=1;ODDS=20539.1;PAIRED=0.711369;PAIREDR=0.721984;PAO=0;PQA=0;PQR=0;PRO=0;QA=191457;QR=2727557;RO=71370;RPL=3039;RPP=511.856;RPPR=3701.93;RPR=1957;RUN=1;SAF=2329;SAP=52.6656;SAR=2667;SRF=33901;SRP=390.347;SRR=37469;TYPE=snp;SBR=0.475;SBA=0.466;phylotree_mut=T195C!;phylotree_haplotype="A2ag;MGRB_AN=5690;MGRB_AC=981;MGRB_frequency=0.1724;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ],H-strand origins,7S DNA";locus_mitomap=MT-CR.MT-HV2.MT-OHR;num_references_mitomap=0;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=BD-associated / melanoma pts;num_disease_references_mitomap=3;RNA_mitomap=.;homoplasmy_mitomap=+;heteroplasmy_mitomap=-;status_mitomap=Reported;disease_amino_acid_change_mitomap=noncoding;GenBank_frequency_mitomap=6574;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	0/0:27784:27774,5:27774:1062100:5:170:0,-8347,-95565.5:38.2408:0.0002:-0:34	0/0:26351:26346,2:26346:1006103:2:54:0,-7926.69,-90536.7:38.1881:0.0001:-0:27	0/1:22244:17250,4989:17250:659354:4989:191233:-10514.9,0,-52642.2:38.2234:0.2243:3220:38.331
+MT	263	.	A	G	2088990.0	PASS	AB=0;ABP=0;AC=6;AF=1;AN=6;AO=62043;CIGAR=1X;DP=62058;DPB=62058;DPRA=0;EPP=2441.51;EPPR=5.18177;GTI=0;LEN=1;MEANALT=2;MQM=70;MQMR=70;NS=3;NUMALT=1;ODDS=23160.9;PAIRED=0.845946;PAIREDR=0.888889;PAO=0;PQA=0;PQR=0;PRO=0;QA=2332855;QR=305;RO=9;RPL=38072;RPP=6962.24;RPPR=5.18177;RPR=23971;RUN=1;SAF=28916;SAP=623.639;SAR=33127;SRF=4;SRP=3.25157;SRR=5;TYPE=snp;SBR=0.444;SBA=0.466;phylotree_mut=A263G!;phylotree_haplotype=L0a'b'f'g;MGRB_AN=5690;MGRB_AC=5638;MGRB_frequency=0.9909;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ],H-strand origins,7S DNA";locus_mitomap=MT-HV2.MT-OHR;num_references_mitomap=0;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=.;num_disease_references_mitomap=0;RNA_mitomap=.;homoplasmy_mitomap=.;heteroplasmy_mitomap=.;status_mitomap=.;disease_amino_acid_change_mitomap=.;GenBank_frequency_mitomap=29979;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	1/1:21175:5,21169:5:170:21169:794551:-71488.6,-6358.65,0:34:0.9997:3220:37.534	1/1:23778:3,23770:3:108:23770:897401:-80749.7,-7146.65,0:36:0.9997:3220:37.754	1/1:17105:1,17104:1:27:17104:640903:-57674.3,-5146.42,0:27:0.9999:3220:37.471
+MT	310	.	T	CTC	710311.0	POS;SBA	AB=0;ABP=0;AC=4;AF=0.666667;AN=6;AO=16171;CIGAR=8M2I1X8M;DP=28780;DPB=32223.5;DPRA=0;EPP=2965.51;EPPR=3.15506;GTI=1;LEN=19;MEANALT=64.6667;MQM=70;MQMR=70;NS=3;NUMALT=2;ODDS=2330.31;PAIRED=0.821471;PAIREDR=0.866667;PAO=470.933;PQA=10328.9;PQR=10034.8;PRO=454.667;QA=556499;QR=544;RO=15;RPL=10359;RPP=2779.32;RPPR=10.1038;RPR=5812;RUN=1;SAF=345;SAP=32185.2;SAR=15826;SRF=4;SRP=10.1038;SRR=11;TYPE=complex;SBR=0.267;SBA=0.021;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ],H-strand origins,Conserved sequence block 2,7S DNA";locus_mitomap=MT-CSB2.MT-HV2.MT-OHR;num_references_mitomap=0;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=.;num_disease_references_mitomap=0;RNA_mitomap=.;homoplasmy_mitomap=.;heteroplasmy_mitomap=.;status_mitomap=.;disease_amino_acid_change_mitomap=.;GenBank_frequency_mitomap=0;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	1/1:10489:0,8887:0:0:8887:306350:-27570.1,-2675.25,0:0:0.8473:3220:34.472	0/0:9901:15,23:15:544:23:774:-27851.2,-27792.9,-27830.5:36.2667:0.0023:7.01:33.652	1/1:8390:0,7261:0:0:7261:249375:-22442.6,-2185.78,0:0:0.8654:3220:34.344
+MT	310	.	T	TC	710311.0	POS	AB=0;ABP=0;AC=2;AF=0.333333;AN=6;AO=9346;CIGAR=9M1I8M;DP=28780;DPB=32223.5;DPRA=0;EPP=1793.48;EPPR=3.15506;GTI=1;LEN=1;MEANALT=64.6667;MQM=70;MQMR=70;NS=3;NUMALT=2;ODDS=2330.31;PAIRED=0.85138;PAIREDR=0.866667;PAO=471.267;PQA=10360;PQR=10034.8;PRO=454.667;QA=310547;QR=544;RO=15;RPL=5758;RPP=1097.09;RPPR=10.1038;RPR=3588;RUN=1;SAF=655;SAP=15007.1;SAR=8691;SRF=4;SRP=10.1038;SRR=11;TYPE=ins;SBR=0.267;SBA=0.07;MGRB_AN=5690;MGRB_AC=5569;MGRB_frequency=0.9787;Map_Locus="MT-HV2";Description="Hypervariable segment 2 [classic:73-340 ],H-strand origins,Conserved sequence block 2,7S DNA";locus_mitomap=MT-CSB2.MT-HV2.MT-OHR;num_references_mitomap=0;variant_amino_acid_change_mitomap=.;codon_position_mitomap=.;codon_number_mitomap=.;disease_mitomap=.;num_disease_references_mitomap=0;RNA_mitomap=.;homoplasmy_mitomap=.;heteroplasmy_mitomap=.;status_mitomap=.;disease_amino_acid_change_mitomap=.;GenBank_frequency_mitomap=10752;commercial_panels=.	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	0/0:10489:0,8:0:0:8:246:-27570.1,-27550.4,-27548:0:0.0008:0:30.75	1/1:9901:15,9329:15:544:9329:310014:-27851.2,-2763.87,0:36.2667:0.9422:3220:33.231	0/0:8390:0,9:0:0:9:287:-22442.6,-22419.5,-22416.8:0:0.0011:0.13:31.889
+MT	577	.	C	T	1060430.0	PASS	AB=0;ABP=0;AC=4;AF=0.666667;AN=6;AO=32537;CIGAR=1X;DP=55614;DPB=55614;DPRA=0;EPP=12747.7;EPPR=2556.23;GTI=0;LEN=1;MEANALT=2.66667;MQM=70;MQMR=70;NS=3;NUMALT=1;ODDS=9865.63;PAIRED=0.884931;PAIREDR=0.940067;PAO=0;PQA=0;PQR=0;PRO=0;QA=1203575;QR=869760;RO=23059;RPL=12246;RPP=4322.46;RPPR=3139.3;RPR=20291;RUN=1;SAF=17976;SAP=781.33;SAR=14561;SRF=10005;SRP=878.455;SRR=13054;TYPE=snp;SBR=0.434;SBA=0.552;GENE="MT-TF";GENE_BIOTYPE="Mt_tRNA";Map_Locus="MT-TF";Description="tRNA phenylalanine,membrane attachment site,Control Region	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	1/1:18283:17,18263:17:510:18263:675928:-60783,-5456.91,0:30:0.9989:3220:37.011	0/0:23043:23034,4:23034:869009:4:148:0,-6921.8,-78191.1:37.7272:0.0002:0:37	1/1:14288:8,14270:8:241:14270:527499:-47449.7,-4276.4,0:30.125:0.9987:3220:36.966
+MT	610	.	C	T	647305.0	PASS	AB=0;ABP=0;AC=2;AF=0.333333;AN=6;AO=20320;CIGAR=4M1X;DP=63383;DPB=63472.8;DPRA=0;EPP=4102.91;EPPR=3663.69;GTI=0;LEN=1;MEANALT=17.6667;MQM=70;MQMR=70;NS=3;NUMALT=1;ODDS=16893.2;PAIRED=0.954577;PAIREDR=0.865629;PAO=46.5;PQA=655;PQR=2877;PRO=107.5;QA=729442;QR=1538585;RO=42576;RPL=8703;RPP=910.433;RPPR=3402.36;RPR=11617;RUN=1;SAF=11062;SAP=350.79;SAR=9258;SRF=23010;SRP=607.955;SRR=19566;TYPE=snp;SBR=0.54;SBA=0.544;GENE="MT-TF";GENE_BIOTYPE="Mt_tRNA";Map_Locus="MT-TF";Description="tRNA phenylalanine,membrane attachment site,Control Region	GT:DP:AD:RO:QR:AO:QA:GL:AQR:VAF:q:AQA	0/0:23840:23776,2:23776:860442:2:67:0,-7151.86,-77428.9:36.1895:0.0001:-0:33.5	1/1:20818:135,20315:135:3630:20315:729289:-65305.1,-5829.37,0:26.8889:0.9758:3220:35.899	0/0:18725:18665,3:18665:674513:3:86:0,-5611.89,-60694.7:36.1379:0.0002:0:28.667
