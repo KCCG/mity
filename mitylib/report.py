@@ -682,7 +682,7 @@ def do_report(debug, vcf, prefix=None, min_vaf=0.0, out_folder_path = "."):
     str_idx = [i for i, ltr in enumerate(gb_freq) if ltr != "."]
     
     for x in str_idx:
-        freq = round(float(gb_freq[x]) / 32059, 3)
+        freq = round(float(gb_freq[x]) / 3205, 3)
         # print(freq)
         gb_perc[x] = freq
     
@@ -950,7 +950,7 @@ def do_report(debug, vcf, prefix=None, min_vaf=0.0, out_folder_path = "."):
     documentation_df.to_excel(writer, sheet_name='Documentation', index=False,
                               header=False)
     annotated_variants1.to_excel(writer, sheet_name='Variants', index=False)
-    writer.save()
+    writer.close()
     
     csv_name = os.path.join(out_folder_path, prefix + ".annotated_variants.csv")
     logging.info("saving csv report: " + csv_name)
