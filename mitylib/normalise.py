@@ -51,6 +51,8 @@ def add_headers(input_vcf):
     new_header.formats.add("AQR", number="A", type="Float", description="Average base quality of the reference reads, AQR=QR/RO")
     new_header.formats.add("VAF", number="A", type="Float", description="Allele frequency in the range (0,1] - the ratio of the number of alternate reads to reference reads")
     new_header.formats.add("q", number="A", type="Float", description="Phred scaled binomial probability of seeing AO reads from DP, assuming a noise floor of p=0.002. ")
+    new_header.formats.add("tier", number="A", type="Integer", description="Custom variant tier (TODO: change description)")
+
 
     return new_header
 
@@ -114,6 +116,7 @@ def add_filter(variant, allsamples, p):
     # testing samples
     for sample in variant.samples.values():
         # adding to format
+        # AQR
         if int(sample["RO"]) > 0:
             AQR = float(sample["QR"]) / float(sample["RO"])
         else:
@@ -121,6 +124,7 @@ def add_filter(variant, allsamples, p):
         
         sample["AQR"] = AQR
 
+        # VAF
         if sample["DP"] != 0:
             VAF = round(float(sample["AO"][0]) / float(sample["DP"]), 4)
         else:
@@ -128,15 +132,27 @@ def add_filter(variant, allsamples, p):
         
         sample["VAF"] = VAF
 
+        # mity quality
         q = mity_qual(sample["AO"][0], sample["DP"], p)
         sample["q"] = q
 
+        # AQA
         if sample["AO"][0] > 0:
             AQA = float(round(sample["QA"][0] / sample["AO"][0], 3))
         else:
             AQA = float(0)
 
         sample["AQA"] = AQA
+
+        # tier (originally from mity report)
+        if float(VAF) >= 0.01:
+            tier = 1
+        elif float(VAF) < 0.01 and float(sample["AO"][0]) > 10:
+            tier = 2
+        else:
+            tier = 3
+
+        sample["tier"] = tier
 
         # testing
         if sample["RO"] > MIN_DP:
