@@ -1,4 +1,5 @@
 import sys
+import pysam
 import logging
 import gzip
 import pandas
@@ -23,26 +24,22 @@ def do_report(debug, vcf, prefix=None, min_vaf=0.0, out_folder_path = "."):
     else:
         logger.setLevel(logging.INFO)
 
-    vcf = vcf[0]
-    
-    if len(vcf) == 0:
-        raise ValueError("At least one VCF file must be supplied")
-    if prefix is None and len(vcf) > 1:
-        raise ValueError("If there is more than one vcf file, --prefix must be set")
-    check_missing_file(vcf, die=True)
+    excel_table = []
+    excel_headers = []
+    annotated_vcf = pysam.VariantFile(vcf)
+    for variant in annotated_vcf.fetch():
+        for sample in variant.samples.values():
+            
+            if float(sample["VAF"]) > float(min_vaf):
+                continue
 
-    prefix = create_prefix(vcf[0], prefix)
+            excel_row = []
+            excel_row.append(sample.name)
 
-    # write annotations to excel file
-    if not os.path.exists(out_folder_path):
-        os.makedirs(out_folder_path)
+            # FILTER
+            
 
-    xlsx_name = os.path.join(out_folder_path, prefix + ".annotated_variants.xlsx")
-    logging.info("saving xlsx report: " + xlsx_name)
-    writer = pandas.ExcelWriter(xlsx_name, engine='xlsxwriter')
-    annotated_variants1.to_excel(writer, sheet_name='Variants', index=False)
-    writer.close()
-    
-    csv_name = os.path.join(out_folder_path, prefix + ".annotated_variants.csv")
-    logging.info("saving csv report: " + csv_name)
-    annotated_variants1.to_csv(csv_name, index=False, )
+            # INFO field
+            # FORMAT field
+
+
