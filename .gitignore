@@ -30,3 +30,9 @@ pyvenv.cfg
 # egg
 mitylib.egg-info/*
 *.egg-info/*
+
+# tests
+tests/*
+
+.vscode/
+
