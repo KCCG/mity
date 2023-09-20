@@ -14,18 +14,18 @@ import os.path
 
 # CONSTANTS
 P_VAL = 0.002
-SB_RANGE_LO = 0.1 
+SB_RANGE_LO = 0.1
 SB_RANGE_HI = 0.9
 MIN_MQMR = 30
 MIN_AQR = 20
 MIN_DP = 15
 
-BLACKLIST = list(range(302, 319)) + list(range(3105,3109))
+BLACKLIST = list(range(302, 319)) + list(range(3105, 3109))
 
 # CONFIG PARSER
 config = configparser.ConfigParser()
 config.read(get_mity_dir() + "/config.ini")
-GENOME_FILE = config.get('PATHS', 'GENOME_FILE')
+GENOME_FILE = config.get("PATHS", "GENOME_FILE")
 
 # LOGGING
 logger = logging.getLogger(__name__)
@@ -36,28 +36,87 @@ def add_headers(input_vcf):
     new_header = input_vcf.header
 
     # fitler headers
-    new_header.filters.add("FAIL", None, None, "Variant fails filter in at least one or all samples (depending on filter option)")
+    new_header.filters.add(
+        "FAIL",
+        None,
+        None,
+        "Variant fails filter in at least one or all samples (depending on filter option)",
+    )
 
     # info headers
-    new_header.info.add("SBR", number=1, type="Float", description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)")
-    new_header.info.add("SBA", number=1, type="Float", description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)")
-    
+    new_header.info.add(
+        "SBR",
+        number=1,
+        type="Float",
+        description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)",
+    )
+    new_header.info.add(
+        "SBA",
+        number=1,
+        type="Float",
+        description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)",
+    )
+
     # format headers
-    new_header.formats.add("AQA", number="A", type="Float", description="Average base quality of the alternate reads, AQA=QA/AO")
-    new_header.formats.add("AQR", number="A", type="Float", description="Average base quality of the reference reads, AQR=QR/RO")
-    new_header.formats.add("VAF", number="A", type="Float", description="Allele frequency in the range (0,1] - the ratio of the number of alternate reads to reference reads")
-    new_header.formats.add("q", number="A", type="Float", description="Phred scaled binomial probability of seeing AO reads from DP, assuming a noise floor of p=0.002. ")
-    new_header.formats.add("tier", number="A", type="Integer", description="Custom variant tier (TODO: change description)")
+    new_header.formats.add(
+        "AQA",
+        number="A",
+        type="Float",
+        description="Average base quality of the alternate reads, AQA=QA/AO",
+    )
+    new_header.formats.add(
+        "AQR",
+        number="A",
+        type="Float",
+        description="Average base quality of the reference reads, AQR=QR/RO",
+    )
+    new_header.formats.add(
+        "VAF",
+        number="A",
+        type="Float",
+        description="Allele frequency in the range (0,1] - the ratio of the number of alternate reads to reference reads",
+    )
+    new_header.formats.add(
+        "q",
+        number="A",
+        type="Float",
+        description="Phred scaled binomial probability of seeing AO reads from DP, assuming a noise floor of p=0.002. ",
+    )
+    new_header.formats.add(
+        "tier",
+        number="A",
+        type="Integer",
+        description="Custom variant tier (TODO: change description)",
+    )
 
     # format filter headers
-    new_header.formats.add("POS_filter", number="A", type="Integer", description="Variant falls in the blacklist of positions: MT:302-319, MT:3105-3108")
-    new_header.formats.add("SBR_filter", number="A", type="Integer", description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)")
-    new_header.formats.add("SBA_filter", number="A", type="Integer", description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)")
-    new_header.formats.add("MQMR_filter", number="A", type="Integer", description="For all alleles MQMR<30")
-    new_header.formats.add("AQR_filter", number="A", type="Integer", description="For all alleles AQR<20")
-
+    new_header.formats.add(
+        "POS_filter",
+        number="A",
+        type="Integer",
+        description="Variant falls in the blacklist of positions: MT:302-319, MT:3105-3108",
+    )
+    new_header.formats.add(
+        "SBR_filter",
+        number="A",
+        type="Integer",
+        description="For all alleles RO > 15 and (SBR > 0.9 or SBR < 0.1)",
+    )
+    new_header.formats.add(
+        "SBA_filter",
+        number="A",
+        type="Integer",
+        description="For all alleles AO > 15 and (SBA > 0.9 or SBA < 0.1)",
+    )
+    new_header.formats.add(
+        "MQMR_filter", number="A", type="Integer", description="For all alleles MQMR<30"
+    )
+    new_header.formats.add(
+        "AQR_filter", number="A", type="Integer", description="For all alleles AQR<20"
+    )
 
     return new_header
+
 
 def mity_qual(AO, DP, p):
     """
@@ -91,15 +150,15 @@ def mity_qual(AO, DP, p):
         # v1: the cdf implementation caps at 159.55, due to the cdf capping at 0.9999999999999999
         # q = round(abs(-10 * log10(1 - binom.cdf(AO, DP, p))), 2)
         # v2: the logsf implementation is identical to cdf for low values and continues to scale up
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide="ignore"):
             q = float(round(-4.342945 * binom.logsf(AO, DP, p), 2))
     if isinf(q):
         # this is the maximum q that we observed looking at homoplastic variants around ~129x depth
         q = float(3220)
     return q
 
+
 def add_filter(variant, allsamples, p):
-    
     # filter dictionary
     # each value represents the number of samples that pass each field
     # starts with all samples passing
@@ -108,7 +167,7 @@ def add_filter(variant, allsamples, p):
         "SBR": num_samples,
         "MQMR": num_samples,
         "AQR": num_samples,
-        "SBA": num_samples
+        "SBA": num_samples,
     }
 
     # filtering
@@ -126,7 +185,7 @@ def add_filter(variant, allsamples, p):
             AQR = float(sample["QR"]) / float(sample["RO"])
         else:
             AQR = 0
-        
+
         sample["AQR"] = AQR
 
         # VAF
@@ -134,7 +193,7 @@ def add_filter(variant, allsamples, p):
             VAF = round(float(sample["AO"][0]) / float(sample["DP"]), 4)
         else:
             VAF = 0
-        
+
         sample["VAF"] = VAF
 
         # mity quality
@@ -185,15 +244,15 @@ def add_filter(variant, allsamples, p):
                 sample["SBA_filter"] = 0
 
     # all samples must pass each test
-    if (allsamples):
-        for (field, num_passing_samples) in filter_dict.items():
+    if allsamples:
+        for field, num_passing_samples in filter_dict.items():
             if num_passing_samples != num_samples:
                 pass_flag = False
                 break
 
     # only one sample has to pass each test
     else:
-        for (field, num_passing_samples) in filter_dict.items():
+        for field, num_passing_samples in filter_dict.items():
             if num_passing_samples == 0:
                 pass_flag = False
                 break
@@ -201,10 +260,11 @@ def add_filter(variant, allsamples, p):
     # setting passing filter
     if pass_flag:
         variant.filter.add("PASS")
-    else: 
+    else:
         variant.filter.add("FAIL")
 
     return variant
+
 
 def add_info_values(variant):
     # adding to INFO field
@@ -231,21 +291,22 @@ def add_info_values(variant):
     SAR = variant.info["SAR"][0]
 
     SBA = round(SAF / (SAF + SAR), 3)
-        
-    variant.info.update({
-        "SBR": float(SBR), 
-        "SBA": float(SBA)
-    })
+
+    variant.info.update({"SBR": float(SBR), "SBA": float(SBA)})
 
     return variant
 
 
 def do_gsort(filtered_vcf, genome_file, output_file):
-    gsort_cmd = "gsort {} {} | bgzip -cf > {}".format(filtered_vcf, genome_file, output_file)
-    subprocess.run(gsort_cmd, shell=True)
+    gsort_cmd = "gsort {} {} | bgzip -cf > {}".format(
+        filtered_vcf, genome_file, output_file
+    )
+    subprocess.run(gsort_cmd, shell=True, check=False)
 
 
-def do_normalise(debug, vcf, reference_fasta, genome, output_file=None, allsamples=False, p=P_VAL):
+def do_normalise(
+    debug, vcf, reference_fasta, genome, output_file=None, allsamples=False, p=P_VAL
+):
     if debug:
         logger.setLevel(logging.DEBUG)
         logger.debug("Entered debug mode.")
@@ -257,14 +318,16 @@ def do_normalise(debug, vcf, reference_fasta, genome, output_file=None, allsampl
     # The "-o" option doesn't get passed to pysam's bcftools wrapper (as of 31-08-2023)
     # so we write to a separate file manually.
     with open(normalised_vcf, "w") as f:
-        print(pysam.bcftools.norm("-f", reference_fasta, "-m-both", vcf), end="", file=f)
-    
+        print(
+            pysam.bcftools.norm("-f", reference_fasta, "-m-both", vcf), end="", file=f
+        )
+
     # vcf files
     input_vcf = pysam.VariantFile(normalised_vcf)
     new_header = add_headers(input_vcf)
     filtered_vcf = vcf.replace(".vcf.gz", ".filtered.vcf")
-    output_vcf = pysam.VariantFile(filtered_vcf, 'w', header=new_header)
-    
+    output_vcf = pysam.VariantFile(filtered_vcf, "w", header=new_header)
+
     for variant in input_vcf.fetch():
         variant = add_info_values(variant)
         variant = add_filter(variant, allsamples, p)
