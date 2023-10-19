@@ -1,62 +1,149 @@
-import sys
-import pysam
+"""
+TODO: Mity report description.
+"""
+
 import logging
-import gzip
-import pandas
 import os.path
-import xlsxwriter
 import subprocess
+import pysam
+import pandas
 import yaml
 
 # LOGGING
 logger = logging.getLogger(__name__)
 
-# def make_excel_row(variant, sample)
-
 
 class Vep:
     """
-    Handles everything VEP related.
+    Provides methods to handle vepped files.
     """
 
-    def __init__(self, vcf_header) -> None:
-        self.vcf_header = vcf_header
-        self.vep_keys = self.get_vep_keys()
+    def __init__(self, vcf_obj):
+        self.vcf_obj = vcf_obj
+        self.vepped = self.check_vepped()
 
-    def get_vep_dict(self, variant):
+        if self.vepped:
+            self.vep_keys = self.generate_vep_keys()
+            self.vep_excel_headers = self.generate_vep_excel_headers()
+
+    def get_vep_name(self, name):
         """
-        Takes two strings from VEP consequences/impacts in the form:
-            impact name  | impact name  | ...
-            impact value | impact value | ...
+        Capitalises vep name, replaces _ with <space> and adds "VEP" to the end.
+        """
+        name = name.upper()
+        name = name.replace("_", " ")
+        name = name + " VEP"
 
-        And returns a dictionary matching relevant values.
+        return name
+
+    def generate_vep_excel_headers(self):
+        """
+        Generates vep excel headers based on the vep keys.
+        """
+        vep_excel_headers = ["HIGHEST IMPACT VEP"]
+        for name in self.vep_keys:
+            vep_excel_headers.append(self.get_vep_name(name))
+
+        return vep_excel_headers
+
+    def find_highest_impact(self, impacts):
+        """
+        Returns the highest impact in the list of consequences. Raises error if
+        none of the consequences match.
+        """
+        if "HIGH" in impacts:
+            return "HIGH"
+        if "MODERATE" in impacts:
+            return "MODERATE"
+        if "MODIFIER" in impacts:
+            return "MODIFIER"
+        if "LOW" in impacts:
+            return "LOW"
+
+        raise ValueError("Unknown SO term.")
+
+    def get_vep_values(self, variant):
+        """
+        Takes a string from VEP consequences/impacts in the form:
+            impact value | impact value | ... |, |||, |||
+
+        And peforms the following:
+            - removes annotation "line" if the consequence has "stream" in it,
+              e.g. "upstream"
+            - concatenates remaining line fields with ";"
+
+        Types:
+            variant.info["CSQ"]: Tuple of form (a|b|c|..., a|b|c|..., a|b|c|...)
+
+        Example:
+            vep_keys = [ IMPACT, Consequence, field_1, field_2, field_3 ]
+
+            list(variant.info["CSQ"] = [
+                HIGH        | something_else    | a | b | c,
+                LOW         | upstream_variant  | d | e | f,
+                MODIFIER    | something_else    | g | h | i
+            ]
+
+            vep_dict = {
+                HIGHEST IMPACT VEP  : HIGH,
+                CONSEQUENCE VEP     : something_else;something_else,
+                FIELD 1 VEP         : a;g,
+                FIELD 2 VEP         : b;h,
+                FIELD 3 VEP         : c;i
+            }
         """
 
-        values = variant.info["CSQ"].split("|")
-        res = dict(map(lambda i, j: (i, j), self.vep_keys, values))
+        vep_dict = {}
+        for name in self.vep_excel_headers:
+            vep_dict[name] = []
 
-        return res
+        impacts = []
 
-    def is_vepped(self, vcf):
+        for line in list(variant.info["CSQ"]):
+            split_line = line.split("|")
+
+            # NOTE: rename IMPACT if the name changes to something else
+            impact = split_line[self.vep_keys.index("IMPACT")]
+            if "stream" in impact:
+                continue
+
+            impacts.append(impact)
+
+            for i, value in enumerate(split_line):
+                if value:
+                    vep_dict[self.vep_excel_headers[i + 1]].append(value)
+
+        vep_dict["HIGHEST IMPACT VEP"] = self.find_highest_impact(impacts)
+
+        # NOTE: final string format/join for excel output can be changed here
+        for key, value in vep_dict.items():
+            if isinstance(value, list):
+                vep_dict[key] = ";".join(value)
+
+        return vep_dict
+
+    def check_vepped(self):
         """
         Checks whether a file has been vepped by looking for VEP in the vcf
         header. The line should look something like this:
             ##VEP="v110" time="2023-10-04 00:20:30" cache="/net/isilonP...
         """
-        if "VEP" in str(self.vcf.header):
+        if "VEP" in str(self.vcf_obj.header):
             return True
         return False
 
-    def get_vep_keys(self):
+    def generate_vep_keys(self):
         """
         Example header INFO line:
-            ##INFO=<ID=CSQ,Number=.,Type=String,Description="Consequence annotations from Ensembl VEP. Format: Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|BIOTYPE|EXON|INTRON|HGVSc|HGVSp|cDNA_position|CDS_position|Protein_position|Amino_acids|Codons|Existing_variation|DISTANCE|STRAND|FLAGS|SYMBOL_SOURCE|HGNC_ID|MANE_SELECT|MANE_PLUS_CLINICAL|TSL|APPRIS|SIFT|PolyPhen|AF|CLIN_SIG|SOMATIC|PHENO|PUBMED|MOTIF_NAME|MOTIF_POS|HIGH_INF_POS|MOTIF_SCORE_CHANGE|TRANSCRIPTION_FACTORS">
+            ##INFO=<ID=CSQ,Number=.,Type=String,Description=
+            "Consequence annotations from Ensembl VEP. Format:
+            Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
 
         Returns a list of keys, i.e. ["Allele", "Consequence", ...]
 
-        NOTE: This method is all hard coded, and will not work if the description format changes.
+        NOTE: This method is hard coded based on the format of the description.
         """
-        for header in self.vcf_header.records:
+        for header in self.vcf_obj.header.records:
             if header.type == "INFO" and "CSQ" in str(header) and header.attrs:
                 description = header.attrs[-2][1].strip('"')
 
@@ -68,10 +155,12 @@ class Vep:
                 keys = description.split("|")
                 return keys
 
+        return None
 
-class Report:
+
+class SingleReport:
     """
-    TODO: Mity report description.
+    Handles generating a mity report for one VCF file.
     """
 
     def __init__(self, vcf_path, min_vaf) -> None:
@@ -83,18 +172,39 @@ class Report:
         self.annot_vcf_path = None
         self.annot_vcf_obj = None
 
-        self.vep = Vep(self.vcf_obj)
-
         # excel and vcf headers
         with open("report-config.yaml", "r") as report_config_file:
             self.report_config = yaml.safe_load(report_config_file)
 
         self.excel_headers = self.report_config["excel_headers"]
-        self.vep_excel_headers = self.report_config["vep_excel_headers"]
         self.vcf_headers = self.report_config["vcf_headers"]
 
-    def do_report(self):
-        pass
+        self.excel_table = {}
+        self.df = None
+
+        self.vep = None
+
+        self.run()
+
+    def run(self):
+        """
+        Run SingleReport.
+        """
+        # self.vcfanno_call()
+
+        self.annot_vcf_path = self.vcf_path
+        self.annot_vcf_obj = pysam.VariantFile(self.vcf_path)
+        self.vep = Vep(self.annot_vcf_obj)
+        self.make_table()
+
+    def get_df(self):
+        """
+        Return a pandas dataframe from the generated excel table.
+        """
+        all_excel_headers = self.excel_headers
+        if self.vep.vepped:
+            all_excel_headers += self.vep.vep_excel_headers
+        return pandas.DataFrame(self.excel_table, columns=all_excel_headers)
 
     def make_hgvs(self, pos, ref, alt):
         """
@@ -208,17 +318,20 @@ class Report:
 
     def make_table(self):
         """
-        Takes a vcfanno annotated vcf file and returns a formatted table with
-        relevant information. The vcf names are hardcoded in vcf_column_names
+        Takes a vcfanno annotated vcf file and returns a formatted dictionary
+        with relevant information.
+
+        The vcf and excel header names are hardcoded in report-config.yaml.
         """
 
-        excel_table = {}
         for header in self.excel_headers:
-            excel_table[header] = []
+            self.excel_table[header] = []
 
-        if self.vep.is_vepped():
-            for header in self.vep_excel_headers:
-                excel_table[header] = []
+        # check if VCF file is vepped, adds relevant VEP headers
+
+        if self.vep.vepped:
+            for header in self.vep.vep_excel_headers:
+                self.excel_table[header] = []
 
         num_samples = len(self.annot_vcf_obj.header.samples)
 
@@ -231,73 +344,56 @@ class Report:
                 # skip sample if the VAF is too low
                 if float(sample["VAF"][0]) <= float(self.min_vaf):
                     continue
-                
+
                 cohort_count += 1
 
-                excel_table["SAMPLE"] = sample.name
-                excel_table["HGVS"] = self.make_hgvs(variant.pos, variant.ref, variant.alts[0])
+                self.excel_table["SAMPLE"].append(sample.name)
+                self.excel_table["HGVS"].append(
+                    self.make_hgvs(variant.pos, variant.ref, variant.alts[0])
+                )
 
-                excel_table["CHR"] = variant.chrom
-                excel_table["POS"] = variant.pos
-                excel_table["REF"] = variant.ref
-                excel_table["ALT"] = variant.alts[0]
-                excel_table["QUAL"] = variant.qual
-                excel_table["FILTER"] = variant.filter.keys()[0]
+                self.excel_table["CHR"].append(variant.chrom)
+                self.excel_table["POS"].append(variant.pos)
+                self.excel_table["REF"].append(variant.ref)
 
-                excel_table["INFO"] = info_string
-                excel_table["FORMAT"] = self.make_format_string(sample)
+                # NOTE: assumes only one ALT
+                self.excel_table["ALT"].append(variant.alts[0])
+                self.excel_table["QUAL"].append(variant.qual)
+                self.excel_table["FILTER"].append(variant.filter.keys()[0])
 
-                for name in self.vcf_headers["info"]
+                self.excel_table["INFO"].append(info_string)
+                self.excel_table["FORMAT"].append(self.make_format_string(sample))
 
-                for name in vcf_column_names["start_info"]:
-                    if name in variant.info.keys():
-                        row.append(self.clean_string(variant.info[name]))
+                # vcf_headers: info
+                for vcf_header, excel_header in self.vcf_headers["info"].items():
+                    if vcf_header in variant.info.keys():
+                        self.excel_table[excel_header].append(
+                            self.clean_string(variant.info[vcf_header])
+                        )
                     else:
-                        row.append(".")
+                        self.excel_table[excel_header].append(".")
 
-                for name in vcf_column_names["start_format"]:
-                    if name in sample.keys():
-                        row.append(self.clean_string(sample[name]))
+                # vcf_headers: annotations
+                for vcf_header, excel_header in self.vcf_headers["annotations"].items():
+                    if vcf_header in variant.info.keys():
+                        self.excel_table[excel_header].append(
+                            self.clean_string(variant.info[vcf_header])
+                        )
                     else:
-                        row.append(".")
+                        self.excel_table[excel_header].append(".")
 
-                # placeholder for cohort count and cohort frequency
-                row.append(0)
-                row.append(0)
-
-                # headers_dict -> basic
-                row.extend(vcf_start_columns)
-
-                # headers_dict -> info
-                info_column_data = []
-                for field in vcf_column_names["info"]:
-                    info_column_data.append(self.clean_string(variant.info[field]))
-
-                row.extend(info_column_data)
-
-                # headers_dict -> filters
-                filter_column_data = []
-                for filter_name in vcf_column_names["filters"]:
-                    filter_column_data.append(
-                        # Note that the field is a tuple (1,) so we take the first
-                        # index since there is only ever one value (i.e. true/false)
-                        "PASS"
-                        if sample[filter_name + "_filter"][0] == 1
-                        else "FAIL"
-                    )
-
-                row.extend(filter_column_data)
-
-                # headers_dict -> annotations
-
-                for name in vcf_column_names["annotations"]:
-                    if name in variant.info.keys():
-                        row.append(self.clean_string(variant.info[name]))
+                # vcf_headers: format
+                for vcf_header, excel_header in self.vcf_headers["format"].items():
+                    if vcf_header in sample.keys():
+                        self.excel_table[excel_header].append(
+                            self.clean_string(sample[vcf_header])
+                        )
                     else:
-                        row.append(".")
+                        self.excel_table[excel_header].append(".")
 
                 # calculate ALLELE FREQUENCY MITOMAP
-                # TODO: check this formula
+                # TODO: currently this formula matches old mity behaviour, check
+                # that this is still valid.
                 if "Genbank_frequency_mitomap" in sample.keys():
                     allele_frequency_mitomap = round(
                         float(sample["GenBank_frequency_mitomap"]) / 32050, 3
@@ -305,73 +401,88 @@ class Report:
                 else:
                     allele_frequency_mitomap = "."
 
-                row.append(allele_frequency_mitomap)
-
-                for name in vcf_column_names["annotations2"]:
-                    if name in variant.info.keys():
-                        row.append(self.clean_string(variant.info[name]))
-                    else:
-                        row.append(".")
-
-                # headers_dict -> format
-                format_column_data = []
-                for format_name in vcf_column_names["format"]:
-                    if format_name in sample:
-                        format_column_data.append(
-                            self.clean_string(sample[format_name])
-                        )
-                    else:
-                        format_column_data.append(".")
-
-                row.extend(format_column_data)
-
-                # headers_dict -> vcf_info_format
+                self.excel_table["ALLELE FREQUENCY MITOMAP"].append(
+                    allele_frequency_mitomap
+                )
 
             # fill in cohort count
+            cohort_frequency = float(cohort_count / num_samples)
             for _ in range(cohort_count):
-                excel_table["COHORT COUNT"] = cohort_count
-                excel_table["COHORT FREQUENCY"] = float(cohort_count / num_samples)
+                self.excel_table["COHORT COUNT"] = cohort_count
+                self.excel_table["COHORT FREQUENCY"] = cohort_frequency
 
-        return excel_table
+            # fill in VEP impacts if vepped
+            if self.vep.vepped:
+                self.add_vep_impacts(variant, cohort_count)
+
+    def add_vep_impacts(self, variant, cohort_count):
+        """
+        Adds vep impacts for a variant.
+        """
+        variant_impacts = self.vep.get_vep_values(variant)
+        for _ in range(cohort_count):
+            for vep_header in self.vep.vep_excel_headers:
+                self.excel_table[vep_header].append(variant_impacts[vep_header])
 
 
+class Report:
+    """
+    Runs mity report.
+    """
+
+    def __init__(self, debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path="."):
+        self.debug = debug
+        self.vcfs = vcfs
+        self.prefix = prefix
+        self.min_vaf = min_vaf
+        self.out_folder_path = out_folder_path
+
+        self.run()
+
+    def run(self):
+        """
+        Runs mity report.
+        """
+        if self.debug:
+            logger.setLevel(logging.DEBUG)
+            logger.debug("Entered debug mode.")
+        else:
+            logger.setLevel(logging.INFO)
+
+        if not os.path.exists(self.out_folder_path):
+            os.makedirs(self.out_folder_path)
+
+        xlsx_name = os.path.join(
+            self.out_folder_path, self.prefix + ".annotated_variants.xlsx"
+        )
+        with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
+            if isinstance(self.vcfs, str):
+                self.vcfs = [self.vcfs]
+            for vcf in self.vcfs:
+                single_report = SingleReport(vcf, self.min_vaf)
+                df = single_report.get_df()
+
+                sheet_name = vcf.replace("vcf.gz", "").split("/")[-1]
+                df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+
+# TODO: (commands rewrite) remove and move Report call to commands
 def do_report(debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path="."):
     """
     Create a mity report
     :param vcf: the path to a vcf file
     :param prefix: the optional prefix. This must be set if there is >1 vcf files
-    :param min_vaf: only include vairants with vaf > min_vaf in the report
+    :param min_vaf: only include variants with vaf > min_vaf in the report
     :return:
     """
-    if debug:
-        logger.setLevel(logging.DEBUG)
-        logger.debug("Entered debug mode.")
-    else:
-        logger.setLevel(logging.INFO)
-
-    if not os.path.exists(out_folder_path):
-        os.makedirs(out_folder_path)
-
-    xlsx_name = os.path.join(out_folder_path, prefix + ".annotated_variants.xlsx")
-    with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
-        for vcf in vcfs:
-            report = Report(vcf, min_vaf)
-            df = report.get_df()
-
-            sheet_name = vcf.replace("vcf.gz", "")
-            df.to_excel(writer, sheet_name=sheet_name, index=False)
+    Report(debug, vcfs, prefix, min_vaf, out_folder_path)
 
 
 if __name__ == "__main__":
     do_report(
         debug=False,
-        vcfs="../tests/ashkenazim-trio/output3/new_normalise.vcf.gz",
+        vcfs="../tests/vep-tests/annotated-and-vepped.vcf",
         min_vaf=0.01,
-        out_folder_path="../tests/ashkenazim-trio/output4",
+        out_folder_path="../tests/ashkenazim-trio/output5",
         prefix="ashkenazim",
     )
-
-"""
-df.insert(position, col name, list)
-pandas.Dataframe(dict)
-"""
