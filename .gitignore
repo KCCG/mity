@@ -32,3 +32,5 @@ mitylib.egg-info/*
 
 # tests
 tests/*
+
+.vscode/
