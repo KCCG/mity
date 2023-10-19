@@ -190,10 +190,7 @@ class SingleReport:
         """
         Run SingleReport.
         """
-        # self.vcfanno_call()
-
-        self.annot_vcf_path = self.vcf_path
-        self.annot_vcf_obj = pysam.VariantFile(self.vcf_path)
+        self.vcfanno_call()
         self.vep = Vep(self.annot_vcf_obj)
         self.make_table()
 
@@ -476,13 +473,3 @@ def do_report(debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path="."):
     :return:
     """
     Report(debug, vcfs, prefix, min_vaf, out_folder_path)
-
-
-if __name__ == "__main__":
-    do_report(
-        debug=False,
-        vcfs="../tests/vep-tests/annotated-and-vepped.vcf",
-        min_vaf=0.01,
-        out_folder_path="../tests/ashkenazim-trio/output5",
-        prefix="ashkenazim",
-    )
