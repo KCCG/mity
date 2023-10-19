@@ -405,8 +405,8 @@ class SingleReport:
             # fill in cohort count
             cohort_frequency = float(cohort_count / num_samples)
             for _ in range(cohort_count):
-                self.excel_table["COHORT COUNT"] = cohort_count
-                self.excel_table["COHORT FREQUENCY"] = cohort_frequency
+                self.excel_table["COHORT COUNT"].append(cohort_count)
+                self.excel_table["COHORT FREQUENCY"].append(cohort_frequency)
 
             # fill in VEP impacts if vepped
             if self.vep.vepped:
