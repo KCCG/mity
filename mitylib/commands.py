@@ -10,10 +10,8 @@ License: MIT
 import argparse
 import logging
 
-from . import call, normalise, report, merge
+from mitylib import call, normalise, report, merge, util
 from ._version import __version__
-from .util import select_reference_fasta
-from .util import select_reference_genome
 
 __all__ = []
 
@@ -45,10 +43,10 @@ def _cmd_call(args):
     logging.info("Calling mitochondrial variants")
     logging.debug("Debugging mode activated")
 
-    genome = select_reference_genome(args.reference, None)
-    args.reference = select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
-    call.do_call(
+    call.Call(
         args.debug,
         args.bam,
         args.reference,
@@ -176,8 +174,8 @@ def _cmd_normalise(args):
     logging.info("mity %s", __version__)
     logging.info("Normalising and FILTERing mitochondrial vcf.gz file")
 
-    genome = select_reference_genome(args.reference, None)
-    args.reference = select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
     normalise.do_normalise(
         args.debug,
@@ -280,7 +278,7 @@ def _cmd_merge(args):
     logging.info("mity %s", __version__)
     logging.info("mity vcf merge")
 
-    genome = select_reference_genome(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
 
     merge.do_merge(args.debug, args.mity_vcf, args.nuclear_vcf, args.prefix, genome)
 
