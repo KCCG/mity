@@ -1,5 +1,5 @@
 """
-TODO: Mity report description.
+Adds annotations and generates mity excel report from VCF file.
 """
 
 import logging
@@ -60,7 +60,9 @@ class Vep:
         if "LOW" in impacts:
             return "LOW"
 
-        raise ValueError("Unknown SO term.")
+        logging.warning("Unknown SO term.")
+
+        return ""
 
     def get_vep_values(self, variant):
         """
@@ -393,7 +395,7 @@ class SingleReport:
                 # that this is still valid.
                 if "Genbank_frequency_mitomap" in sample.keys():
                     allele_frequency_mitomap = round(
-                        float(sample["GenBank_frequency_mitomap"]) / 32050, 3
+                        float(sample["GenBank_frequency_mitomap"]) / 32059, 3
                     )
                 else:
                     allele_frequency_mitomap = "."
