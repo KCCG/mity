@@ -1,5 +1,4 @@
 import setuptools
-import os
 
 with open("mitylib/_version.py", "r") as fh:
     version = fh.read().replace("__version__ = ", "").strip('""\n')
@@ -18,36 +17,31 @@ setuptools.setup(
     author_email="mcowley@ccia.org.au",
     license="MIT",
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Environment :: Console',
-        'Environment :: MacOS X',
-        'Intended Audience :: Science/Research',
-        'Intended Audience :: Healthcare Industry',
-        'License :: Free for non-commercial use',
-        'Natural Language :: English',
+        "Development Status :: 4 - Beta",
+        "Environment :: Console",
+        "Environment :: MacOS X",
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Healthcare Industry",
+        "License :: Free for non-commercial use",
+        "Natural Language :: English",
         "Operating System :: MacOS",
         "Operating System :: POSIX",
         "Operating System :: Unix",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
-        "Topic :: Scientific/Engineering :: Bio-Informatics"
+        "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
-    keywords='mitochondrial DNA genomics variant SNV INDEL',
+    keywords="mitochondrial DNA genomics variant SNV INDEL",
     project_urls={
-        'Documentation': 'https://github.com/KCCG/mity/',
-        'Source': 'https://github.com/KCCG/mity/',
-        'Funding': 'http://garvan.org.au/kccg',
+        "Documentation": "https://github.com/KCCG/mity/",
+        "Source": "https://github.com/KCCG/mity/",
+        "Funding": "http://garvan.org.au/kccg",
     },
     packages=setuptools.find_packages(),
-    install_requires=[
-        'pysam',
-        'pandas',
-        'xlsxwriter',
-        'scipy'
-    ],
-    python_requires='>=3.5.4',
-    package_data={'mitylib': ['config.ini', 'verchew.ini', 'annot/*', 'reference/*']},
+    install_requires=["pysam", "pandas", "xlsxwriter", "scipy", "pyyaml"],
+    python_requires=">=3.5.4",
+    package_data={"mitylib": ["annot/*", "reference/*"]},
     include_package_data=True,
-    scripts=["mitylib/mity"]
+    scripts=["mitylib/mity"],
 )

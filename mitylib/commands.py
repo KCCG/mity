@@ -4,23 +4,14 @@ Mity: a sensitive variant analysis pipeline optimised for WGS data
 
 
 Usage: See the online manual for details: http://github.com/KCCG/mity
-Authors: Clare Puttick, Mark Cowley
+Authors: Clare Puttick, Mark Cowley, Trent Zeng, Christian Fares
 License: MIT
 """
 import argparse
 import logging
 
-from . import call, normalise, report, merge
+from mitylib import call, normalise, report, merge, util
 from ._version import __version__
-from .util import select_reference_fasta
-from .util import select_reference_genome
-
-__all__ = []
-
-
-def public(fn):
-    __all__.append(fn.__name__)
-    return fn
 
 
 usage = __doc__.split("\n\n\n", maxsplit=1)
@@ -36,8 +27,6 @@ AP_subparsers = AP.add_subparsers(help="mity sub-commands (use with -h for more 
 
 # call -------------------------------------------------------------------------
 
-do_call = public(call.do_call)
-
 
 def _cmd_call(args):
     """Call mitochondrial variants"""
@@ -45,10 +34,10 @@ def _cmd_call(args):
     logging.info("Calling mitochondrial variants")
     logging.debug("Debugging mode activated")
 
-    genome = select_reference_genome(args.reference, None)
-    args.reference = select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
-    call.do_call(
+    call.Call(
         args.debug,
         args.bam,
         args.reference,
@@ -159,7 +148,8 @@ P_call.add_argument(
     action="store",
     type=str,
     default=None,
-    help="A text file of BAM files to be processed. The path to each file should be on one row per Region of MT genome to call variants in. "
+    help="A text file of BAM files to be processed. The path to each file should be"
+    "on one row per Region of MT genome to call variants in. "
     "If unset will call variants in entire MT genome as specified in BAM header. "
     "Default: Entire MT genome. ",
     dest="region",
@@ -168,24 +158,23 @@ P_call.set_defaults(func=_cmd_call)
 
 # normalise --------------------------------------------------------------------
 
-do_normalise = public(normalise.do_normalise)
-
 
 def _cmd_normalise(args):
     """Normalise & FILTER mitochondrial variants"""
     logging.info("mity %s", __version__)
     logging.info("Normalising and FILTERing mitochondrial vcf.gz file")
 
-    genome = select_reference_genome(args.reference, None)
-    args.reference = select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
-    normalise.do_normalise(
+    normalise.Normalise(
         args.debug,
         args.vcf,
         args.reference,
         genome,
         args.outfile,
         args.allsamples,
+        args.keep,
         p=args.p,
     )
 
@@ -209,6 +198,13 @@ P_normalise.add_argument(
     help="PASS in the filter requires all samples to pass instead of just one",
 )
 P_normalise.add_argument(
+    "-k",
+    "--keep",
+    action="store_true",
+    required=False,
+    help="Keep all intermediate files",
+)
+P_normalise.add_argument(
     "--p",
     action="store",
     type=float,
@@ -229,15 +225,13 @@ P_normalise.set_defaults(func=_cmd_normalise)
 
 # report -----------------------------------------------------------------------
 
-do_report = public(report.do_report)
-
 
 def _cmd_report(args):
     """Generate mity report"""
     logging.info("mity %s", __version__)
     logging.info("Generating mity report")
-    report.do_report(
-        args.debug, args.vcf, args.prefix, args.min_vaf, args.out_folder_path
+    report.Report(
+        args.debug, args.vcf, args.prefix, args.min_vaf, args.out_folder_path, args.keep
     )
 
 
@@ -267,12 +261,17 @@ P_report.add_argument(
 P_report.add_argument(
     "vcf", action="append", nargs="+", help="mity vcf files to create a report from"
 )
+P_report.add_argument(
+    "-k",
+    "--keep",
+    action="store_true",
+    required=False,
+    help="Keep all intermediate files",
+)
 P_report.set_defaults(func=_cmd_report)
 
 
 # merge -----------------------------------------------------------------------
-
-do_merge = public(merge.do_merge)
 
 
 def _cmd_merge(args):
@@ -280,7 +279,7 @@ def _cmd_merge(args):
     logging.info("mity %s", __version__)
     logging.info("mity vcf merge")
 
-    genome = select_reference_genome(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
 
     merge.do_merge(args.debug, args.mity_vcf, args.nuclear_vcf, args.prefix, genome)
 
