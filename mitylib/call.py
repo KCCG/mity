@@ -157,7 +157,7 @@ class Call:
 
         mity_cmd += " " + " ".join(self.files)
         mity_cmd += '"'
-        mity_cmd = mity_cmd.replace("/", "\/")
+        mity_cmd = mity_cmd.replace("/", "\\/")
 
         logger.debug(mity_cmd)
 
@@ -215,26 +215,32 @@ class Call:
 
     def bam_has_rg(self, bam):
         """
-        Does the BAM or CRAM File have an @RG header? This is critical for mity
-        to correctly call variants.
+        Check whether a BAM or CRAM file contains a valid @RG header, which is critical for accurate variant calling with mity.
 
-        :param bam: str: path to bam or cram file
-        :return: True/False
-        >>> bam_has_RG('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam')
+        Parameters:
+            - bam (str): Path to a BAM or CRAM file.
+
+        Returns:
+            - bool: True if the file has a valid @RG header, False otherwise.
         """
         r = pysam.AlignmentFile(bam, "rb")
         return len(r.header["RG"]) > 0
 
     def bam_get_mt_contig(self, bam, as_string=False):
         """
-        get the mitochondrial contig name and length from a BAM file
-        :param bam: path to a bam or cram file
-        :return: a tuple of contig name as str and length as int
+        Retrieve mitochondrial contig information from a BAM or CRAM file.
 
-        >>> bam_get_mt_contig('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam', False)
-        ('chrM', 16569)
-        >>> bam_get_mt_contig('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam', True)
-        'chrM:1-16569'
+        Parameters:
+            - bam (str): Path to a BAM or CRAM file.
+
+        Keyword Arguments:
+            - with_coordinates (bool): If True, the result includes the contig
+            name with coordinates (e.g., 'chrM:1-16569'). If False, it returns a
+            tuple containing the contig name (str) and its length (int).
+
+        Returns:
+            - If with_coordinates is False, a tuple (contig_name, contig_length).
+            - If with_coordinates is True, a string with coordinates.
         """
         r = pysam.AlignmentFile(bam, "rb")
         chroms = [str(record.get("SN")) for record in r.header["SQ"]]
