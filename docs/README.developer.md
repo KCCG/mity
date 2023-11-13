@@ -4,35 +4,143 @@
 - [Development Branch](#development-branch)
   - [TestPyPI Repo](#testpypi-repo)
   - [Test DockerHub Repo](#test-dockerhub-repo)
-- [Pysam VariantFile](#pysam-variantfile)
+- [Pysam](#pysam)
+  - [VariantFile](#variantfile)
+  - [VariantHeader](#variantheader)
+  - [VariantRecord](#variantrecord)
+  - [VariantRecordSamples](#variantrecordsamples)
 - [MITY call](#mity-call)
+  - [Freebayes](#freebayes)
 - [MITY normalise](#mity-normalise)
+  - [Bcftools norm](#bcftools-norm)
 - [MITY report](#mity-report)
   - [vcfanno](#vcfanno)
-  - [Dictionaries](#dictionaries)
-  - [Cohort count and frequency](#cohort-count-and-frequency)
+  - [Vep annotations](#vep-annotations)
+    - [Vep labels](#vep-labels)
+    - [Vep values](#vep-values)
   - [Pandas and Excel](#pandas-and-excel)
 
 
-## Development Branch
+# Development Branch
 
-### TestPyPI Repo
+Merging into the development branch triggers an Azure pipeline which performs the following:
+- compiles the python package and uploads it to `TestPyPI`.
+- creates and publishes a docker image.
 
-### Test DockerHub Repo
+Both repos will have a tag in the form (where `r` is the revision number):
+```
+YYYY.MMDD.r
+```
 
-## Pysam VariantFile
+## TestPyPI Repo
+
+<https://test.pypi.org/project/mitywgs-test/>
+
+## Test DockerHub Repo
+
+The dockerhub test repo is currently private.
+
+# Pysam
+
+A large part of mity uses pysam, which has quite poor documentation. So here's a guide for mity's use cases. For more details, I would highly recommend going straight to the source code and trying things out to test behaviour.
+
+<https://github.com/pysam-developers/pysam/blob/cdc0ed12fbe2d7633b8fa47534ab2c2547f66b84/pysam/libcbcf.pyx>
+
+## VariantFile
+
+```python
+import pysam
+
+variant_file_obj = pysam.VariantFile(vcf_file_name)
+```
+
+## VariantHeader
+
+```python
+header_obj = variant_file_obj.header
+```
+
+Adding headers:
+```
+header_obj.filters.add(params)
+header_obj.info.add(params)
+header_obj.formats.add(params)
+```
+
+## VariantRecord
+
+To loop through variants:
+```python
+for variant in variant_file_obj.fetch():
+  # do something with variant
+```
+
+To access fields:
+```python
+variant.chrom
+variant.pos
+variant.ref
+variant.alts  # note that this is a tuple of all the alts
+variant.qual
+variant.filter
+```
+
+Note that `variant.filter` is a dictionary, so it should have both keys and values, but filter names don't have a value, so the keys are the names and the values are just blank.
+```python
+variant.filter.keys()   # this is a tuple/list
+```
+
+To get info columns, we can use `variant.info` which is a dictionary.
+```python
+variant.info["info column name"]
+```
+
+Note that the dictionaries here support all the the dictionary syntax, e.g.
+```python
+for info_field_name, value in variant.info.items():
+```
+
+## VariantRecordSamples
+
+To loop through samples:
+```python
+for sample in variant.samples.values():
+  # do something with sample
+```
+
+To get the sample name:
+```python
+sample.name
+```
+
+We can access sample fields like a dictionary:
+```python
+sample["field"]
+```
 
 
-## MITY call
-## MITY normalise
-## MITY report
+# MITY call
 
-Structure:
-1. call `vcfanno` to add annotations to the `mity.normalise.vcf.gz` file
-2. parse the annotated vcf and organise into table with relevant information
-3. convert to pandas df and finally write to excel spreadsheet
+## Freebayes
 
-### vcfanno
+<https://github.com/freebayes/freebayes>
+
+# MITY normalise
+
+## Bcftools norm
+
+Documentation:
+<https://samtools.github.io/bcftools/bcftools.html#norm>
+
+Bcftools command:
+```
+pysam.bcftools.norm("-f", self.reference_fasta, "-m-both", self.vcf)
+```
+
+
+# MITY report
+
+## vcfanno
 
 More information can be found here: [vcfanno](https://github.com/brentp/vcfanno)
 
@@ -52,35 +160,64 @@ Since vcfanno tends to have long, somewhat verbose warnings, we capture the `std
     logger.debug(res.stdout)
 ```
 
-### Dictionaries
+## Vep annotations
 
-There are two main dictionaries in mity report:
-- `headers_dict` contains all the columns for the excel spreadsheet in order. These are separated for readability, but they also correspond to sections of code. e.g. All the columns in `"start"` are under the comment:
-```python
-# headers_dict -> start
-row.append(sample.name)
-row.append(make_hgvs(variant.pos, variant.ref, variant.alts[0]))
+### Vep labels
 
-for name in vcf_column_names["start_info"]:
-    if name in variant.info.keys():
-        row.append(clean_string(variant.info[name]))
-        ...
+Example header INFO line:
 ```
-- `vcf_column_names` contains the column names in the annotated vcf that correspond (mostly) to the columns in `headers_dict`. The columns that are missing are because that particular column does not directly relate to a field in the vcf and needs to be calculated e.g. HGVS, or is accessed in a special way, e.g. the position column.
-
-### Cohort count and frequency
-
-Since cohort count and frequency depends on the whole variant being read first, we add a placeholder at first, and fill it in after reading through all the samples.
-
-```python
-# placeholder for cohort count and cohort frequency
-row.append(0)
-row.append(0)
+##INFO=<ID=CSQ,Number=.,Type=String,Description=
+"Consequence annotations from Ensembl VEP. Format:
+Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
 ```
 
-TODO: add other bit of code for counting and freq
+Returns a list of keys, i.e. 
+```
+["Allele", "Consequence", ...]
+```
 
-### Pandas and Excel
+Change this line if the description text or format changes.
+```
+description = description.replace(
+    "Consequence annotations from Ensembl VEP. Format:", ""
+)
+```
+
+### Vep values
+
+In function `get_vep_values(self, variant)`.
+
+```
+Takes a string from VEP consequences/impacts in the form:
+    impact value | impact value | ... |, |||, |||
+
+And peforms the following:
+    - removes annotation "line" if the consequence has "stream" in it,
+      e.g. "upstream"
+    - concatenates remaining line fields with ";"
+
+Types:
+    variant.info["CSQ"]: Tuple of form (a|b|c|..., a|b|c|..., a|b|c|...)
+
+Example:
+    vep_keys = [ IMPACT, Consequence, field_1, field_2, field_3 ]
+
+    list(variant.info["CSQ"]) = [
+        HIGH        | something_else    | a | b | c,
+        LOW         | upstream_variant  | d | e | f,
+        MODIFIER    | something_else    | g | h | i
+    ]
+
+    vep_dict = {
+        HIGHEST IMPACT VEP  : HIGH,
+        CONSEQUENCE VEP     : something_else;something_else,
+        FIELD 1 VEP         : a;g,
+        FIELD 2 VEP         : b;h,
+        FIELD 3 VEP         : c;i
+    }
+```
+
+## Pandas and Excel
 
 We use the table and headers created in `make_table` and `make_headers` respectively to create the pandas dataframe:
 ```python

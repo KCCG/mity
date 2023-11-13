@@ -99,6 +99,7 @@ options:
                         output VCF file in bgzip compressed format
   --allsamples          PASS in the filter requires all samples to pass
                         instead of just one
+  -k, --keep            Keep all intermediate files
   --p P                 Minimum noise level. This is used to calculate QUAL
                         scoreDefault: 0.002, range = [0,1]
   --reference {hs37d5,hg19,hg38,mm10}
@@ -122,6 +123,7 @@ options:
   --out-folder-path OUT_FOLDER_PATH
                         Output files will be saved in OUT_FOLDER_PATH.
                         Default: '.'
+  -k, --keep            Keep all intermediate files
 ```
 
 ## Merge

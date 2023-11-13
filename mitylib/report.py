@@ -80,7 +80,7 @@ class Vep:
         Example:
             vep_keys = [ IMPACT, Consequence, field_1, field_2, field_3 ]
 
-            list(variant.info["CSQ"] = [
+            list(variant.info["CSQ"]) = [
                 HIGH        | something_else    | a | b | c,
                 LOW         | upstream_variant  | d | e | f,
                 MODIFIER    | something_else    | g | h | i
