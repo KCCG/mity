@@ -103,7 +103,8 @@ class MityUtil:
         Returns:
             tuple: A tuple of contig name as a str and length as an int.
         """
-        r = pysam.VariantFile(vcf, "r", require_index=True)
+        r = pysam.VariantFile(vcf, "r")
+        # r = pysam.VariantFile(vcf, "r", require_index=True)
         chroms = r.header.contigs
         mito_contig = set(["MT", "chrM"]).intersection(chroms)
         assert len(mito_contig) == 1
@@ -122,6 +123,6 @@ class MityUtil:
             str: The path to the annotation file.
         """
         mitylibdir = cls.get_mity_dir()
-        p = os.path.join(mitylibdir, cls.ANNOT_DIR, f)
-        assert os.path.exists(p)
-        return p
+        path = os.path.join(mitylibdir, cls.ANNOT_DIR, f)
+        assert os.path.exists(path)
+        return path

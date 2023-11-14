@@ -286,7 +286,7 @@ class Normalise:
             sample["VAF"] = VAF
 
             # mity quality
-            q = mity_qual(sample["AO"][0], sample["DP"], self.p)
+            q = self.mity_qual(sample["AO"][0], sample["DP"], self.p)
             sample["q"] = q
 
             # AQA
