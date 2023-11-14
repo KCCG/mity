@@ -165,8 +165,9 @@ class SingleReport:
     Handles generating a mity report for one VCF file.
     """
 
-    def __init__(self, vcf_path, min_vaf) -> None:
+    def __init__(self, vcf_path, min_vaf, keep) -> None:
         self.min_vaf = min_vaf
+        self.keep = keep
 
         self.vcf_path = vcf_path
         self.vcf_obj = pysam.VariantFile(vcf_path)
@@ -195,6 +196,10 @@ class SingleReport:
         self.vcfanno_call()
         self.vep = Vep(self.annot_vcf_obj)
         self.make_table()
+
+        if not self.keep:
+            # remove vcfanno annotated vcf
+            os.remove(self.annot_vcf_path)
 
     def get_df(self):
         """
@@ -429,12 +434,15 @@ class Report:
     Runs mity report.
     """
 
-    def __init__(self, debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path="."):
+    def __init__(
+        self, debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path=".", keep=False
+    ):
         self.debug = debug
         self.vcfs = vcfs
         self.prefix = prefix
         self.min_vaf = min_vaf
         self.out_folder_path = out_folder_path
+        self.keep = keep
 
         self.run()
 
@@ -458,7 +466,7 @@ class Report:
             if isinstance(self.vcfs, str):
                 self.vcfs = [self.vcfs]
             for vcf in self.vcfs:
-                single_report = SingleReport(vcf, self.min_vaf)
+                single_report = SingleReport(vcf, self.min_vaf, self.keep)
                 df = single_report.get_df()
 
                 sheet_name = vcf.replace("vcf.gz", "").split("/")[-1]

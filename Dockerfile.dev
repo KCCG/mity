@@ -6,26 +6,26 @@ ARG TAG
 # Install freebayes dependencies
 RUN apt-get update -yqq && \
     apt-get install -yqq \
-        make build-essential libssl-dev zlib1g-dev libbz2-dev \
-        libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
-        xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git tabix \
-        freebayes && \
+    make build-essential libssl-dev zlib1g-dev libbz2-dev \
+    libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+    xz-utils tk-dev libffi-dev liblzma-dev python3-openssl git tabix \
+    freebayes && \
     apt-get clean
 
 # Install gsort
 RUN \
     cd /usr/local/bin && \
     curl -s https://api.github.com/repos/brentp/gsort/releases/latest \
-      | grep browser_download_url \
-      | grep -i $(uname) \
-      | cut -d '"' -f 4 \
-      | wget -O gsort -qi - && \
+    | grep browser_download_url \
+    | grep -i $(uname) \
+    | cut -d '"' -f 4 \
+    | wget -O gsort -qi - && \
     chmod +x gsort
 
 # Install mity from dev server (but first install the previous version to get the dependencies from pypi)
 # RUN pip install mitywgs==0.4.0
 # mitywgs 0.4.0 requires pyvcf which doesn't allow testing of python 3.10.6 so here I'm installing dependencies manually
-RUN pip install pandas xlsxwriter pyfastx scipy pysam
+RUN pip install pandas xlsxwriter pyfastx scipy pysam pyyaml
 RUN pip install -i https://test.pypi.org/simple/ mitywgs-test==${TAG}
 
 WORKDIR /home

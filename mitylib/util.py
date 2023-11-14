@@ -1,310 +1,127 @@
-import configparser
+"""
+Contains utility functions for mity modules.
+"""
 import logging
 import os
 import subprocess
 import sys
-import tempfile
-import pysam
-import inspect
 from glob import glob
+import pysam
 
 
-# MITYLIB DIRECTORY
-def get_mity_dir():
-    path = os.path.dirname(sys.modules["mitylib"].__file__)
-    return path
-
-
-# CONFIG PARSER
-config = configparser.ConfigParser()
-config.read([get_mity_dir() + "/config.ini", get_mity_dir() + "/verchew.ini"])
-GENOME_FILE = config.get("PATHS", "GENOME_FILE")
-ANNOT_DIR = config.get("PATHS", "ANNOT_DIR")
-REF_DIR = config.get("PATHS", "REF_DIR")
-
-
-def tabix(f):
+class MityUtil:
     """
-    Generate a tabix index for a bgzipped file
-
-    :param f: path to a bgzip compressed file
-    :type f: str
-
-    :returns: Nothing
-    :rtype: None
+    Contains utility functions for mity modules.
     """
 
-    tabix_call = "tabix -f " + f
-    logging.debug(tabix_call)
-    subprocess.run(tabix_call, shell=True)
+    MITY_DIR = "mitylib"
+    GENOME_FILE = "mitylib/reference/b37d5.genome"
+    REF_DIR = "reference"
+    ANNOT_DIR = "annot"
 
+    @classmethod
+    def get_mity_dir(cls):
+        """
+        Get the directory path of the Mity library.
 
-def check_missing_file(file_list, die=True):
-    missing_files = []
-    for item in file_list:
-        if not os.path.isfile(item):
-            missing_files.append(item)
-    if die and len(missing_files) > 0:
-        raise ValueError("Missing these files: " + ",".join(missing_files))
-    return missing_files
+        Returns:
+            str: The path to the Mity library directory.
+        """
+        path = os.path.dirname(sys.modules["mitylib"].__file__)
+        return path
 
+    @classmethod
+    def tabix(cls, f):
+        """
+        Generate a tabix index for a bgzipped file.
 
-def tmp_mity_file_name():
-    """
-    Create a tmp mity vcf file
+        Parameters:
+            f (str): The path to a bgzip compressed file.
 
-    #TODO There must be a more pythonic way of doing this.
-    """
-    f = tempfile.NamedTemporaryFile(
-        mode="wt", prefix="mity", suffix=".vcf", delete=False
-    )
-    f.close()
-    assert isinstance(f.name, str)
-    return f.name
+        Returns:
+            None
+        """
+        tabix_call = "tabix -f " + f
+        logging.debug(tabix_call)
+        subprocess.run(tabix_call, shell=True, check=False)
 
+    @classmethod
+    def select_reference_fasta(cls, reference, custom_reference_fa=None):
+        """
+        Select the reference genome fasta file.
 
-def create_prefix(file_name, prefix=None):
-    """
-    Most mity functions have an optional prefix. If a prefix is not specified,
-    then use the  file name (minus the .vcf.gz, .bam or .cram suffix) as the prefix.
-    :param file_name: The vcf, bam, cram, bed filename
-    :param prefix: The optional prefix. If None, then create a prefix from
-    file_name, else return prefix
-    :return: str prefix
-    """
-    if prefix is not None:
-        pass
-    elif ".vcf" in file_name:
-        prefix = [os.path.basename(file_name).split(".vcf")[0], prefix][
-            prefix is not None
-        ]
-    elif ".bam" in file_name:
-        prefix = [os.path.basename(file_name).split(".bam")[0], prefix][
-            prefix is not None
-        ]
-    elif ".cram" in file_name:
-        prefix = [os.path.basename(file_name).split(".cram")[0], prefix][
-            prefix is not None
-        ]
-    else:
-        raise ValueError("Unsupported file type")
-    return prefix
+        Parameters:
+            reference (str): One of the inbuilt reference genomes: hs37d5, hg19, hg38, mm10.
+            custom_reference_fa (str, optional): The path to a custom reference genome, or None.
 
+        Returns:
+            str: The path to the selected reference genome fasta file.
+        """
+        if custom_reference_fa is not None and os.path.exists(custom_reference_fa):
+            res = custom_reference_fa
+        else:
+            ref_dir = os.path.join(cls.get_mity_dir(), cls.REF_DIR)
+            res = glob(f"{ref_dir}/{reference}.*.fa")
+            logging.debug(",".join(res))
+            assert len(res) == 1
+            res = res[0]
+        return res
 
-def gsort_vcf(f, out_file, genome_file=GENOME_FILE, remove_unsorted_vcf=False):
-    """
-    use gsort to sort the records in a VCF file according to a .genome file.
+    @classmethod
+    def select_reference_genome(cls, reference, custom_reference_genome=None):
+        """
+        Select the reference genome .genome file.
 
-    :param f: the path to an unsorted vcf.gz file
-    :param out_file: the path to a resulting sorted vcf.gz file
-    :param genome_file: the .genome file corresponding to the reference genome. see https://github.com/brentp/gsort
-    :param remove_unsorted_vcf: if True, then the input file 'f' will be deleted.
-    :return: nothing
-    """
-    logging.debug("Sorting, bgzipping {} -> {}".format(f, out_file))
-    logging.debug("gsort is using genome file " + genome_file)
-    gsort_cmd = "gsort {} {} | bgzip -cf > {}".format(f, genome_file, out_file)
+        Parameters:
+            reference (str): One of the inbuilt reference genomes: hs37d5, hg19, hg38, mm10.
+            custom_reference_genome (str, optional): The path to a custom reference .genome file, or None.
 
-    logging.debug(gsort_cmd)
+        Returns:
+            str: The path to the selected reference .genome file.
+        """
+        if custom_reference_genome is not None and os.path.exists(
+            custom_reference_genome
+        ):
+            res = custom_reference_genome
+        else:
+            ref_dir = os.path.join(cls.get_mity_dir(), cls.REF_DIR)
+            logging.debug("Looking for .genome file in %s", ref_dir)
+            res = glob(f"{ref_dir}/{reference}.genome")
+            logging.debug(",".join(res))
+            assert len(res) == 1
+            res = res[0]
+        return res
 
-    subprocess.run(gsort_cmd, shell=True)
-    logging.debug("Tabix indexing {}".format(out_file))
-    tabix(out_file)
-    if remove_unsorted_vcf:
-        os.remove(f)
+    @classmethod
+    def vcf_get_mt_contig(cls, vcf):
+        """
+        Get the mitochondrial contig name and length from a VCF file.
 
+        Parameters:
+            vcf (str): Path to a VCF file.
 
-def write_merged_vcf(new_vcf, out_file, genome_file=GENOME_FILE):
-    """
-    write a vcf object to vcf.gz file with tbi index.
+        Returns:
+            tuple: A tuple of contig name as a str and length as an int.
+        """
+        r = pysam.VariantFile(vcf, "r", require_index=True)
+        chroms = r.header.contigs
+        mito_contig = set(["MT", "chrM"]).intersection(chroms)
+        assert len(mito_contig) == 1
+        mito_contig = "".join(mito_contig)
+        return r.header.contigs[mito_contig].name, r.header.contigs[mito_contig].length
 
-    This differs from write_vcf, as mity merge doesn't split each VCF line on
-    tabs, whereas mity normalise does
+    @classmethod
+    def get_annot_file(cls, f):
+        """
+        Get the path to an annotation file.
 
-    :param new_vcf: new_vcf is a list of strings, created by merge
-    :param out_file: the resulting filename. this should end in vcf.gz
-    :return: None. This function writes a vcf.gz and vcf.gz.tbi file.
-    """
-    f = tmp_mity_file_name()
-    logging.debug("Writing uncompressed vcf to " + f)
-    with open(f, mode="wt", encoding="utf-8") as myfile:
-        for vcf_line in new_vcf:
-            myfile.write(vcf_line + "\n")
-    gsort_vcf(f, out_file, genome_file=genome_file)
+        Parameters:
+            f (str): The name of the annotation file.
 
-
-def check_dependency(dep, exit=True):
-    """
-    Check if a dependency exists.
-
-    Special cases:
-    * gsort: this utility from brentp has the same name as GNU sort on some linux
-      systems. This function will check that brentp's gsort is found.
-
-    >>> check_dependency("ls")
-    >>> check_dependency("freebayes")
-    >>> check_dependency("gsort")
-    :param dep: name of the dependency
-    :param exit: If True, then if the dependency isn't found, the session will exit.
-    :return: True/False if dependency was found.
-    """
-    found = False
-    try:
-        res = subprocess.run(
-            ["which", dep], capture_output=True, check=True, encoding="UTF8"
-        )
-        found = True
-        logging.debug("Found dependency: " + str(res.stdout).strip())
-        if dep == "gsort":
-            # There is a potential name clash with gnu sort on linux
-            res = subprocess.check_output("gsort --help | grep -c GENOME", shell=True)
-            if res != b"2\n":
-                logging.error(
-                    "Adjust your PATH to ensure that brentp's gsort is found before GNU sort"
-                    + dep
-                )
-    except subprocess.CalledProcessError:
-        logging.error("Missing dependency: " + dep)
-        if exit:
-            sys.exit(1)
-    return found
-
-
-def check_dependencies():
-    """
-    Check that all of the dependencies that are listed in the INI format exist.
-    :param f: an INI formatted file. see verchew [https://verchew.readthedocs.io/en/latest/]
-    :return:
-    """
-    for section in config.sections():
-        if section != "PATHS":
-            dependency = config[section]["cli"]
-            check_dependency(dependency)
-
-
-def select_reference_fasta(reference, custom_reference_fa=None):
-    """
-    Allow the user to select one of the pre-loaded reference genome fasta files, via --reference,
-    or supply their own via --custom_reference. This function will return the path to
-    the reference genome fasta file.
-
-    :param reference: one of the inbuilt reference genomes: hs37d5, hg19, hg38, mm10.
-    :param custom_reference_fa: the path to a custom reference genome, or None. If this
-    file exists, then it will override the option provided by 'reference'.
-    :return the path to the reference genome as a str.
-
-    >>> select_reference_fasta('hg19', None)
-    'reference/hg19.chrM.fa'
-    >>> select_reference_fasta('hg19', 'mitylib/reference/hs37d5.MT.fa')
-    'reference/hs37d5.MT.fa'
-    >>> select_reference_fasta('hg19', 'nonexistent.fa')
-    'reference/hg19.chrM.fa'
-
-    """
-    if custom_reference_fa is not None and os.path.exists(custom_reference_fa):
-        res = custom_reference_fa
-    else:
-        ref_dir = os.path.join(get_mity_dir(), REF_DIR)
-        res = glob("{}/{}.*.fa".format(ref_dir, reference))
-        logging.debug(",".join(res))
-        assert len(res) == 1
-        res = res[0]
-    return res
-
-
-def select_reference_genome(reference, custom_reference_genome=None):
-    """
-    This function returns the path to a '.genome' file [1], which is needed for `gsort` to order the chromosomes
-    properly.
-
-    [1]: https://bedtools.readthedocs.io/en/latest/content/general-usage.html#genome-file-format
-
-    :param reference: one of the inbuilt reference genomes: hs37d5, hg19, hg38, mm10
-    :param custom_reference_genome: the path to a custom reference .genome file, or None. If this
-    file exists, then it will override the option provided by 'reference'.
-    :return the path to the reference .genome file as a str.
-
-    >>> select_reference_genome('hg19', None)
-    'reference/hg19.genome'
-    >>> select_reference_genome('hg19', 'mitylib/reference/hs37d5.MT.fa')
-    'reference/hs37d5.genome'
-    >>> select_reference_genome('hg19', 'nonexistent.fa')
-    'reference/hg19.genome'
-
-    """
-    if custom_reference_genome is not None and os.path.exists(custom_reference_genome):
-        res = custom_reference_genome
-    else:
-        ref_dir = os.path.join(get_mity_dir(), REF_DIR)
-        logging.debug("Looking for .genome file in " + ref_dir)
-        res = glob("{}/{}.genome".format(ref_dir, reference))
-        logging.debug(",".join(res))
-        assert len(res) == 1
-        res = res[0]
-    return res
-
-
-def vcf_get_mt_contig(vcf):
-    """
-    get the mitochondrial contig name and length from a VCF file
-    :param vcf: path to a vcf file
-    :return: a tuple of contig name as str and length as int
-
-    >>> vcf_get_mt_contig('./151016_FR07959656.dedup.realigned.recalibrated.chrMT.dedup.realigned.recalibrated.chrMT.mity.vcf.gz')
-    ('MT', 16569)
-    """
-
-    r = pysam.VariantFile(vcf, "r", require_index=True)
-    chroms = r.header.contigs
-
-    mito_contig = set(["MT", "chrM"]).intersection(chroms)
-    assert len(mito_contig) == 1
-    mito_contig = "".join(mito_contig)
-
-    return r.header.contigs[mito_contig].name, r.header.contigs[mito_contig].length
-
-
-def bam_get_mt_contig(bam, as_string=False):
-    """
-    get the mitochondrial contig name and length from a BAM file
-    :param bam: path to a bam or cram file
-    :return: a tuple of contig name as str and length as int
-
-    >>> bam_get_mt_contig('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam', False)
-    ('chrM', 16569)
-    >>> bam_get_mt_contig('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam', True)
-    'chrM:1-16569'
-    """
-    r = pysam.AlignmentFile(bam, "rb")
-    chroms = [str(record.get("SN")) for record in r.header["SQ"]]
-    mito_contig = {"MT", "chrM"}.intersection(chroms)
-    assert len(mito_contig) == 1
-    mito_contig = "".join(mito_contig)
-    res = None
-    for record in r.header["SQ"]:
-        if mito_contig == record["SN"]:
-            res = record["SN"], record["LN"]
-    if res is not None and as_string:
-        res = res[0] + ":1-" + str(res[1])
-    return res
-
-
-def bam_has_RG(bam):
-    """
-    Does the BAM or CRAM File have an @RG header? This is critical for mity to correctly call variants.
-
-    :param bam: str: path to bam or cram file
-    :return: True/False
-    >>> bam_has_RG('NA12878.alt_bwamem_GRCh38DH.20150718.CEU.low_coverage.chrM.bam')
-    """
-    r = pysam.AlignmentFile(bam, "rb")
-    return len(r.header["RG"]) > 0
-
-
-def get_annot_file(f):
-    # mitylibdir = os.path.dirname(inspect.getfile(mitylib))
-    # mitylibdir = os.path.dirname(mitylib.__file__)
-    mitylibdir = get_mity_dir()
-    p = os.path.join(mitylibdir, ANNOT_DIR, f)
-    assert os.path.exists(p)
-    return p
+        Returns:
+            str: The path to the annotation file.
+        """
+        mitylibdir = cls.get_mity_dir()
+        p = os.path.join(mitylibdir, cls.ANNOT_DIR, f)
+        assert os.path.exists(p)
+        return p

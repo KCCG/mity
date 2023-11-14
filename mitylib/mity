@@ -9,15 +9,17 @@ License: MIT
 """
 
 import logging
-from mitylib import commands
-from mitylib import util
 import sys
+from mitylib import commands
 
 assert sys.version_info >= (3, 7, 4)
 
+
 def main():
+    """
+    Entry function for mity.
+    """
     logging.basicConfig(level=logging.INFO, format="%(message)s")
-    util.check_dependencies()
 
     args = commands.parse_args()
 
@@ -27,5 +29,5 @@ def main():
         args.func(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
