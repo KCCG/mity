@@ -36,8 +36,9 @@ class Call:
         min_ac=MIN_AC,
         p=P_VAL,
         normalise=True,
-        out_folder_path=".",
+        output_dir=".",
         region=None,
+        keep=False,
     ):
         self.debug = debug
         self.files = files[0]
@@ -50,12 +51,13 @@ class Call:
         self.min_ac = min_ac
         self.p = p
         self.normalise = normalise
-        self.out_folder_path = out_folder_path
+        self.output_dir = output_dir
         self.region = region
+        self.keep = keep
 
         self.file_string = ""
-        self.normalise_output_file = ""
-        self.call_output_file = ""
+        self.normalised_vcf_path = ""
+        self.call_vcf_path = ""
 
         self.mity_cmd = ""
         self.sed_cmd = ""
@@ -83,7 +85,7 @@ class Call:
         if self.normalise:
             self.run_normalise()
         else:
-            MityUtil.tabix(self.call_output_file)
+            MityUtil.tabix(self.call_vcf_path)
 
     def run_normalise(self):
         """
@@ -94,15 +96,18 @@ class Call:
         try:
             Normalise(
                 debug=self.debug,
-                vcf=self.call_output_file,
+                vcf=self.call_vcf_path,
                 reference_fasta=self.reference,
-                output_file=self.normalise_output_file,
+                prefix=self.prefix,
+                output_dir=self.output_dir,
                 allsamples=False,
                 p=self.p,
                 genome=self.genome,
+                keep=self.keep,
             )
         finally:
-            os.remove(self.call_output_file)
+            if not self.keep:
+                os.remove(self.call_vcf_path)
 
     def run_freebayes(self):
         """
@@ -118,7 +123,7 @@ class Call:
             f"--region {self.region} "
             f"| sed 's/##source/##freebayesSource/' "
             f"| sed 's/##commandline/##freebayesCommandline/' "
-            f"| {self.sed_cmd} | bgzip > {self.call_output_file}"
+            f"| {self.sed_cmd} | bgzip > {self.call_vcf_path}"
         )
 
         logger.info("Running FreeBayes in sensitive mode")
@@ -137,7 +142,7 @@ class Call:
             logger.error("FreeBayes failed: %s", res.stderr)
             exit(1)
 
-        if os.path.isfile(self.call_output_file):
+        if os.path.isfile(self.call_vcf_path):
             logger.debug("Finished running FreeBayes")
 
     def set_mity_cmd(self):
@@ -149,7 +154,7 @@ class Call:
             f'##mityCommandline="mity call --reference {self.reference} --prefix {self.prefix} '
             f"--min-mapping-quality {self.min_mq} --min-base-quality {self.min_bq} "
             f"--min-alternate-fraction {self.min_af} --min-alternate-count {self.min_ac} "
-            f"--out-folder-path {self.out_folder_path} --region {self.region}"
+            f"--out-folder-path {self.output_dir} --region {self.region}"
         )
 
         if self.normalise:
@@ -183,13 +188,16 @@ class Call:
             call_output_file
             normalise_output_file
         """
-        self.prefix = self.create_prefix(self.files[0], self.prefix)
+        if self.prefix is None:
+            self.prefix = self.make_prefix(self.files[0], self.prefix)
+
         self.file_string = " ".join(["-b " + _file for _file in reversed(self.files)])
-        self.normalise_output_file = os.path.join(
-            self.out_folder_path, self.prefix + ".mity.normalise.vcf.gz"
+
+        self.normalised_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".mity.normalise.vcf.gz"
         )
-        self.call_output_file = os.path.join(
-            self.out_folder_path, self.prefix + ".mity.call.vcf.gz"
+        self.call_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".mity.call.vcf.gz"
         )
 
     def run_checks(self):
@@ -203,7 +211,7 @@ class Call:
             )
 
         self.check_missing_file(self.files, die=True)
-        self.prefix = self.create_prefix(self.files[0], self.prefix)
+        self.prefix = self.make_prefix(self.files[0], self.prefix)
 
         if not all(map(self.bam_has_rg, self.files)):
             logger.error("At least one BAM/CRAM file lacks an @RG header")
@@ -226,7 +234,7 @@ class Call:
         r = pysam.AlignmentFile(bam, "rb")
         return len(r.header["RG"]) > 0
 
-    def bam_get_mt_contig(self, bam, as_string=False):
+    def bam_get_mt_contig(self, bam: str, as_string: bool = False):
         """
         Retrieve mitochondrial contig information from a BAM or CRAM file.
 
@@ -255,9 +263,9 @@ class Call:
             res = res[0] + ":1-" + str(res[1])
         return res
 
-    def create_prefix(self, file_name, prefix=None):
+    def make_prefix(self, file_name: str, prefix: str = None):
         """
-        Generate a prefix for Mity functions. If a custom prefix is not provided,
+        Generate a prefix for Mity functions if a custom prefix is not provided,
         the function uses the filename without the file extension (.vcf, .bam, .cram, .bed).
 
         Parameters:
@@ -279,7 +287,7 @@ class Call:
         else:
             raise ValueError("Unsupported file type")
 
-    def check_missing_file(self, file_list, die=True):
+    def check_missing_file(self, file_list: str, die: bool = True):
         """
         Check if input files exist.
         """

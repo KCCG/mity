@@ -10,7 +10,7 @@ import sys
 import gzip
 import pysam
 import pysam.bcftools
-from util import MityUtil
+from mitylib.util import MityUtil
 
 
 logger = logging.getLogger(__name__)
@@ -22,21 +22,24 @@ class Merge:
     """
 
     def __init__(
-        self, nuclear_vcf_path, mity_vcf_path, output_dir="./", prefix=None, keep=False
+        self,
+        debug,
+        nuclear_vcf_path,
+        mity_vcf_path,
+        genome,
+        output_dir=".",
+        prefix=None,
+        keep=False,
     ):
+        self.debug = debug
         self.nuclear_vcf_path = nuclear_vcf_path
         self.mity_vcf_path = mity_vcf_path
-
-        self.nuclear_vcf_obj = None
-        self.mity_vcf_obj = None
+        self.genome = genome
 
         self.bcftools_isec_path = ""
         self.bcftools_concat_path = ""
-
-        self.bcftools_concat_obj = None
-
-        self.merged_vcf_path = ""
-        self.merged_vcf_obj = None
+        self.merged_sorted_vcf_path = ""
+        self.merged_unsorted_vcf_path = ""
 
         self.output_dir = output_dir
         self.prefix = prefix
@@ -48,18 +51,26 @@ class Merge:
         """
         Run mity merge.
         """
+
+        if self.debug:
+            logger.setLevel(logging.DEBUG)
+            logger.debug("Entered debug mode.")
+        else:
+            logger.setLevel(logging.INFO)
+
         self.run_checks()
         self.set_strings()
-        self.set_initial_vcf_objects()
         self.run_bcftools_isec()
         self.run_bcftools_concat()
         self.write_merged()
-        self.remove_temporary_files()
+        MityUtil.gsort(
+            self.merged_unsorted_vcf_path, self.merged_sorted_vcf_path, self.genome
+        )
+        self.remove_intermediate_files()
 
     def run_checks(self):
         """
         Check whether the nuclear and mity vcfs are compatible based on:
-            - hg37/hg38 matching
             - contig matching
         """
 
@@ -70,43 +81,28 @@ class Merge:
             logger.error("The VCF files use mitochondrial contigs.")
             sys.exit()
 
-        # mity_version = MityUtil.get_vcf_version(self.mity_vcf_path)
-        # nuclear_version = MityUtil.get_vcf_version(self.nuclear_vcf_path)
-
-        # if mity_version != nuclear_version:
-        #     logger.error("The VCF file versions do not match.")
-        #     sys.exit()
-
     def set_strings(self):
         """
         Sets:
             - bcftools_isec_path
             - bcftools_concat_path
-            - merged_vcf_path
+            - merged_unsorted_vcf_path
+            - merged_sorted_vcf_path
         """
         if self.prefix is None:
-            if "mity.normalise" in self.mity_vcf_path:
-                self.prefix = self.mity_vcf_path.replace(".normalise.vcf.gz", "")
-            else:
-                self.prefix = self.mity_vcf_path.replace(".vcf.gz", ".mity")
-
-        self.prefix = self.prefix.split("/")[-1]
+            self.prefix = MityUtil.make_prefix(self.mity_vcf_path)
 
         self.bcftools_isec_path = os.path.join(self.output_dir, "0000.vcf")
         self.bcftools_concat_path = os.path.join(
-            self.output_dir, self.prefix + ".bcftools.concat.vcf.gz"
+            self.output_dir, self.prefix + ".bcftools.concat.vcf"
         )
 
-        self.merged_vcf_path = os.path.join(
-            self.output_dir, self.prefix + ".merge.vcf.gz"
+        self.merged_unsorted_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".mity.merge.unsorted.vcf"
         )
-
-    def set_initial_vcf_objects(self):
-        """
-        Set vcf objects using pysam.VariantFile
-        """
-        self.nuclear_vcf_obj = pysam.VariantFile(self.nuclear_vcf_path)
-        self.mity_vcf_obj = pysam.VariantFile(self.mity_vcf_path)
+        self.merged_sorted_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".mity.merge.vcf.gz"
+        )
 
     def run_bcftools_isec(self):
         """
@@ -138,7 +134,7 @@ class Merge:
                 file=file,
             )
 
-    def merge_description(self, nuclear_description, mity_description):
+    def merge_description(self, nuclear_description: str, mity_description: str):
         """
         Merge nuclear and mity header description.
         """
@@ -253,7 +249,7 @@ class Merge:
 
         header_dict = self.get_header_line_nums()
 
-        with open(self.merged_vcf_path, "w", encoding="utf-8") as merged_file:
+        with open(self.merged_unsorted_vcf_path, "w", encoding="utf-8") as merged_file:
             with open(self.bcftools_concat_path, "r") as concat_file:
                 for line in concat_file:
                     if line.startswith("##FORMAT") or line.startswith("##INFO"):
@@ -268,7 +264,7 @@ class Merge:
                     else:
                         merged_file.write(line)
 
-    def remove_temporary_files(self):
+    def remove_intermediate_files(self):
         """
         Removes extra files from bcftools isec:
             README.txt
@@ -284,12 +280,3 @@ class Merge:
         if not self.keep:
             os.remove(self.bcftools_isec_path)
             os.remove(self.bcftools_concat_path)
-
-
-if __name__ == "__main__":
-    Merge(
-        nuclear_vcf_path="tests/merge-testing/overlap/smallFile.vcf.gz",
-        mity_vcf_path="tests/merge-testing/overlap/ashkenazim.mity.vcf.gz",
-        output_dir="tests/merge-testing/overlap/output",
-        keep=True,
-    )

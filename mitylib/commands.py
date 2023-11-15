@@ -38,19 +38,20 @@ def _cmd_call(args):
     args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
     call.Call(
-        args.debug,
-        args.bam,
-        args.reference,
-        genome,
-        args.prefix,
-        args.min_mq,
-        args.min_bq,
-        args.min_af,
-        args.min_ac,
-        args.p,
-        args.normalise,
-        args.out_folder_path,
-        args.region,
+        debug=args.debug,
+        files=args.bam,
+        reference=args.reference,
+        genome=genome,
+        prefix=args.prefix,
+        min_mq=args.min_mq,
+        min_bq=args.min_bq,
+        min_af=args.min_af,
+        min_ac=args.min_ac,
+        p=args.p,
+        normalise=args.normalise,
+        output_dir=args.output_dir,
+        region=args.region,
+        keep=args.keep,
     )
 
 
@@ -126,12 +127,12 @@ P_call.add_argument(
     "--normalise", action="store_true", help="Normalise the resulting VCF?"
 )
 P_call.add_argument(
-    "--out-folder-path",
+    "--output-dir",
     action="store",
     type=str,
     default=".",
     help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
-    dest="out_folder_path",
+    dest="output_dir",
 )
 P_call.add_argument(
     "--region",
@@ -154,6 +155,13 @@ P_call.add_argument(
     "Default: Entire MT genome. ",
     dest="region",
 )
+P_call.add_argument(
+    "-k",
+    "--keep",
+    action="store_true",
+    required=False,
+    help="Keep all intermediate files",
+)
 P_call.set_defaults(func=_cmd_call)
 
 # normalise --------------------------------------------------------------------
@@ -168,13 +176,14 @@ def _cmd_normalise(args):
     args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
     normalise.Normalise(
-        args.debug,
-        args.vcf,
-        args.reference,
-        genome,
-        args.outfile,
-        args.allsamples,
-        args.keep,
+        debug=args.debug,
+        vcf=args.vcf,
+        reference_fasta=args.reference,
+        genome=genome,
+        output_dir=args.output_dir,
+        prefix=args.prefix,
+        allsamples=args.allsamples,
+        keep=args.keep,
         p=args.p,
     )
 
@@ -185,11 +194,15 @@ P_normalise.add_argument(
 )
 P_normalise.add_argument("vcf", action="store", help="vcf.gz file from running mity")
 P_normalise.add_argument(
-    "-o",
-    "--outfile",
+    "--output-dir",
     action="store",
-    required=True,
-    help="output VCF file in bgzip compressed format",
+    type=str,
+    default=".",
+    help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
+    dest="output_dir",
+)
+P_normalise.add_argument(
+    "--prefix", action="store", help="Output files will be named with PREFIX"
 )
 P_normalise.add_argument(
     "--allsamples",
@@ -231,7 +244,12 @@ def _cmd_report(args):
     logging.info("mity %s", __version__)
     logging.info("Generating mity report")
     report.Report(
-        args.debug, args.vcf, args.prefix, args.min_vaf, args.out_folder_path, args.keep
+        debug=args.debug,
+        vcfs=args.vcf,
+        prefix=args.prefix,
+        min_vaf=args.min_vaf,
+        output_dir=args.output_dir,
+        keep=args.keep,
     )
 
 
@@ -251,12 +269,12 @@ P_report.add_argument(
     "0.",
 )
 P_report.add_argument(
-    "--out-folder-path",
+    "--output-dir",
     action="store",
     type=str,
     default=".",
     help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
-    dest="out_folder_path",
+    dest="output_dir",
 )
 P_report.add_argument(
     "vcf", action="append", nargs="+", help="mity vcf files to create a report from"
@@ -281,13 +299,29 @@ def _cmd_merge(args):
 
     genome = util.MityUtil.select_reference_genome(args.reference, None)
 
-    merge.do_merge(args.debug, args.mity_vcf, args.nuclear_vcf, args.prefix, genome)
+    merge.Merge(
+        debug=args.debug,
+        nuclear_vcf_path=args.nuclear_vcf,
+        mity_vcf_path=args.mity_vcf,
+        genome=genome,
+        output_dir=args.output_dir,
+        prefix=args.prefix,
+        keep=args.keep,
+    )
 
 
 P_merge = AP_subparsers.add_parser("merge", help=_cmd_merge.__doc__)
 P_merge.add_argument("--mity_vcf", action="store", required=True, help="mity vcf file")
 P_merge.add_argument(
     "--nuclear_vcf", action="store", required=True, help="nuclear vcf file"
+)
+P_merge.add_argument(
+    "--output-dir",
+    action="store",
+    type=str,
+    default=".",
+    help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
+    dest="output_dir",
 )
 P_merge.add_argument(
     "--prefix",
@@ -304,6 +338,13 @@ P_merge.add_argument(
 )
 P_merge.add_argument(
     "-d", "--debug", action="store_true", help="Enter debug mode", required=False
+)
+P_merge.add_argument(
+    "-k",
+    "--keep",
+    action="store_true",
+    required=False,
+    help="Keep all intermediate files",
 )
 P_merge.set_defaults(func=_cmd_merge)
 
