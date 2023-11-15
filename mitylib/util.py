@@ -106,7 +106,6 @@ class MityUtil:
             tuple: A tuple of contig name as a str and length as an int.
         """
         r = pysam.VariantFile(vcf, "r")
-        # r = pysam.VariantFile(vcf, "r", require_index=True)
         chroms = r.header.contigs
         mito_contig = set(["MT", "chrM"]).intersection(chroms)
         assert len(mito_contig) == 1
