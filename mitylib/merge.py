@@ -219,6 +219,9 @@ class Merge:
         """
         Get header description.
         """
+        if "Description=" not in line:
+            return ""
+
         return line.split("Description=")[1].strip('>" ')
 
     def make_new_line(self, nuclear_line, mity_file_line_num):
