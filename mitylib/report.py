@@ -435,13 +435,13 @@ class Report:
     """
 
     def __init__(
-        self, debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path=".", keep=False
+        self, debug, vcfs, prefix=None, min_vaf=0.0, output_dir=".", keep=False
     ):
         self.debug = debug
         self.vcfs = vcfs
         self.prefix = prefix
         self.min_vaf = min_vaf
-        self.out_folder_path = out_folder_path
+        self.output_dir = output_dir
         self.keep = keep
 
         self.run()
@@ -456,11 +456,11 @@ class Report:
         else:
             logger.setLevel(logging.INFO)
 
-        if not os.path.exists(self.out_folder_path):
-            os.makedirs(self.out_folder_path)
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
         xlsx_name = os.path.join(
-            self.out_folder_path, self.prefix + ".annotated_variants.xlsx"
+            self.output_dir, self.prefix + ".annotated_variants.xlsx"
         )
         with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
             if isinstance(self.vcfs, str):
@@ -471,15 +471,3 @@ class Report:
 
                 sheet_name = vcf.replace("vcf.gz", "").split("/")[-1]
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
-
-
-# TODO: (commands rewrite) remove and move Report call to commands
-def do_report(debug, vcfs, prefix=None, min_vaf=0.0, out_folder_path="."):
-    """
-    Create a mity report
-    :param vcf: the path to a vcf file
-    :param prefix: the optional prefix. This must be set if there is >1 vcf files
-    :param min_vaf: only include variants with vaf > min_vaf in the report
-    :return:
-    """
-    Report(debug, vcfs, prefix, min_vaf, out_folder_path)

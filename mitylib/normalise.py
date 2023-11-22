@@ -1,6 +1,5 @@
 """Normalise mity VCF."""
 
-import subprocess
 import logging
 import os.path
 from math import isinf
@@ -34,7 +33,8 @@ class Normalise:
         vcf,
         reference_fasta,
         genome,
-        output_file=None,
+        output_dir=".",
+        prefix=None,
         allsamples=False,
         keep=False,
         p=P_VAL,
@@ -43,16 +43,18 @@ class Normalise:
         self.vcf = vcf
         self.reference_fasta = reference_fasta
         self.genome = genome
-        self.output_file = output_file
+        self.output_dir = output_dir
+        self.prefix = prefix
         self.allsamples = allsamples
         self.keep = keep
         self.p = p
 
-        self.normalised_vcf_obj = None
+        self.bcftools_norm_obj = None
         self.filtered_vcf_obj = None
 
-        self.normalised_vcf_name = ""
-        self.filtered_vcf_name = ""
+        self.bcftools_norm_path = ""
+        self.filtered_vcf_path = ""
+        self.normalised_vcf_path = ""
 
     def run(self):
         """
@@ -66,33 +68,29 @@ class Normalise:
 
         self.set_strings()
         self.run_bcftools_norm()
+        self.run_filtering()
 
-        # vcf files
-        self.normalised_vcf_obj = pysam.VariantFile(self.normalised_vcf_name)
+        MityUtil.gsort(self.filtered_vcf_path, self.normalised_vcf_path, self.genome)
+
+        self.remove_intermediate_files()
+
+    def run_filtering(self):
+        """
+        Makes pysam VariantFile objects and runs filtering for each variant.
+        """
+        self.bcftools_norm_obj = pysam.VariantFile(self.bcftools_norm_path)
         self.filtered_vcf_obj = pysam.VariantFile(
-            self.filtered_vcf_name, "w", header=self.add_headers()
+            self.filtered_vcf_path, "w", header=self.add_headers()
         )
 
-        for variant in self.normalised_vcf_obj.fetch():
+        for variant in self.bcftools_norm_obj.fetch():
             variant = self.add_info_values(variant)
             variant = self.add_filter(variant)
 
             self.filtered_vcf_obj.write(variant)
 
-        self.normalised_vcf_obj.close()
+        self.bcftools_norm_obj.close()
         self.filtered_vcf_obj.close()
-
-        # gsort
-        if output_file is None:
-            output_file = self.vcf.replace(".vcf.gz", ".mity.normalise.vcf.gz")
-
-        self.do_gsort()
-        MityUtil.tabix(output_file)
-
-        if not self.keep:
-            # remove temporary files
-            os.remove(self.filtered_vcf_name)
-            os.remove(self.normalised_vcf_name)
 
     def run_bcftools_norm(self):
         """
@@ -100,7 +98,7 @@ class Normalise:
         """
         # The "-o" option doesn't get passed to pysam's bcftools wrapper (as of 31-08-2023)
         # so we write to a separate file manually.
-        with open(self.normalised_vcf_name, "w") as f:
+        with open(self.bcftools_norm_path, "w") as f:
             print(
                 pysam.bcftools.norm("-f", self.reference_fasta, "-m-both", self.vcf),
                 end="",
@@ -110,17 +108,23 @@ class Normalise:
     def set_strings(self):
         """
         Sets:
+            prefix
             normalised_vcf
             filtered_vcf
         """
-        self.normalised_vcf_name = self.vcf.replace(".vcf.gz", ".bcftoolsnorm.vcf.gz")
-        self.filtered_vcf_name = self.vcf.replace(".vcf.gz", ".filtered.vcf")
+        if self.prefix is None:
+            self.prefix = MityUtil.make_prefix(self.vcf)
+
+        self.bcftools_norm_path = os.path.join(
+            self.output_dir, self.prefix + ".bcftools.norm.vcf.gz"
+        )
+        self.filtered_vcf_path = self.vcf.replace(".vcf.gz", ".filtered.vcf")
 
     def add_headers(self):
         """
         Return new headers for mity normalise vcf output.
         """
-        new_header = self.normalised_vcf_name.header
+        new_header = self.bcftools_norm_path.header
 
         # fitler headers
         new_header.filters.add(
@@ -286,7 +290,7 @@ class Normalise:
             sample["VAF"] = VAF
 
             # mity quality
-            q = mity_qual(sample["AO"][0], sample["DP"], self.p)
+            q = self.mity_qual(sample["AO"][0], sample["DP"], self.p)
             sample["q"] = q
 
             # AQA
@@ -387,9 +391,10 @@ class Normalise:
 
         return variant
 
-    def do_gsort(self):
+    def remove_intermediate_files(self):
         """
-        Run gsort.
+        Remove intermediate files.
         """
-        gsort_cmd = f"gsort {self.filtered_vcf_name} {self.genome} | bgzip -cf > {self.output_file}"
-        subprocess.run(gsort_cmd, shell=True, check=False)
+        if not self.keep:
+            os.remove(self.filtered_vcf_path)
+            os.remove(self.bcftools_norm_path)

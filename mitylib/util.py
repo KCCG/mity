@@ -31,7 +31,7 @@ class MityUtil:
         return path
 
     @classmethod
-    def tabix(cls, f):
+    def tabix(cls, f: str):
         """
         Generate a tabix index for a bgzipped file.
 
@@ -46,7 +46,7 @@ class MityUtil:
         subprocess.run(tabix_call, shell=True, check=False)
 
     @classmethod
-    def select_reference_fasta(cls, reference, custom_reference_fa=None):
+    def select_reference_fasta(cls, reference: str, custom_reference_fa: str = None):
         """
         Select the reference genome fasta file.
 
@@ -68,7 +68,9 @@ class MityUtil:
         return res
 
     @classmethod
-    def select_reference_genome(cls, reference, custom_reference_genome=None):
+    def select_reference_genome(
+        cls, reference: str, custom_reference_genome: str = None
+    ):
         """
         Select the reference genome .genome file.
 
@@ -93,7 +95,7 @@ class MityUtil:
         return res
 
     @classmethod
-    def vcf_get_mt_contig(cls, vcf):
+    def vcf_get_mt_contig(cls, vcf: str):
         """
         Get the mitochondrial contig name and length from a VCF file.
 
@@ -103,7 +105,7 @@ class MityUtil:
         Returns:
             tuple: A tuple of contig name as a str and length as an int.
         """
-        r = pysam.VariantFile(vcf, "r", require_index=True)
+        r = pysam.VariantFile(vcf, "r")
         chroms = r.header.contigs
         mito_contig = set(["MT", "chrM"]).intersection(chroms)
         assert len(mito_contig) == 1
@@ -111,17 +113,51 @@ class MityUtil:
         return r.header.contigs[mito_contig].name, r.header.contigs[mito_contig].length
 
     @classmethod
-    def get_annot_file(cls, f):
+    def get_annot_file(cls, annotation_file_path: str):
         """
         Get the path to an annotation file.
 
         Parameters:
-            f (str): The name of the annotation file.
+            annotation_file_path (str): The name of the annotation file.
 
         Returns:
             str: The path to the annotation file.
         """
         mitylibdir = cls.get_mity_dir()
-        p = os.path.join(mitylibdir, cls.ANNOT_DIR, f)
-        assert os.path.exists(p)
-        return p
+        path = os.path.join(mitylibdir, cls.ANNOT_DIR, annotation_file_path)
+        assert os.path.exists(path)
+        return path
+
+    @classmethod
+    def make_prefix(cls, vcf_path: str):
+        """
+        Make a prefix based on the input vcf path. This handles vcf files from
+        previous steps of mity. e.g. from call to normalise, etc.
+
+        Format of MITY output filenames:
+            prefix.mity.call.vcf.gz
+            prefix.mity.normalise.vcf.gz
+            prefix.mity.merge.vcf.gz
+            prefix.report.xlsx
+        """
+
+        prefix = (
+            os.path.basename(vcf_path)
+            .replace(".mity", "")
+            .replace(".call", "")
+            .replace(".normalise", "")
+            .replace(".merge", "")
+            .replace(".report", "")
+            .replace(".vcf.gz", "")
+        )
+
+        return prefix
+
+    @classmethod
+    def gsort(cls, input_path: str, output_path: str, genome: str):
+        """
+        Run gsort.
+        """
+        gsort_cmd = f"gsort {input_path} {genome} | bgzip -cf > {output_path}"
+        subprocess.run(gsort_cmd, shell=True, check=False)
+        MityUtil.tabix(input_path)
