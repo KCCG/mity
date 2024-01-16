@@ -10,6 +10,8 @@
 # Usage
     mity -h
 
+More detailed usage can be found [docs/commands.md](docs/commands.md)
+
 # Dependencies
 * python3 (tested on 3.7.4)
 * freebayes >= 1.2.0
@@ -20,13 +22,13 @@
 * pandas
 
 # Installation
-Installation instructions via Docker, pip, or manually are available in [INSTALL.md](https://github.com/KCCG/mity/blob/master/INSTALL.md)
+Installation instructions via Docker, pip, or manually are available in [INSTALL.md](docs/INSTALL.md)
 
 # Example Usage
 This is an example of calling variants in the Ashkenazim Trio.
 
 ## mity call
-First run `mity call` on three MT BAMs provided in [mity/test_in](https://github.com/KCCG/mity/blob/master/test_in). CRAM files are supported.
+First run `mity call` on three MT BAMs provided in [docs/test-files.md](docs/test-files.md). CRAM files are supported.
 
 We recommend always using `--normalise`, or `mity report` won't work:
 ```bash

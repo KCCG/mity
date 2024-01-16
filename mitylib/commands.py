@@ -39,7 +39,7 @@ def _cmd_call(args):
 
     call.Call(
         debug=args.debug,
-        files=args.bam,
+        files=args.files,
         reference=args.reference,
         genome=genome,
         prefix=args.prefix,
@@ -51,6 +51,7 @@ def _cmd_call(args):
         normalise=args.normalise,
         output_dir=args.output_dir,
         region=args.region,
+        bam_list=args.bam_file_list,
         keep=args.keep,
     )
 
@@ -60,14 +61,17 @@ P_call.add_argument(
     "-d", "--debug", action="store_true", help="Enter debug mode", required=False
 )
 P_call.add_argument(
-    "bam", action="append", nargs="+", help="BAM files to run the analysis on."
+    "files",
+    action="append",
+    nargs="+",
+    help="BAM / CRAM files to run the analysis on. If --bam-file-list is included, this argument is the file containing the list of bam/cram files.",
 )
 P_call.add_argument(
     "--reference",
     choices=["hs37d5", "hg19", "hg38", "mm10"],
     default="hs37d5",
     required=False,
-    help="reference genome version to use. default: hs37d5",
+    help="Reference genome version to use. Default: hs37d5",
 )
 P_call.add_argument(
     "--prefix", action="store", help="Output files will be named with PREFIX"
@@ -124,14 +128,14 @@ P_call.add_argument(
     dest="p",
 )
 P_call.add_argument(
-    "--normalise", action="store_true", help="Normalise the resulting VCF?"
+    "--normalise", action="store_true", help="Run mity normalise the resulting VCF"
 )
 P_call.add_argument(
     "--output-dir",
     action="store",
     type=str,
     default=".",
-    help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
+    help="Output files will be saved in OUTPUT_DIR. " "Default: '.' ",
     dest="output_dir",
 )
 P_call.add_argument(
@@ -146,14 +150,11 @@ P_call.add_argument(
 )
 P_call.add_argument(
     "--bam-file-list",
-    action="store",
-    type=str,
-    default=None,
-    help="A text file of BAM files to be processed. The path to each file should be"
-    "on one row per Region of MT genome to call variants in. "
-    "If unset will call variants in entire MT genome as specified in BAM header. "
-    "Default: Entire MT genome. ",
-    dest="region",
+    action="store_true",
+    default=False,
+    help="Treat the file as a text file of BAM files to be processed."
+    " The path to each file should be on one row per bam file.",
+    dest="bam_file_list",
 )
 P_call.add_argument(
     "-k",
@@ -198,7 +199,7 @@ P_normalise.add_argument(
     action="store",
     type=str,
     default=".",
-    help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
+    help="Output files will be saved in OUTPUT_DIR. " "Default: '.' ",
     dest="output_dir",
 )
 P_normalise.add_argument(
@@ -231,7 +232,7 @@ P_normalise.add_argument(
     choices=["hs37d5", "hg19", "hg38", "mm10"],
     default="hs37d5",
     required=False,
-    help="reference genome version to use. default: hs37d5",
+    help="Reference genome version to use. default: hs37d5",
 )
 P_normalise.set_defaults(func=_cmd_normalise)
 
@@ -273,7 +274,7 @@ P_report.add_argument(
     action="store",
     type=str,
     default=".",
-    help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
+    help="Output files will be saved in OUTPUT_DIR. " "Default: '.' ",
     dest="output_dir",
 )
 P_report.add_argument(
@@ -320,7 +321,7 @@ P_merge.add_argument(
     action="store",
     type=str,
     default=".",
-    help="Output files will be saved in OUT_FOLDER_PATH. " "Default: '.' ",
+    help="Output files will be saved in OUTPUT_DIR. " "Default: '.' ",
     dest="output_dir",
 )
 P_merge.add_argument(

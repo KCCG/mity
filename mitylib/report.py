@@ -438,7 +438,7 @@ class Report:
         self, debug, vcfs, prefix=None, min_vaf=0.0, output_dir=".", keep=False
     ):
         self.debug = debug
-        self.vcfs = vcfs
+        self.vcfs = vcfs[0]
         self.prefix = prefix
         self.min_vaf = min_vaf
         self.output_dir = output_dir
@@ -469,5 +469,5 @@ class Report:
                 single_report = SingleReport(vcf, self.min_vaf, self.keep)
                 df = single_report.get_df()
 
-                sheet_name = vcf.replace("vcf.gz", "").split("/")[-1]
+                sheet_name = vcf.replace(".vcf.gz", "").split("/")[-1]
                 df.to_excel(writer, sheet_name=sheet_name, index=False)

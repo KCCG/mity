@@ -1,10 +1,15 @@
 # mity report annotations
 
+If you are using the pip installation method, then you can use custom annotations.
+Default annotations can be found in the `mitylib` directory.
+
 ## Adding new annotations
 
 1. Place annotations file (and index file) in `mitylib/annot`.
 2. Add a new vcfanno entry for the file in `vcfanno-config.toml`
 3. Add new fields in `annotations` and `excel_headers` in `report-config.yaml`.
+
+Ensure that `vcfanno-config.toml` and `report-config.yaml` are in your current directory.
 
 ```yaml
 excel_headers:

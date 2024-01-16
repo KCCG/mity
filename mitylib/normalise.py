@@ -56,6 +56,8 @@ class Normalise:
         self.filtered_vcf_path = ""
         self.normalised_vcf_path = ""
 
+        self.run()
+
     def run(self):
         """
         Run mity normalise.
@@ -119,12 +121,15 @@ class Normalise:
             self.output_dir, self.prefix + ".bcftools.norm.vcf.gz"
         )
         self.filtered_vcf_path = self.vcf.replace(".vcf.gz", ".filtered.vcf")
+        self.normalised_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".normalise.vcf.gz"
+        )
 
     def add_headers(self):
         """
         Return new headers for mity normalise vcf output.
         """
-        new_header = self.bcftools_norm_path.header
+        new_header = self.bcftools_norm_obj.header
 
         # fitler headers
         new_header.filters.add(

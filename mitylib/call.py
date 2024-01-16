@@ -3,6 +3,7 @@ import subprocess
 import logging
 import os.path
 import sys
+import urllib.request
 
 import pysam
 
@@ -38,6 +39,7 @@ class Call:
         normalise=True,
         output_dir=".",
         region=None,
+        bam_list=False,
         keep=False,
     ):
         self.debug = debug
@@ -53,6 +55,7 @@ class Call:
         self.normalise = normalise
         self.output_dir = output_dir
         self.region = region
+        self.bam_list = bam_list
         self.keep = keep
 
         self.file_string = ""
@@ -75,6 +78,8 @@ class Call:
         else:
             logger.setLevel(logging.INFO)
 
+        if (self.bam_list):
+            self.get_files_from_list()
         self.run_checks()
         self.set_strings()
         self.set_region()
@@ -286,6 +291,16 @@ class Call:
             )
         else:
             raise ValueError("Unsupported file type")
+        
+    def get_files_from_list(self, die: bool = True):
+        """
+        Get the list of BAM / CRAM files from the provided file
+        """
+        if len(self.files) > 1:
+            raise ValueError("--bam-file-list Argument expects only 1 file to be provided.")
+        with open(self.files[0], 'r') as f:
+            self.files = f.read().splitlines()
+
 
     def check_missing_file(self, file_list: str, die: bool = True):
         """
@@ -293,7 +308,12 @@ class Call:
         """
         missing_files = []
         for item in file_list:
-            if not os.path.isfile(item):
+            if item.lower().startswith('http'):
+                try:
+                    urllib.request.urlopen(item).getcode()
+                except:
+                    missing_files.append(item)
+            elif not os.path.isfile(item):
                 missing_files.append(item)
         if die and len(missing_files) > 0:
             raise ValueError("Missing these files: " + ",".join(missing_files))
