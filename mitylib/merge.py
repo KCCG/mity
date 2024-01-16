@@ -281,5 +281,6 @@ class Merge:
         os.remove(os.path.join(self.output_dir, "sites.txt"))
 
         if not self.keep:
+            os.remove(self.merged_unsorted_vcf_path)
             os.remove(self.bcftools_isec_path)
             os.remove(self.bcftools_concat_path)

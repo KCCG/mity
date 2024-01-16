@@ -160,4 +160,4 @@ class MityUtil:
         """
         gsort_cmd = f"gsort {input_path} {genome} | bgzip -cf > {output_path}"
         subprocess.run(gsort_cmd, shell=True, check=False)
-        MityUtil.tabix(input_path)
+        MityUtil.tabix(output_path)
