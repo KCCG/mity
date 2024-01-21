@@ -34,7 +34,7 @@ We recommend always using `--normalise`, or `mity report` won't work:
 ```bash
 mity call \
 --prefix ashkenazim \
---out-folder-path test_out \
+--output-dir test_out \
 --region MT:1-500 \
 --normalise \
 test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
@@ -44,10 +44,10 @@ test_in/HG004.hs37d5.2x250.small.MT.RG.bam
 This will create `test_out/normalised/ashkenazim.mity.vcf.gz` (and tbi file).
 
 or, if using Docker:
-```
+```bash
 docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity call \
 --prefix ashkenazim \
---out-folder-path test_out \
+--output-dir test_out \
 --region MT:1-500 \
 --normalise \
 test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
@@ -62,7 +62,7 @@ We can create a `mity report` on the normalised VCF:
 mity report \
 --prefix ashkenazim \
 --min_vaf 0.01 \
---out-folder-path test_out \
+--output-dir test_out \
 test_out/ashkenazim.mity.vcf.gz
 ```
 This will create: `test_out/ashkenazim.annotated_variants.csv` and `test_out/ashkenazim.annotated_variants.xlsx`.

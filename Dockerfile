@@ -22,6 +22,7 @@ RUN \
       | wget -O gsort -qi - && \
     chmod +x gsort
 
+RUN pip install pandas xlsxwriter pyfastx scipy pysam pyyaml
 RUN pip install mitywgs==${TAG}
 
 WORKDIR /home
