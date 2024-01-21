@@ -1,270 +1,286 @@
 """
-Run mity-merge.
-This merges a nuclear VCF and a mity VCF, such that the MT variants in the
-nuclear VCF are replaces with the mity variants, and the headers are merged
+MITY Merge
+
+Combines a nuclear VCF with MITY by adding MITY MT variants.
 """
+
+import logging
+import os.path
 import sys
 import gzip
-import logging
-from .util import write_merged_vcf
-from .util import create_prefix
-from .util import vcf_get_mt_contig
+import pysam
+import pysam.bcftools
+from mitylib.util import MityUtil
 
-def check_vcf_merge_compatibility(mity_vcf, hc_vcf):
+
+logger = logging.getLogger(__name__)
+
+
+class Merge:
     """
-    Check that the MT sequence names and lengths match in both the mity and hc vcf's.
+    Combines a nuclear VCF with a MITY VCF
     """
-    m = vcf_get_mt_contig(mity_vcf)
-    h = vcf_get_mt_contig(hc_vcf)
-    return m == h
 
-def do_merge(mity_vcf, hc_vcf, prefix=None, genome='mitylib/reference/b37d5.genome'):
+    def __init__(
+        self,
+        debug,
+        nuclear_vcf_path,
+        mity_vcf_path,
+        genome,
+        output_dir=".",
+        prefix=None,
+        keep=False,
+    ):
+        self.debug = debug
+        self.nuclear_vcf_path = nuclear_vcf_path
+        self.mity_vcf_path = mity_vcf_path
+        self.genome = genome
 
-    if not check_vcf_merge_compatibility(mity_vcf, hc_vcf):
-        logging.error("The VCF files use mitochondrial contigs")
-        sys.exit()
+        self.bcftools_isec_path = ""
+        self.bcftools_concat_path = ""
+        self.merged_sorted_vcf_path = ""
+        self.merged_unsorted_vcf_path = ""
 
-    prefix = create_prefix(hc_vcf, prefix)
-    outfile = prefix + ".mity.vcf.gz"
+        self.output_dir = output_dir
+        self.prefix = prefix
+        self.keep = keep
 
-    logging.debug("importing hc_vcf: " + hc_vcf)
-    hc_file = gzip.open(hc_vcf, 'rt')
-    
-    # split the header and the variants into two separate lists
-    hc_header = []
-    hc_variants = []
-    for line in hc_file:
-        if line[0] == "#":
-            line = line.strip()
-            hc_header.append(line)
+        self.run()
+
+    def run(self):
+        """
+        Run mity merge.
+        """
+
+        if self.debug:
+            logger.setLevel(logging.DEBUG)
+            logger.debug("Entered debug mode.")
         else:
-            line = line.strip()
-            # line = line.split('\t')
-            hc_variants.append(line)
-    
-    hc_col_names = hc_header[-1]
-    del hc_header[-1]
+            logger.setLevel(logging.INFO)
 
-    logging.debug("importing mity_vcf: " + mity_vcf)
-    mity_file = gzip.open(mity_vcf, 'rt')
-    
-    # split the header and the variants into two separate lists
-    # TODO: to speed up, do we actually need to get hc variants?
-    mity_header = []
-    mity_variants = []
-    for line in mity_file:
-        if line[0] == "#":
-            line = line.strip()
-            mity_header.append(line)
-        else:
-            line = line.strip()
-            line = line.split('\t')
-            mity_variants.append(line)
-    
-    mity_col_names = mity_header[-1]
-    del mity_header[-1]
-    
-    # print(mity_header)
-    # print(hc_header)
-    
-    # remove file format (e.g. 4.1/4.2) for mity and hc add manually to the 
-    # merged header
-    del mity_header[0]
-    del hc_header[0]
-    
-    # remove phasing from mity header
-    mity_header = [x for x in mity_header if "phasing=" not in x]
-    
-    # remove file date from mity header
-    mity_header = [x for x in mity_header if "##fileDate" not in x]
-    
-    # get mity reference
-    mity_ref = [x for x in mity_header if "##reference=" in x]
-    
-    # should only be one line in the mity header that has reference in it
-    if len(mity_ref) > 1:
-        err_msg = "Mity header has more than lines that define a reference: \n"
-        for x in mity_ref:
-            err_msg = err_msg + x
-            err_msg = err_msg + '\n'
-        sys.exit(err_msg)
-    
-    mity_ref = mity_ref[0].split('##reference=')[1]
-    # print(mity_ref)
-    # remove mity reference from header because we will add it with hc 
-    # reference later
-    mity_header = [x for x in mity_header if "##reference" not in x]
-    
-    # get hc reference then remove from header
-    hc_ref = [x for x in hc_header if "##reference" in x]
-    # should only be one line in the hc header that has reference in it
-    if len(hc_ref) > 1:
-        err_msg = "HC header has more than lines that define a reference: \n"
-        for x in hc_ref:
-            err_msg = err_msg + x
-            err_msg = err_msg + '\n'
-        sys.exit(err_msg)
-    
-    hc_ref = hc_ref[0].split('##reference=')[1]
-    # remove hc reference from header because we will add it with mity 
-    # reference later
-    hc_header = [x for x in hc_header if "##reference" not in x]
-    
-    # make new reference line and add to merged header
-    # @TODO add ##mity_reference, ##nuclear_reference, and set ##reference=hc_ref[0].split('##reference=')
-    new_ref_line = "##reference=If CHR=MT: " + mity_ref + ". Otherwise: " + hc_ref
-    
-    # remove all the lines in the mity header that are also in the HC header
-    # this should remove contig lines if they are the same
-    mity_header = [x for x in mity_header if x not in hc_header]
-    
-    # now if there are two lines in mity_header and hc_header that 
-    # that have the same eg "##INFO=<ID=SRR,", then they have different 
-    # definitions for the same 
-    # ID. need to make hc and mity specific definitions.
-    sep = ","
-    merged_header = []
-    mity_ids = [x.split(sep)[0] for x in mity_header]
-    # print(mity_ids)
-    # loop through the hc_header
-    for hc_line in hc_header:
-        hc_id = hc_line.split(sep, 1)[0]
-        if hc_id in mity_ids:
-            # print(hc_line)
-            mity_line_idx = mity_ids.index(hc_id)
-            mity_line = mity_header[mity_line_idx]
-            # print(mity_line)
-            
-            # check the number is the same - if not put "."
-            mity_number = mity_line.split("Number=")[1]
-            mity_number = mity_number.split(",")[0]
-            # print(mity_number)
-            
-            hc_number = hc_line.split("Number=")[1]
-            hc_number = hc_number.split(",")[0]
-            # print(hc_number)
-            
-            if str(hc_number) == str(mity_number):
-                new_number = hc_number
-            else:
-                new_number = "."
-            
-            # check the type is the same
-            # if not will have to stop the app with an error
-            # no way of saying unknown type
-            # and they really should be the same anyway
-            mity_type = mity_line.split("Type=")[1]
-            mity_type = mity_type.split(",")[0]
-            # print(mity_type)
-            
-            hc_type = hc_line.split("Type=")[1]
-            hc_type = hc_type.split(",")[0]
-            # print(hc_type)
-            
-            if str(hc_type) == str(mity_type):
-                new_type = hc_type
-            else:
-                new_type = hc_type
-            # print("")
-            # sys.exit("TODO")
-            
-            hc_description = hc_line.split('Description="')[1]
-            # remove the last ">
-            hc_description = hc_description[:-2]
-            # print(hc_description)
-            
-            mity_description = mity_line.split('Description="')[1]
-            # remove the last ">
-            mity_description = mity_description[:-2]
-            # print(mity_description)
-            
-            new_header_line = hc_id + ",Number=" + new_number + ",Type=" + \
-                              new_type + ",Description=\"If CHR=MT: \'" + \
-                              mity_description + "\'. Otherwise: \'" + \
-                              hc_description + "\' \">"
-            # print(new_header_line)
-            merged_header.append(new_header_line)
-            
-            # remove the line from the mity_header
-            del mity_header[mity_line_idx]
-        # print(len(mity_header))
-        else:
-            merged_header.append(hc_line)
-    
-    # now add the rest of the mity_header to the merge header
-    merged_header = merged_header + mity_header
-    merged_header = sorted(merged_header)
-    merged_header.insert(0, new_ref_line)
-    merged_header.insert(0, '##fileformat=VCFv4.1')
-    
-    # for line in merged_header:
-    # 	print(line)
-    
-    # now check that the sample names are in the right order
-    
-    # get hc and mity sample names
-    # assumes that sample names always start from 10th column
-    hc_col_names = hc_col_names.split('\t')
-    hc_samples = hc_col_names[9:]
-    # print(hc_samples)
-    
-    mity_col_names = mity_col_names.split('\t')
-    mity_samples = mity_col_names[9:]
-    # print(mity_samples)
-    
-    if hc_samples == mity_samples:
-        sys.stderr.write(
-            "samples in same order - can just add mity variants to hc vcf")
-        # add the hc variants with the mity variants - will be ordered later
-        hc_col_names = ('\t').join(hc_col_names)
-        
-        new_mity_variants = []
-        for line in mity_variants:
-            new_line = ('\t').join(line)
-            new_mity_variants.append(new_line)
-        
-        new_vcf = merged_header + [
-            hc_col_names] + new_mity_variants + hc_variants
-        for line in new_vcf:
-            print(line)
-    else:
-        # check that they have the same samples
-        if set(hc_samples) != set(mity_samples):
-            sys.exit("VCFs have different sample names")
-        mity_variants_no_sample = [x[:9] for x in mity_variants]
-        mity_variants_sample = [x[9:] for x in mity_variants]
-        # print(mity_variants_sample)
-        # sys.stderr.write("samples not in the same order - will reorder mity
-        # variants")
-        
-        # get the order of the hc sampels
-        # print("hc samples")
-        # print(hc_samples)
-        # print("mity samples")
-        # print(mity_samples)
-        # mity_samples_idx = [hc_samples.index(x) for x in mity_samples]
-        mity_samples_idx = [mity_samples.index(x) for x in hc_samples]
-        
-        # print(mity_samples_idx)
-        # sys.exit()
-        mity_variants_reordered_sample = []
-        for line in mity_variants_sample:
-            mity_variants_reordered_sample.append(
-                    [line[x] for x in mity_samples_idx])
-        # print(mity_variants_reordered_sample)
-        # sys.exit()
-        # add the newly ordered samples back onto the mity_variants_no_sample
-        new_mity_variants = []
-        for i in range(0, len(mity_variants_no_sample)):
-            new_line = mity_variants_no_sample[i] + \
-                       mity_variants_reordered_sample[i]
-            # print(new_line)
-            new_line = ('\t').join(new_line)
-            new_mity_variants.append(new_line)
-        
-        # add the hc variants with the mity variants - will be ordered later
-        hc_col_names = ('\t').join(hc_col_names)
-        new_vcf = merged_header + [
-            hc_col_names] + new_mity_variants + hc_variants
+        self.run_checks()
+        self.set_strings()
+        self.run_bcftools_isec()
+        self.run_bcftools_concat()
+        self.write_merged()
+        MityUtil.gsort(
+            self.merged_unsorted_vcf_path, self.merged_sorted_vcf_path, self.genome
+        )
+        self.remove_intermediate_files()
 
-        write_merged_vcf(new_vcf, outfile, genome)
+    def run_checks(self):
+        """
+        Check whether the nuclear and mity vcfs are compatible based on:
+            - contig matching
+        """
+
+        mity_contig = MityUtil.vcf_get_mt_contig(self.mity_vcf_path)
+        nuclear_contig = MityUtil.vcf_get_mt_contig(self.nuclear_vcf_path)
+
+        if mity_contig != nuclear_contig:
+            logger.error("The VCF files use mitochondrial contigs.")
+            sys.exit()
+
+    def set_strings(self):
+        """
+        Sets:
+            - bcftools_isec_path
+            - bcftools_concat_path
+            - merged_unsorted_vcf_path
+            - merged_sorted_vcf_path
+        """
+        if self.prefix is None:
+            self.prefix = MityUtil.make_prefix(self.mity_vcf_path)
+
+        self.bcftools_isec_path = os.path.join(self.output_dir, "0000.vcf")
+        self.bcftools_concat_path = os.path.join(
+            self.output_dir, self.prefix + ".bcftools.concat.vcf"
+        )
+
+        self.merged_unsorted_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".mity.merge.unsorted.vcf"
+        )
+        self.merged_sorted_vcf_path = os.path.join(
+            self.output_dir, self.prefix + ".mity.merge.vcf.gz"
+        )
+
+    def run_bcftools_isec(self):
+        """
+        Run bcftools isec
+        """
+
+        with open(self.bcftools_isec_path, "w", encoding="utf-8") as file:
+            print(
+                pysam.bcftools.isec(
+                    "-p",
+                    self.output_dir,
+                    "-C",
+                    self.nuclear_vcf_path,
+                    self.mity_vcf_path,
+                ),
+                end="",
+                file=file,
+            )
+
+    def run_bcftools_concat(self):
+        """
+        Run bcftools concat
+        """
+
+        with open(self.bcftools_concat_path, "w", encoding="utf-8") as file:
+            print(
+                pysam.bcftools.concat(self.bcftools_isec_path, self.mity_vcf_path),
+                end="",
+                file=file,
+            )
+
+    def merge_description(self, nuclear_description: str, mity_description: str):
+        """
+        Merge nuclear and mity header description.
+        """
+        return f"If CHR=MT OR CHR=chrM: {mity_description}, otherwise: {nuclear_description}"
+
+    def get_header_line_nums(self):
+        """
+        Returns a dictionary with key value pairs of ID : current position.
+
+        E.g.
+        ##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths ...">
+        ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate rea...">
+        ##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+        ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+
+        ##INFO=<ID=AC,Number=A,Type=Integer,Description="Allele count in g...">
+        ##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency, f...">
+        ##INFO=<ID=AN,Number=1,Type=Integer,Description="Total number of a...">
+        ##INFO=<ID=BaseQRankSum,Number=1,Type=Float,Description="Z-score f...">
+
+
+        Gives the dictionary:
+        dict = {
+            FORMAT: {
+                AD: 0,      # this represents the line starting from 0 bytes
+                DP: 80,     # this line starts from 80 bytes
+                GQ: 160,
+                GT: ...
+            },
+            INFO: {
+                AC: ...,
+                AF: ...,
+                AN: ...,
+                BaseQRankSum: ...
+            }
+        }
+
+        This is then used to file.seek later. Note that this is a workaround to
+        reduce memory footprint (it only stores position), but also give
+        O(n + m) performance instead of O(nm) if we simply loop over each file
+        from the beginning each time.
+        """
+
+        line_nums = {"FORMAT": {}, "INFO": {}}
+
+        with gzip.open(self.mity_vcf_path, "rt") as file:
+            position = 0
+            file.seek(0)
+
+            while True:
+                position = file.tell()
+
+                line = file.readline()
+
+                if not line:
+                    break
+
+                if not line.startswith("##"):
+                    break
+
+                if line.startswith("##FORMAT") or line.startswith("##INFO"):
+                    section, field_id = self.get_header_line_info(line)
+                    line_nums[section][field_id] = position
+
+        return line_nums
+
+    def get_header_line_info(self, line: str):
+        """
+        Get section (INFO/FORMAT) and ID of a header line.
+        """
+        if line.startswith("##FORMAT"):
+            section = "FORMAT"
+        else:
+            section = "INFO"
+
+        line = line.split(",")[0]
+        field_id = line.split("=")[-1]
+
+        return section, field_id
+
+    def get_header_description(self, line: str):
+        """
+        Get header description.
+        """
+        if "Description=" not in line:
+            return ""
+
+        return line.split("Description=")[1].strip('>" ')
+
+    def make_new_line(self, nuclear_line, mity_file_line_num):
+        """
+        Makes an updated line with merged description.
+        """
+        with gzip.open(self.mity_vcf_path, "rt") as file:
+            file.seek(mity_file_line_num)
+            mity_line = file.readline()
+
+        mity_line = mity_line.strip("\n")
+        nuclear_line = nuclear_line.strip("\n")
+
+        nuclear_description = self.get_header_description(nuclear_line)
+        mity_description = self.get_header_description(mity_line)
+
+        new_description = self.merge_description(nuclear_description, mity_description)
+
+        new_line = nuclear_line.split("Description=")[0]
+        new_line += f'Description="{new_description}">\n'
+
+        return new_line
+
+    def write_merged(self):
+        """
+        Make a new file with updated headers and add variants.
+        """
+
+        header_dict = self.get_header_line_nums()
+
+        with open(self.merged_unsorted_vcf_path, "w", encoding="utf-8") as merged_file:
+            with open(self.bcftools_concat_path, "r") as concat_file:
+                for line in concat_file:
+                    if line.startswith("##FORMAT") or line.startswith("##INFO"):
+                        section, field_id = self.get_header_line_info(line)
+                        if field_id in header_dict[section]:
+                            new_line = self.make_new_line(
+                                line, header_dict[section][field_id]
+                            )
+                            merged_file.write(new_line)
+                        else:
+                            merged_file.write(line)
+                    else:
+                        merged_file.write(line)
+
+    def remove_intermediate_files(self):
+        """
+        Removes extra files from bcftools isec:
+            README.txt
+            sites.txt
+
+        Optionally removes:
+            bcftools.isec file
+            bcftools.concat file
+        """
+        os.remove(os.path.join(self.output_dir, "README.txt"))
+        os.remove(os.path.join(self.output_dir, "sites.txt"))
+
+        if not self.keep:
+            os.remove(self.merged_unsorted_vcf_path)
+            os.remove(self.bcftools_isec_path)
+            os.remove(self.bcftools_concat_path)

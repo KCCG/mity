@@ -10,6 +10,8 @@
 # Usage
     mity -h
 
+More detailed usage can be found [docs/commands.md](docs/commands.md)
+
 # Dependencies
 * python3 (tested on 3.7.4)
 * freebayes >= 1.2.0
@@ -20,19 +22,19 @@
 * pandas
 
 # Installation
-Installation instructions via Docker, pip, or manually are available in [INSTALL.md](https://github.com/KCCG/mity/blob/master/INSTALL.md)
+Installation instructions via Docker, pip, or manually are available in [INSTALL.md](docs/INSTALL.md)
 
 # Example Usage
 This is an example of calling variants in the Ashkenazim Trio.
 
 ## mity call
-First run `mity call` on three MT BAMs provided in [mity/test_in](https://github.com/KCCG/mity/blob/master/test_in). CRAM files are supported.
+First run `mity call` on three MT BAMs provided in [docs/test-files.md](docs/test-files.md). CRAM files are supported.
 
 We recommend always using `--normalise`, or `mity report` won't work:
 ```bash
 mity call \
 --prefix ashkenazim \
---out-folder-path test_out \
+--output-dir test_out \
 --region MT:1-500 \
 --normalise \
 test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
@@ -42,10 +44,10 @@ test_in/HG004.hs37d5.2x250.small.MT.RG.bam
 This will create `test_out/normalised/ashkenazim.mity.vcf.gz` (and tbi file).
 
 or, if using Docker:
-```
+```bash
 docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity call \
 --prefix ashkenazim \
---out-folder-path test_out \
+--output-dir test_out \
 --region MT:1-500 \
 --normalise \
 test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
@@ -60,7 +62,7 @@ We can create a `mity report` on the normalised VCF:
 mity report \
 --prefix ashkenazim \
 --min_vaf 0.01 \
---out-folder-path test_out \
+--output-dir test_out \
 test_out/ashkenazim.mity.vcf.gz
 ```
 This will create: `test_out/ashkenazim.annotated_variants.csv` and `test_out/ashkenazim.annotated_variants.xlsx`.

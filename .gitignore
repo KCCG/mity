@@ -1,16 +1,31 @@
-*.vcf.gz
-*.vcf.gz.tbi
+# mitylib files
+mitylib/__pycache__
+
+# pip compile stuff
+requirements.txt
+
+# folders
+lib/*
+*/output/*
+bin/*
+build/*
+dist/*
+
+# other
 *DS_Store
-*.bam
-*.bai
 *.R
 venv
 *.iml
 .idea
-mitylib/__pycache__
-build/*
-dist/*
 gsort
-lib/*
-mity.egg-info/*
 pyvenv.cfg 
+.python-version
+
+# egg
+mitylib.egg-info/*
+*.egg-info/*
+
+# tests
+tests/*
+
+.vscode/*
