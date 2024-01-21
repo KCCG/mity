@@ -1,4 +1,4 @@
-![mity logo](https://github.com/KCCG/mity/blob/master/logos/mity-logo-red-white.png "mity")
+![mity logo](res/logos/mity-logo-red-white.png "mity")
 
 # mity
 `mity` is a bioinformatic analysis pipeline designed to call mitochondrial SNV and INDEL variants from Whole Genome Sequencing (WGS) data. `mity` can:
