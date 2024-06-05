@@ -5,9 +5,11 @@ Adds annotations and generates mity excel report from VCF file.
 import logging
 import os.path
 import subprocess
+from typing import Optional
 import pysam
 import pandas
 import yaml
+
 
 from mitylib.util import MityUtil
 
@@ -167,7 +169,7 @@ class SingleReport:
     Handles generating a mity report for one VCF file.
     """
 
-    def __init__(self, vcf_path, min_vaf, keep) -> None:
+    def __init__(self, vcf_path, min_vaf, keep, vcfanno_config, report_config) -> None:
         self.min_vaf = min_vaf
         self.keep = keep
 
@@ -177,12 +179,15 @@ class SingleReport:
         self.annot_vcf_path = None
         self.annot_vcf_obj = None
 
-        # excel and vcf headers
-        with open("report-config.yaml", "r") as report_config_file:
-            self.report_config = yaml.safe_load(report_config_file)
+        self.vcfanno_config = vcfanno_config
+        self.report_config = report_config
 
-        self.excel_headers = self.report_config["excel_headers"]
-        self.vcf_headers = self.report_config["vcf_headers"]
+        # excel and vcf headers
+        with open(self.report_config, "r", encoding="utf-8") as report_config_file:
+            opened_report_config = yaml.safe_load(report_config_file)
+
+        self.excel_headers = opened_report_config["excel_headers"]
+        self.vcf_headers = opened_report_config["vcf_headers"]
 
         self.excel_table = {}
         self.df = None
@@ -195,6 +200,7 @@ class SingleReport:
         """
         Run SingleReport.
         """
+
         self.vcfanno_call()
         self.vep = Vep(self.annot_vcf_obj)
         self.make_table()
@@ -257,7 +263,7 @@ class SingleReport:
 
         # vcfanno call
         vcfanno_cmd = (
-            f"vcfanno -p 4 vcfanno-config.toml {self.vcf_path} > {annotated_file}"
+            f"vcfanno -p 4 {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
         )
         res = subprocess.run(
             vcfanno_cmd,
@@ -305,7 +311,7 @@ class SingleReport:
         format_field_string = ":".join(format_field_array)
         return format_field_string
 
-    def clean_string(self, s):
+    def clean_string(self, s: str) -> str:
         """
         Removes the following characters from a string:
             "
@@ -362,7 +368,7 @@ class SingleReport:
                 self.excel_table["POS"].append(variant.pos)
                 self.excel_table["REF"].append(variant.ref)
 
-                # NOTE: assumes only one ALT
+                # NOTE: assumes only one ALT as the vcf should be normalised
                 self.excel_table["ALT"].append(variant.alts[0])
                 self.excel_table["QUAL"].append(variant.qual)
                 self.excel_table["FILTER"].append(variant.filter.keys()[0])
@@ -419,7 +425,7 @@ class SingleReport:
             if self.vep.vepped:
                 self.add_vep_impacts(variant, cohort_count)
 
-    def add_vep_impacts(self, variant, cohort_count):
+    def add_vep_impacts(self, variant, cohort_count: int) -> None:
         """
         Adds vep impacts for a variant.
         """
@@ -435,18 +441,28 @@ class Report:
     """
 
     def __init__(
-        self, debug, vcfs, prefix=None, min_vaf=0.0, output_dir=".", keep=False
-    ):
+        self,
+        debug: bool,
+        vcfs,
+        prefix: Optional[str] = None,
+        min_vaf: float = 0.0,
+        output_dir: str = ".",
+        keep: bool = False,
+        vcfanno_config: Optional[str] = None,
+        report_config: Optional[str] = None,
+    ) -> None:
         self.debug = debug
         self.vcfs = vcfs[0]
         self.prefix = prefix
         self.min_vaf = min_vaf
         self.output_dir = output_dir
         self.keep = keep
+        self.vcfanno_config = vcfanno_config
+        self.report_config = report_config
 
         self.run()
 
-    def run(self):
+    def run(self) -> None:
         """
         Runs mity report.
         """
@@ -467,12 +483,28 @@ class Report:
         if self.prefix is None:
             self.prefix = MityUtil.make_prefix(self.vcfs[0])
 
+        if self.vcfanno_config is None:
+            self.vcfanno_config = os.path.join(
+                MityUtil.get_mity_dir(), "vcfanno-config.toml"
+            )
+
+        if self.report_config is None:
+            self.report_config = os.path.join(
+                MityUtil.get_mity_dir(), "report-config.yaml"
+            )
+
         xlsx_name = os.path.join(
             self.output_dir, self.prefix + ".annotated_variants.xlsx"
         )
         with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
             for vcf in self.vcfs:
-                single_report = SingleReport(vcf, self.min_vaf, self.keep)
+                single_report = SingleReport(
+                    vcf_path=vcf,
+                    min_vaf=self.min_vaf,
+                    keep=self.keep,
+                    vcfanno_config=self.vcfanno_config,
+                    report_config=self.report_config,
+                )
                 df = single_report.get_df()
 
                 sheet_name = vcf.replace(".vcf.gz", "").split("/")[-1]
