@@ -1,4 +1,5 @@
 """Mitochondrial variant calling."""
+
 import subprocess
 import logging
 import os.path
@@ -78,7 +79,7 @@ class Call:
         else:
             logger.setLevel(logging.INFO)
 
-        if (self.bam_list):
+        if self.bam_list:
             self.get_files_from_list()
         self.run_checks()
         self.set_strings()
@@ -128,7 +129,7 @@ class Call:
             f"--region {self.region} "
             f"| sed 's/##source/##freebayesSource/' "
             f"| sed 's/##commandline/##freebayesCommandline/' "
-            f"| {self.sed_cmd} | bgzip > {self.call_vcf_path}"
+            f'| {self.sed_cmd} | bgzip > "{self.call_vcf_path}"'
         )
 
         logger.info("Running FreeBayes in sensitive mode")
@@ -291,16 +292,17 @@ class Call:
             )
         else:
             raise ValueError("Unsupported file type")
-        
+
     def get_files_from_list(self, die: bool = True):
         """
         Get the list of BAM / CRAM files from the provided file
         """
         if len(self.files) > 1:
-            raise ValueError("--bam-file-list Argument expects only 1 file to be provided.")
-        with open(self.files[0], 'r') as f:
+            raise ValueError(
+                "--bam-file-list Argument expects only 1 file to be provided."
+            )
+        with open(self.files[0], "r") as f:
             self.files = f.read().splitlines()
-
 
     def check_missing_file(self, file_list: str, die: bool = True):
         """
@@ -308,7 +310,7 @@ class Call:
         """
         missing_files = []
         for item in file_list:
-            if item.lower().startswith('http'):
+            if item.lower().startswith("http"):
                 try:
                     urllib.request.urlopen(item).getcode()
                 except:
