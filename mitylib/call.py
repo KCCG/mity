@@ -129,7 +129,7 @@ class Call:
             f"--region {self.region} "
             f"| sed 's/##source/##freebayesSource/' "
             f"| sed 's/##commandline/##freebayesCommandline/' "
-            f'| {self.sed_cmd} | bgzip > "{self.call_vcf_path}"'
+            f"| {self.sed_cmd} | bgzip > {self.call_vcf_path}"
         )
 
         logger.info("Running FreeBayes in sensitive mode")
