@@ -7,6 +7,7 @@ Usage: See the online manual for details: http://github.com/KCCG/mity
 Authors: Clare Puttick, Mark Cowley, Trent Zeng, Christian Fares
 License: MIT
 """
+
 import argparse
 import logging
 
@@ -251,6 +252,8 @@ def _cmd_report(args):
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
         keep=args.keep,
+        vcfanno_config=args.vcfanno_config,
+        report_config=args.report_config,
     )
 
 
@@ -286,6 +289,18 @@ P_report.add_argument(
     action="store_true",
     required=False,
     help="Keep all intermediate files",
+)
+P_report.add_argument(
+    "--custom-vcfanno-config",
+    action="store",
+    help="Provide a custom vcfanno-config.toml for custom annotations.",
+    dest="vcfanno_config",
+)
+P_report.add_argument(
+    "--custom-report-config",
+    action="store",
+    help="Provide a custom report-config.yaml for custom report generation.",
+    dest="report_config",
 )
 P_report.set_defaults(func=_cmd_report)
 
