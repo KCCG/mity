@@ -9,6 +9,8 @@ import pysam
 import pandas
 import yaml
 
+from mitylib.util import MityUtil
+
 # LOGGING
 logger = logging.getLogger(__name__)
 
@@ -396,8 +398,6 @@ class SingleReport:
                         self.excel_table[excel_header].append(".")
 
                 # calculate ALLELE FREQUENCY MITOMAP
-                # TODO: currently this formula matches old mity behaviour, check
-                # that this is still valid.
                 if "Genbank_frequency_mitomap" in sample.keys():
                     allele_frequency_mitomap = round(
                         float(sample["GenBank_frequency_mitomap"]) / 32059, 3
@@ -459,12 +459,18 @@ class Report:
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
+        # self.vcfs is of type str if there is only one vcf input, but list[str]
+        # so we standardise everything to be a list[str]
+        if isinstance(self.vcfs, str):
+            self.vcfs = [self.vcfs]
+
+        if self.prefix is None:
+            self.prefix = MityUtil.make_prefix(self.vcfs[0])
+
         xlsx_name = os.path.join(
             self.output_dir, self.prefix + ".annotated_variants.xlsx"
         )
         with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
-            if isinstance(self.vcfs, str):
-                self.vcfs = [self.vcfs]
             for vcf in self.vcfs:
                 single_report = SingleReport(vcf, self.min_vaf, self.keep)
                 df = single_report.get_df()
