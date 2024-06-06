@@ -41,7 +41,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=["pysam", "pandas", "xlsxwriter", "scipy", "pyyaml"],
     python_requires=">=3.5.4",
-    package_data={"mitylib": ["annot/*", "reference/*", "config/*"]},
+    package_data={"mitylib": ["annot_mt/*", "annot_chrm/*", "reference/*", "config/*"]},
     include_package_data=True,
     scripts=["mitylib/mity"],
 )
