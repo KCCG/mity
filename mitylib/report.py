@@ -169,7 +169,7 @@ class SingleReport:
     Handles generating a mity report for one VCF file.
     """
 
-    def __init__(self, vcf_path, min_vaf, keep, vcfanno_config, report_config) -> None:
+    def __init__(self, vcf_path, min_vaf, keep, vcfanno_base_path, vcfanno_config, report_config) -> None:
         self.min_vaf = min_vaf
         self.keep = keep
 
@@ -179,6 +179,7 @@ class SingleReport:
         self.annot_vcf_path = None
         self.annot_vcf_obj = None
 
+        self.vcfanno_base_path = vcfanno_base_path
         self.vcfanno_config = vcfanno_config
         self.report_config = report_config
 
@@ -260,10 +261,11 @@ class SingleReport:
 
         # annotated_file name
         annotated_file = self.vcf_path.replace(".vcf.gz", ".mity.annotated.vcf")
+        base_path_arg = f"-base-path {self.vcfanno_base_path}" if self.vcfanno_base_path else ''
 
         # vcfanno call
         vcfanno_cmd = (
-            f"vcfanno -p 4 {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
+            f"vcfanno -p 4 {base_path_arg} {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
         )
         res = subprocess.run(
             vcfanno_cmd,
@@ -459,6 +461,7 @@ class Report:
         self.min_vaf = min_vaf
         self.output_dir = output_dir
         self.keep = keep
+        self.vcfanno_base_path = None
         self.vcfanno_config = vcfanno_config
         self.report_config = report_config
 
@@ -487,6 +490,7 @@ class Report:
 
         config_path = os.path.join(MityUtil.get_mity_dir(), "config")
         if self.vcfanno_config is None:
+            self.vcfanno_base_path = MityUtil.get_mity_dir()
             match self.contig:
                 case "MT":
                     self.vcfanno_config = os.path.join(
@@ -511,6 +515,7 @@ class Report:
                     vcf_path=vcf,
                     min_vaf=self.min_vaf,
                     keep=self.keep,
+                    vcfanno_base_path=self.vcfanno_base_path,
                     vcfanno_config=self.vcfanno_config,
                     report_config=self.report_config,
                 )
