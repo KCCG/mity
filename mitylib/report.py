@@ -444,6 +444,7 @@ class Report:
         self,
         debug: bool,
         vcfs,
+        contig: str,
         prefix: Optional[str] = None,
         min_vaf: float = 0.0,
         output_dir: str = ".",
@@ -453,6 +454,7 @@ class Report:
     ) -> None:
         self.debug = debug
         self.vcfs = vcfs[0]
+        self.contig = contig
         self.prefix = prefix
         self.min_vaf = min_vaf
         self.output_dir = output_dir
@@ -483,14 +485,21 @@ class Report:
         if self.prefix is None:
             self.prefix = MityUtil.make_prefix(self.vcfs[0])
 
+        config_path = os.path.join(MityUtil.get_mity_dir(), "config")
         if self.vcfanno_config is None:
-            self.vcfanno_config = os.path.join(
-                MityUtil.get_mity_dir(), "config", "vcfanno-config.toml"
-            )
+            match self.contig:
+                case "MT":
+                    self.vcfanno_config = os.path.join(
+                        config_path, "vcfanno-config-mt.toml"
+                    )
+                case "chrM":
+                    self.vcfanno_config = os.path.join(
+                        config_path, "vcfanno-config-chrm.toml"
+                    )
 
         if self.report_config is None:
             self.report_config = os.path.join(
-                MityUtil.get_mity_dir(), "config", "report-config.yaml"
+                config_path, "report-config.yaml"
             )
 
         xlsx_name = os.path.join(

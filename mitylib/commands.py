@@ -248,6 +248,7 @@ def _cmd_report(args):
     report.Report(
         debug=args.debug,
         vcfs=args.vcf,
+        contig=args.contig,
         prefix=args.prefix,
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
@@ -289,6 +290,13 @@ P_report.add_argument(
     action="store_true",
     required=False,
     help="Keep all intermediate files",
+)
+P_report.add_argument(
+    "--contig",
+    choices=["MT", "chrM"],
+    default="MT",
+    required=False,
+    help="Contig used for annotation purposes",
 )
 P_report.add_argument(
     "--custom-vcfanno-config",
