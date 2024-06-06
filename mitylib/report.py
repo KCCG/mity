@@ -485,12 +485,12 @@ class Report:
 
         if self.vcfanno_config is None:
             self.vcfanno_config = os.path.join(
-                MityUtil.get_mity_dir(), "vcfanno-config.toml"
+                MityUtil.get_mity_dir(), "config", "vcfanno-config.toml"
             )
 
         if self.report_config is None:
             self.report_config = os.path.join(
-                MityUtil.get_mity_dir(), "report-config.yaml"
+                MityUtil.get_mity_dir(), "config", "report-config.yaml"
             )
 
         xlsx_name = os.path.join(
