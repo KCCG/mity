@@ -248,12 +248,14 @@ def _cmd_report(args):
     report.Report(
         debug=args.debug,
         vcfs=args.vcf,
+        contig=args.contig,
         prefix=args.prefix,
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
         keep=args.keep,
         vcfanno_config=args.vcfanno_config,
         report_config=args.report_config,
+        old_mitomap=args.old_mitomap,
     )
 
 
@@ -289,6 +291,19 @@ P_report.add_argument(
     action="store_true",
     required=False,
     help="Keep all intermediate files",
+)
+P_report.add_argument(
+    "--contig",
+    choices=["MT", "chrM"],
+    default="MT",
+    required=False,
+    help="Contig used for annotation purposes",
+)
+P_report.add_argument(
+    "--old-mitomap",
+    action="store_true",
+    required=False,
+    help="Use the old mitomap data for annotations",
 )
 P_report.add_argument(
     "--custom-vcfanno-config",

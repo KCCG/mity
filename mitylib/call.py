@@ -229,7 +229,8 @@ class Call:
 
     def bam_has_rg(self, bam):
         """
-        Check whether a BAM or CRAM file contains a valid @RG header, which is critical for accurate variant calling with mity.
+        Check whether a BAM or CRAM file contains a valid @RG header,
+        which is critical for accurate variant calling with mity.
 
         Parameters:
             - bam (str): Path to a BAM or CRAM file.
@@ -276,7 +277,8 @@ class Call:
 
         Parameters:
             file_name (str): The filename, including extensions (e.g., .vcf, .bam, .cram, .bed).
-            prefix (str, optional): An optional custom prefix. If None, the function generates a prefix from the file name.
+            prefix (str, optional): An optional custom prefix. If None, the function generates a
+                                    prefix from the file name.
 
         Returns:
             str: The generated or custom prefix for the Mity function.

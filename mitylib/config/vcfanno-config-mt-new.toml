@@ -1,0 +1,37 @@
+[[annotation]]
+file="annot_mt/anticodon_positions.bed.gz"
+columns=[4]
+names=["anticodon"]
+ops=["self"]
+
+[[annotation]]
+file="annot_mt/gtf_annotations.bed.gz"
+columns=[4,5]
+names=["GENE","GENE_BIOTYPE"]
+ops=["self", "self"]
+
+[[annotation]]
+file="annot_mt/haplotype_data.vcf.gz"
+fields=["phylotree_mut","phylotree_haplotype"]
+ops=["self", "self"]
+
+[[annotation]]
+file="annot_mt/mgrb_variants.vcf.gz"
+fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
+ops = ["self","self","self","self"]
+
+[[annotation]]
+file="annot_mt/mito_dna_func_loc.bed.gz"
+columns=[4,7]
+names=["Map_Locus", "Description"]
+ops=["self", "self"]
+
+[[annotation]]
+file="annot_mt/mitomap_panel_annotations.vcf.gz"
+fields = ["locus_mitomap","num_references_mitomap","variant_amino_acid_change_mitomap","codon_position_mitomap","codon_number_mitomap","disease_mitomap","num_disease_references_mitomap","RNA_mitomap","homoplasmy_mitomap","heteroplasmy_mitomap","status_mitomap","disease_amino_acid_change_mitomap","GenBank_frequency_mitomap","commercial_panels"]
+ops=["self","self","self","self","self","self","self","self","self","self","self","self","self","self"]
+
+[[annotation]]
+file="annot_mt/mitotip_score_fixed_del.vcf.gz"
+fields=["MitoTip_score","MitoTip_percentile","MitoTip_interpretation"]
+ops=["self","self","self"]

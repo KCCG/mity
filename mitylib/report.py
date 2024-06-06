@@ -444,21 +444,25 @@ class Report:
         self,
         debug: bool,
         vcfs,
+        contig: str,
         prefix: Optional[str] = None,
         min_vaf: float = 0.0,
         output_dir: str = ".",
         keep: bool = False,
         vcfanno_config: Optional[str] = None,
         report_config: Optional[str] = None,
+        old_mitomap: bool = False,
     ) -> None:
         self.debug = debug
         self.vcfs = vcfs[0]
+        self.contig = contig
         self.prefix = prefix
         self.min_vaf = min_vaf
         self.output_dir = output_dir
         self.keep = keep
         self.vcfanno_config = vcfanno_config
         self.report_config = report_config
+        self.old_mitomap = old_mitomap
 
         self.run()
 
@@ -483,10 +487,25 @@ class Report:
         if self.prefix is None:
             self.prefix = MityUtil.make_prefix(self.vcfs[0])
 
+        config_path = os.path.join(MityUtil.get_mity_dir(), "config")
         if self.vcfanno_config is None:
-            self.vcfanno_config = os.path.join(
-                MityUtil.get_mity_dir(), "config", "vcfanno-config.toml"
-            )
+            match (self.old_mitomap, self.contig):
+                case (True, "MT"):
+                    self.vcfanno_config = os.path.join(
+                        config_path, "vcfanno-config-mt-old.toml"
+                    )
+                case (False, "MT"):
+                    self.vcfanno_config = os.path.join(
+                        config_path, "vcfanno-config-mt-new.toml"
+                    )
+                case (True, "chrM"):
+                    self.vcfanno_config = os.path.join(
+                        config_path, "vcfanno-config-chrm-old.toml"
+                    )
+                case (False, "chrM"):
+                    self.vcfanno_config = os.path.join(
+                        config_path, "vcfanno-config-chrm-new.toml"
+                    )
 
         if self.report_config is None:
             self.report_config = os.path.join(
