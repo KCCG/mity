@@ -255,7 +255,6 @@ def _cmd_report(args):
         keep=args.keep,
         vcfanno_config=args.vcfanno_config,
         report_config=args.report_config,
-        old_mitomap=args.old_mitomap,
     )
 
 
@@ -298,12 +297,6 @@ P_report.add_argument(
     default="MT",
     required=False,
     help="Contig used for annotation purposes",
-)
-P_report.add_argument(
-    "--old-mitomap",
-    action="store_true",
-    required=False,
-    help="Use the old mitomap data for annotations",
 )
 P_report.add_argument(
     "--custom-vcfanno-config",

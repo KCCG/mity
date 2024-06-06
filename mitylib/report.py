@@ -451,7 +451,6 @@ class Report:
         keep: bool = False,
         vcfanno_config: Optional[str] = None,
         report_config: Optional[str] = None,
-        old_mitomap: bool = False,
     ) -> None:
         self.debug = debug
         self.vcfs = vcfs[0]
@@ -462,7 +461,6 @@ class Report:
         self.keep = keep
         self.vcfanno_config = vcfanno_config
         self.report_config = report_config
-        self.old_mitomap = old_mitomap
 
         self.run()
 
@@ -489,27 +487,19 @@ class Report:
 
         config_path = os.path.join(MityUtil.get_mity_dir(), "config")
         if self.vcfanno_config is None:
-            match (self.old_mitomap, self.contig):
-                case (True, "MT"):
+            match self.contig:
+                case "MT":
                     self.vcfanno_config = os.path.join(
-                        config_path, "vcfanno-config-mt-old.toml"
+                        config_path, "vcfanno-config-mt.toml"
                     )
-                case (False, "MT"):
+                case "chrM":
                     self.vcfanno_config = os.path.join(
-                        config_path, "vcfanno-config-mt-new.toml"
-                    )
-                case (True, "chrM"):
-                    self.vcfanno_config = os.path.join(
-                        config_path, "vcfanno-config-chrm-old.toml"
-                    )
-                case (False, "chrM"):
-                    self.vcfanno_config = os.path.join(
-                        config_path, "vcfanno-config-chrm-new.toml"
+                        config_path, "vcfanno-config-chrm.toml"
                     )
 
         if self.report_config is None:
             self.report_config = os.path.join(
-                MityUtil.get_mity_dir(), "config", "report-config.yaml"
+                config_path, "report-config.yaml"
             )
 
         xlsx_name = os.path.join(
