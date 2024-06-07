@@ -413,6 +413,9 @@ def _cmd_runall(args):
 
     logging.debug("assumed mity normalise vcf output path is: %s", normalised_vcf_path)
 
+    # matching argparse quirk
+    normalised_vcf_path = [normalised_vcf_path]
+
     report.Report(
         debug=args.debug,
         vcfs=normalised_vcf_path,
