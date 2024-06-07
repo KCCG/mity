@@ -169,7 +169,9 @@ class SingleReport:
     Handles generating a mity report for one VCF file.
     """
 
-    def __init__(self, vcf_path, min_vaf, keep, vcfanno_base_path, vcfanno_config, report_config) -> None:
+    def __init__(
+        self, vcf_path, min_vaf, keep, vcfanno_base_path, vcfanno_config, report_config
+    ) -> None:
         self.min_vaf = min_vaf
         self.keep = keep
 
@@ -261,12 +263,12 @@ class SingleReport:
 
         # annotated_file name
         annotated_file = self.vcf_path.replace(".vcf.gz", ".mity.annotated.vcf")
-        base_path_arg = f"-base-path {self.vcfanno_base_path}" if self.vcfanno_base_path else ''
+        base_path_arg = (
+            f"-base-path {self.vcfanno_base_path}" if self.vcfanno_base_path else ""
+        )
 
         # vcfanno call
-        vcfanno_cmd = (
-            f"vcfanno -p 4 {base_path_arg} {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
-        )
+        vcfanno_cmd = f"vcfanno -p 4 {base_path_arg} {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
         res = subprocess.run(
             vcfanno_cmd,
             shell=True,
@@ -502,9 +504,7 @@ class Report:
                     )
 
         if self.report_config is None:
-            self.report_config = os.path.join(
-                config_path, "report-config.yaml"
-            )
+            self.report_config = os.path.join(config_path, "report-config.yaml")
 
         xlsx_name = os.path.join(
             self.output_dir, self.prefix + ".annotated_variants.xlsx"
@@ -522,4 +522,10 @@ class Report:
                 df = single_report.get_df()
 
                 sheet_name = vcf.replace(".vcf.gz", "").split("/")[-1]
+                if len(sheet_name) > 31:
+                    logging.info(
+                        "sheet_name: %s was too long and was automatically shortened",
+                        sheet_name,
+                    )
+                sheet_name = sheet_name[:32]
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
