@@ -7,8 +7,10 @@ Usage: See the online manual for details: http://github.com/KCCG/mity
 Authors: Clare Puttick, Mark Cowley, Trent Zeng, Christian Fares
 License: MIT
 """
+
 import argparse
 import logging
+import os
 
 from mitylib import call, normalise, report, merge, util
 from ._version import __version__
@@ -247,10 +249,13 @@ def _cmd_report(args):
     report.Report(
         debug=args.debug,
         vcfs=args.vcf,
+        contig=args.contig,
         prefix=args.prefix,
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
         keep=args.keep,
+        vcfanno_config=args.vcfanno_config,
+        report_config=args.report_config,
     )
 
 
@@ -286,6 +291,25 @@ P_report.add_argument(
     action="store_true",
     required=False,
     help="Keep all intermediate files",
+)
+P_report.add_argument(
+    "--contig",
+    choices=["MT", "chrM"],
+    default="MT",
+    required=False,
+    help="Contig used for annotation purposes",
+)
+P_report.add_argument(
+    "--custom-vcfanno-config",
+    action="store",
+    help="Provide a custom vcfanno-config.toml for custom annotations.",
+    dest="vcfanno_config",
+)
+P_report.add_argument(
+    "--custom-report-config",
+    action="store",
+    help="Provide a custom report-config.yaml for custom report generation.",
+    dest="report_config",
 )
 P_report.set_defaults(func=_cmd_report)
 
@@ -348,6 +372,201 @@ P_merge.add_argument(
     help="Keep all intermediate files",
 )
 P_merge.set_defaults(func=_cmd_merge)
+
+
+# runall -----------------------------------------------------------------------
+
+
+def _cmd_runall(args):
+    """Run MITY call, normalise and report all in one go."""
+    logging.info("mity %s", __version__)
+    logging.info("mity runall")
+
+    genome = util.MityUtil.select_reference_genome(args.reference, None)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
+
+    call.Call(
+        debug=args.debug,
+        files=args.files,
+        reference=args.reference,
+        genome=genome,
+        prefix=args.prefix,
+        min_mq=args.min_mq,
+        min_bq=args.min_bq,
+        min_af=args.min_af,
+        min_ac=args.min_ac,
+        p=args.p,
+        # normalise flag is set to true instead of running normalise separately
+        normalise=True,
+        output_dir=args.output_dir,
+        region=args.region,
+        bam_list=args.bam_file_list,
+        keep=args.keep,
+    )
+
+    logging.debug("mity call and normalise completed")
+
+    # This makes use of the uniform naming scheme of mity command outputs.
+    normalised_vcf_path = os.path.join(
+        args.output_dir, args.prefix + ".normalise.vcf.gz"
+    )
+
+    logging.debug("assumed mity normalise vcf output path is: %s", normalised_vcf_path)
+
+    # matching argparse quirk
+    normalised_vcf_path = [normalised_vcf_path]
+
+    report.Report(
+        debug=args.debug,
+        vcfs=normalised_vcf_path,
+        contig=args.contig,
+        prefix=args.prefix,
+        min_vaf=args.min_vaf,
+        output_dir=args.output_dir,
+        keep=args.keep,
+        vcfanno_config=args.vcfanno_config,
+        report_config=args.report_config,
+    )
+
+
+P_runall = AP_subparsers.add_parser("runall", help=_cmd_runall.__doc__)
+P_runall.add_argument(
+    "-d", "--debug", action="store_true", help="Enter debug mode", required=False
+)
+P_runall.add_argument(
+    "files",
+    action="append",
+    nargs="+",
+    help="BAM / CRAM files to run the analysis on. If --bam-file-list is included, this argument is the file containing the list of bam/cram files.",
+)
+P_runall.add_argument(
+    "--reference",
+    choices=["hs37d5", "hg19", "hg38", "mm10"],
+    default="hs37d5",
+    required=False,
+    help="Reference genome version to use. Default: hs37d5",
+)
+# For the runall command, we mandate that the prefix option is set. This is not
+# true for regular mity call, normalise or report separately.
+P_runall.add_argument(
+    "--prefix",
+    action="store",
+    required=True,
+    help="Output files will be named with PREFIX",
+)
+P_runall.add_argument(
+    "--min-mapping-quality",
+    action="store",
+    type=int,
+    default=30,
+    help="Exclude alignments from analysis if they have a "
+    "mapping quality less than MIN_MAPPING_QUALITY. "
+    "Default: 30",
+    dest="min_mq",
+)
+P_runall.add_argument(
+    "--min-base-quality",
+    action="store",
+    type=int,
+    default=24,
+    help="Exclude alleles from analysis if their supporting "
+    "base quality is less than MIN_BASE_QUALITY. "
+    "Default: 24",
+    dest="min_bq",
+)
+P_runall.add_argument(
+    "--min-alternate-fraction",
+    action="store",
+    type=float,
+    default=0.01,
+    help="Require at least MIN_ALTERNATE_FRACTION "
+    "observations supporting an alternate allele within "
+    "a single individual in the in order to evaluate the "
+    "position. Default: 0.01, range = [0,1]",
+    dest="min_af",
+)
+P_runall.add_argument(
+    "--min-alternate-count",
+    action="store",
+    type=int,
+    default=4,
+    help="Require at least MIN_ALTERNATE_COUNT observations "
+    "supporting an alternate allele within a single "
+    "individual in order to evaluate the position. "
+    "Default: 4",
+    dest="min_ac",
+)
+P_runall.add_argument(
+    "--p",
+    action="store",
+    type=float,
+    default=0.002,
+    help="Minimum noise level. This is used to calculate QUAL score. "
+    "Default: 0.002, range = [0,1]",
+    dest="p",
+)
+P_runall.add_argument(
+    "--output-dir",
+    action="store",
+    type=str,
+    default=".",
+    help="Output files will be saved in OUTPUT_DIR. " "Default: '.' ",
+    dest="output_dir",
+)
+P_runall.add_argument(
+    "--region",
+    action="store",
+    type=str,
+    default=None,
+    help="Region of MT genome to call variants in. "
+    "If unset will call variants in entire MT genome as specified in BAM header. "
+    "Default: Entire MT genome. ",
+    dest="region",
+)
+P_runall.add_argument(
+    "--bam-file-list",
+    action="store_true",
+    default=False,
+    help="Treat the file as a text file of BAM files to be processed."
+    " The path to each file should be on one row per bam file.",
+    dest="bam_file_list",
+)
+P_runall.add_argument(
+    "-k",
+    "--keep",
+    action="store_true",
+    required=False,
+    help="Keep all intermediate files",
+)
+P_runall.add_argument(
+    "--min_vaf",
+    action="store",
+    type=float,
+    default=0,
+    help="A variant must have at least this VAF to be included in the report. Default: "
+    "0.",
+)
+P_runall.add_argument(
+    "--contig",
+    choices=["MT", "chrM"],
+    default="MT",
+    required=False,
+    help="Contig used for annotation purposes",
+)
+P_runall.add_argument(
+    "--custom-vcfanno-config",
+    action="store",
+    help="Provide a custom vcfanno-config.toml for custom annotations.",
+    dest="vcfanno_config",
+)
+P_runall.add_argument(
+    "--custom-report-config",
+    action="store",
+    help="Provide a custom report-config.yaml for custom report generation.",
+    dest="report_config",
+)
+P_runall.set_defaults(func=_cmd_runall)
+
 
 # version ----------------------------------------------------------------------
 

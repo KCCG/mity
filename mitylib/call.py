@@ -1,4 +1,5 @@
 """Mitochondrial variant calling."""
+
 import subprocess
 import logging
 import os.path
@@ -78,7 +79,7 @@ class Call:
         else:
             logger.setLevel(logging.INFO)
 
-        if (self.bam_list):
+        if self.bam_list:
             self.get_files_from_list()
         self.run_checks()
         self.set_strings()
@@ -228,7 +229,8 @@ class Call:
 
     def bam_has_rg(self, bam):
         """
-        Check whether a BAM or CRAM file contains a valid @RG header, which is critical for accurate variant calling with mity.
+        Check whether a BAM or CRAM file contains a valid @RG header,
+        which is critical for accurate variant calling with mity.
 
         Parameters:
             - bam (str): Path to a BAM or CRAM file.
@@ -275,7 +277,8 @@ class Call:
 
         Parameters:
             file_name (str): The filename, including extensions (e.g., .vcf, .bam, .cram, .bed).
-            prefix (str, optional): An optional custom prefix. If None, the function generates a prefix from the file name.
+            prefix (str, optional): An optional custom prefix. If None, the function generates a
+                                    prefix from the file name.
 
         Returns:
             str: The generated or custom prefix for the Mity function.
@@ -291,16 +294,17 @@ class Call:
             )
         else:
             raise ValueError("Unsupported file type")
-        
+
     def get_files_from_list(self, die: bool = True):
         """
         Get the list of BAM / CRAM files from the provided file
         """
         if len(self.files) > 1:
-            raise ValueError("--bam-file-list Argument expects only 1 file to be provided.")
-        with open(self.files[0], 'r') as f:
+            raise ValueError(
+                "--bam-file-list Argument expects only 1 file to be provided."
+            )
+        with open(self.files[0], "r") as f:
             self.files = f.read().splitlines()
-
 
     def check_missing_file(self, file_list: str, die: bool = True):
         """
@@ -308,7 +312,7 @@ class Call:
         """
         missing_files = []
         for item in file_list:
-            if item.lower().startswith('http'):
+            if item.lower().startswith("http"):
                 try:
                     urllib.request.urlopen(item).getcode()
                 except:
