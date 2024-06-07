@@ -383,6 +383,7 @@ def _cmd_runall(args):
     logging.info("mity runall")
 
     genome = util.MityUtil.select_reference_genome(args.reference, None)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
 
     call.Call(
         debug=args.debug,
@@ -395,23 +396,33 @@ def _cmd_runall(args):
         min_af=args.min_af,
         min_ac=args.min_ac,
         p=args.p,
+        # normalise flag is set to true instead of running normalise separately
         normalise=True,
         output_dir=args.output_dir,
         region=args.region,
         bam_list=args.bam_file_list,
         keep=args.keep,
     )
-    
+
+    logging.debug("mity call and normalise completed")
+
     # This makes use of the uniform naming scheme of mity command outputs.
-    normalised_vcf_path = os.path.join(args.output_dir, args.prefix + ".normalise.vcf.gz")
+    normalised_vcf_path = os.path.join(
+        args.output_dir, args.prefix + ".normalise.vcf.gz"
+    )
+
+    logging.debug("assumed mity normalise vcf output path is: %s", normalised_vcf_path)
 
     report.Report(
         debug=args.debug,
         vcfs=normalised_vcf_path,
+        contig=args.contig,
         prefix=args.prefix,
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
         keep=args.keep,
+        vcfanno_config=args.vcfanno_config,
+        report_config=args.report_config,
     )
 
 
@@ -435,7 +446,10 @@ P_runall.add_argument(
 # For the runall command, we mandate that the prefix option is set. This is not
 # true for regular mity call, normalise or report separately.
 P_runall.add_argument(
-    "--prefix", action="store", required=True, help="Output files will be named with PREFIX"
+    "--prefix",
+    action="store",
+    required=True,
+    help="Output files will be named with PREFIX",
 )
 P_runall.add_argument(
     "--min-mapping-quality",
@@ -528,6 +542,25 @@ P_runall.add_argument(
     default=0,
     help="A variant must have at least this VAF to be included in the report. Default: "
     "0.",
+)
+P_runall.add_argument(
+    "--contig",
+    choices=["MT", "chrM"],
+    default="MT",
+    required=False,
+    help="Contig used for annotation purposes",
+)
+P_runall.add_argument(
+    "--custom-vcfanno-config",
+    action="store",
+    help="Provide a custom vcfanno-config.toml for custom annotations.",
+    dest="vcfanno_config",
+)
+P_runall.add_argument(
+    "--custom-report-config",
+    action="store",
+    help="Provide a custom report-config.yaml for custom report generation.",
+    dest="report_config",
 )
 P_runall.set_defaults(func=_cmd_runall)
 
