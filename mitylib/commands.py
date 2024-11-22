@@ -36,8 +36,8 @@ def _cmd_call(args):
     logging.info("Calling mitochondrial variants")
     logging.debug("Debugging mode activated")
 
-    genome = util.MityUtil.select_reference_genome(args.reference, None)
-    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, args.custom_reference_genome)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, args.custom_reference_fasta)
 
     call.Call(
         debug=args.debug,
@@ -74,6 +74,18 @@ P_call.add_argument(
     default="hs37d5",
     required=False,
     help="Reference genome version to use. Default: hs37d5",
+)
+P_call.add_argument(
+    "--custom-reference-fasta",
+    action="store",
+    help="Specify custom reference fasta file",
+    dest="custom_reference_fasta"
+)
+P_call.add_argument(
+    "--custom-reference-genome",
+    action="store",
+    help="Specify custom reference genome file",
+    dest="custom_reference_genome"
 )
 P_call.add_argument(
     "--prefix", action="store", help="Output files will be named with PREFIX"
@@ -175,8 +187,8 @@ def _cmd_normalise(args):
     logging.info("mity %s", __version__)
     logging.info("Normalising and FILTERing mitochondrial vcf.gz file")
 
-    genome = util.MityUtil.select_reference_genome(args.reference, None)
-    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, args.custom_reference_genome)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, args.custom_reference_fasta)
 
     normalise.Normalise(
         debug=args.debug,
@@ -235,6 +247,18 @@ P_normalise.add_argument(
     default="hs37d5",
     required=False,
     help="Reference genome version to use. default: hs37d5",
+)
+P_normalise.add_argument(
+    "--custom-reference-fasta",
+    action="store",
+    help="Specify custom reference fasta file",
+    dest="custom_reference_fasta"
+)
+P_normalise.add_argument(
+    "--custom-reference-genome",
+    action="store",
+    help="Specify custom reference genome file",
+    dest="custom_reference_genome"
 )
 P_normalise.set_defaults(func=_cmd_normalise)
 
@@ -382,8 +406,8 @@ def _cmd_runall(args):
     logging.info("mity %s", __version__)
     logging.info("mity runall")
 
-    genome = util.MityUtil.select_reference_genome(args.reference, None)
-    args.reference = util.MityUtil.select_reference_fasta(args.reference, None)
+    genome = util.MityUtil.select_reference_genome(args.reference, args.custom_reference_genome)
+    args.reference = util.MityUtil.select_reference_fasta(args.reference, args.custom_reference_fasta)
 
     call.Call(
         debug=args.debug,
@@ -564,6 +588,18 @@ P_runall.add_argument(
     action="store",
     help="Provide a custom report-config.yaml for custom report generation.",
     dest="report_config",
+)
+P_runall.add_argument(
+    "--custom-reference-fasta",
+    action="store",
+    help="Specify custom reference fasta file",
+    dest="custom_reference_fasta"
+)
+P_runall.add_argument(
+    "--custom-reference-genome",
+    action="store",
+    help="Specify custom reference genome file",
+    dest="custom_reference_genome"
 )
 P_runall.set_defaults(func=_cmd_runall)
 
