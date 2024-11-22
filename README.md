@@ -138,6 +138,10 @@ genome that uses the rCRS sequence.
 `mity` `call` and `normalise` support the analysis of the mouse genome (`mity call --reference mm10 ...`). `mity report`
 currently only supports variant annotation to the human rCRS sequence.
 
+## Custom reference fasta and genome files
+`mity call`, `normalise` and `runall` support custom reference fasta and genome files with the options `--custom-reference-genome`
+ and `--custom-reference-fasta`.
+
 # Commonly asked Questions
 ## Base quality score recalibration (BQSR)
 Most of the development of `mity` was tested on BAM files that had undergone GATK's BQSR method, which improves the 
