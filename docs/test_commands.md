@@ -7,6 +7,7 @@ Make sure to follow instructions in [INSTALL.md](INSTALL.md) to get the latest v
 ### Docker
 
 MITY call and normalise:
+
 ```bash
 docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity call \
 --prefix ashkenazim \
@@ -19,6 +20,7 @@ ashkenazim-trio/input/HG004.hs37d5.2x250.small.MT.RG.bam
 ```
 
 MITY report:
+
 ```bash
 docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity report \
 --prefix ashkenazim \
@@ -30,6 +32,7 @@ docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity report \
 ### PIP
 
 MITY call and normalise:
+
 ```bash
 mity call \
 --prefix ashkenazim \
@@ -42,6 +45,7 @@ ashkenazim-trio/input/HG004.hs37d5.2x250.small.MT.RG.bam
 ```
 
 MITY report:
+
 ```bash
 mity report \
 --prefix ashkenazim \

@@ -2,7 +2,7 @@
 
 Test files are hosted on Netapp as zip files, and can be accessed via S3 commands.
 
-To make repeated calls easier, you can place this alias in your `~/.bashrc` or `~/.zshrc`. 
+To make repeated calls easier, you can place this alias in your `~/.bashrc` or `~/.zshrc`.
 
 ```bash
 alias netapp="aws s3api --endpoint-url https://s3.ccia.org.au/ "
@@ -11,16 +11,19 @@ alias netapp="aws s3api --endpoint-url https://s3.ccia.org.au/ "
 ## Finding test files
 
 To get a list of available test files, run this command:
+
 ```bash
 netapp list-objects --bucket mity --prefix tests/ --query "Contents[].Key"
 ```
 
 Or without the alias:
+
 ```bash
 aws s3api --endpoint-url https://s3.ccia.org.au/ list-objects --bucket mity --prefix tests/ --query "Contents[].Key"
 ```
 
 The output will be a list of keys that look like this:
+
 ```bash
 [
     "tests/ashkenazim-trio.zip",
@@ -32,11 +35,13 @@ The output will be a list of keys that look like this:
 ## Downloading test files
 
 To download a test zip file, run this command:
+
 ```bash
 netapp get-object --bucket mity --key <insert-key-here>
 ```
 
 Or without the alias:
+
 ```bash
 aws s3api --endpoint-url https://s3.ccia.org.au/ get-object --bucket mity --key <insert-key-here>
 ```
@@ -44,6 +49,7 @@ aws s3api --endpoint-url https://s3.ccia.org.au/ get-object --bucket mity --key 
 ## Zip file structure
 
 Each test zip file will have an `input` and `exp` folder. For example:
+
 ```bash
 ashkenazim-trio
 ├── exp

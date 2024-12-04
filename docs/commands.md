@@ -1,6 +1,7 @@
 # MITY Commands
 
 If you're using `docker`, replace `mity` with:
+
 ```bash
 docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity
 ```
@@ -63,6 +64,7 @@ options:
 ```
 
 ## Normalise
+
 ```bash
 usage: mity normalise [-h] [-d] [--output-dir OUTPUT_DIR] [--prefix PREFIX] [--allsamples] [-k] [--p P] [--reference {hs37d5,hg19,hg38,mm10}] vcf
 
@@ -81,7 +83,9 @@ options:
   --reference {hs37d5,hg19,hg38,mm10}
                         Reference genome version to use. default: hs37d5
 ```
+
 ## Report
+
 ```bash
 usage: mity report [-h] [-d] [--prefix PREFIX] [--min_vaf MIN_VAF] [--output-dir OUTPUT_DIR] [-k] vcf [vcf ...]
 
@@ -99,6 +103,7 @@ options:
 ```
 
 ## Merge
+
 ```bash
 usage: mity merge [-h] --mity_vcf MITY_VCF --nuclear_vcf NUCLEAR_VCF [--output-dir OUTPUT_DIR] [--prefix PREFIX] [--reference {hs37d5,hg19,hg38,mm10}] [-d] [-k]
 
