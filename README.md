@@ -19,7 +19,7 @@ More detailed usage can be found [docs/commands.md](docs/commands.md)
 
 # Dependencies
 
-* python3 (tested on 3.7.4)
+* python3 (tested on 3.10, 3.12)
 * freebayes >= 1.2.0
 * bgzip + tabix
 * gsort (<https://github.com/brentp/gsort>)
@@ -37,7 +37,7 @@ This is an example of calling variants in the Ashkenazim Trio.
 
 ## mity call
 
-First run `mity call` on three MT BAMs provided in [docs/test-files.md](docs/test-files.md). CRAM files are supported.
+First run `mity call` on three MT BAMs provided in [docs/test_files.md](docs/test_files.md). CRAM files are supported.
 
 We recommend always using `--normalise`, or `mity report` won't work:
 
@@ -67,6 +67,18 @@ test_in/HG003.hs37d5.2x250.small.MT.RG.bam \
 test_in/HG004.hs37d5.2x250.small.MT.RG.bam 
 ```
 
+## mity normalise
+
+High-depth sequencing and sensitive variant calling can create many variants with more than 2 alleles, and in some
+cases, joins two nearby variants separated by shared `REF` sequence into a multi-nucleotide polymorphism
+as discussed in the manuscript. Here, variant normalisation relates to decomposing the multi-allelic variants and
+where possible, splitting multi-nucleotide polymorphisms into their cognate smaller variants. At the time of writing,
+all variant decomposition tools we used failed to propagate the metadata in a multi-allelic variant to the split
+variants which caused problems when reporting the quality scores associated with each variant.
+  
+Technically you can run `mity call` and `mity normalise` separately, but since `mity report` requires a normalised
+vcf file, we recommend running `mity call --normalise`.
+
 ## mity report
 
 We can create a `mity report` on the normalised VCF:
@@ -81,18 +93,6 @@ test_out/ashkenazim.mity.vcf.gz
 
 This will create: `test_out/ashkenazim.annotated_variants.csv` and `test_out/ashkenazim.annotated_variants.xlsx`.
 
-## mity normalise
-
-High-depth sequencing and sensitive variant calling can create many variants with more than 2 alleles, and in some
-cases, joins two nearby variants separated by shared `REF` sequence into a multi-nucleotide polymorphism
-as discussed in the manuscript. Here, variant normalisation relates to decomposing the multi-allelic variants and
-where possible, splitting multi-nucleotide polymorphisms into their cognate smaller variants. At the time of writing,
-all variant decomposition tools we used failed to propagate the metadata in a multi-allelic variant to the split
-variants which caused problems when reporting the quality scores associated with each variant.
-  
-Technically you can run `mity call` and `mity normalise` separately, but since `mity report` requires a normalised
-vcf file, we recommend running `mity call --normalise`.
-
 ## mity merge
 
 You can merge a nuclear vcf.gz file and a mity.vcf.gz file thereby replacing the MT calls from the nuclear VCF (
@@ -105,6 +105,10 @@ mity merge \
 --mity_vcf test_out/ashkenazim.mity.vcf.gz \
 --nuclear_vcf todo-create-example-nuclear.vcf.gz
 ```
+
+## mity runall
+
+To run `call`, `normalise` and `report` all in one go, you can use the `mity runall` command. This command supports all the options from `call`, `normalise` and `report`.
 
 # Recommendations for interpreting the report
 
