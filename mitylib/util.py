@@ -1,11 +1,13 @@
 """
 Contains utility functions for mity modules.
 """
+
 import logging
 import os
 import subprocess
 import sys
 from glob import glob
+from typing import Optional, Tuple
 import pysam
 
 
@@ -15,38 +17,38 @@ class MityUtil:
     """
 
     MITY_DIR = "mitylib"
-    GENOME_FILE = "mitylib/reference/b37d5.genome"
     REF_DIR = "reference"
     ANNOT_DIR = "annot"
 
-    @classmethod
-    def get_mity_dir(cls):
+    @staticmethod
+    def get_mity_dir():
         """
         Get the directory path of the Mity library.
 
         Returns:
             str: The path to the Mity library directory.
         """
-        path = os.path.dirname(sys.modules["mitylib"].__file__)
-        return path
+        return os.path.dirname(sys.modules["mitylib"].__file__)
 
-    @classmethod
-    def tabix(cls, f: str):
+    @staticmethod
+    def tabix(bgzipped_file: str) -> None:
         """
         Generate a tabix index for a bgzipped file.
 
         Parameters:
-            f (str): The path to a bgzip compressed file.
+            bgzipped_file (str): The path to a bgzip compressed file.
 
         Returns:
             None
         """
-        tabix_call = "tabix -f " + f
+        tabix_call = "tabix -f " + bgzipped_file
         logging.debug(tabix_call)
         subprocess.run(tabix_call, shell=True, check=False)
 
-    @classmethod
-    def select_reference_fasta(cls, reference: str, custom_reference_fa: str = None):
+    @staticmethod
+    def select_reference_fasta(
+        reference: str, custom_reference_fa: Optional[str] = None
+    ) -> str:
         """
         Select the reference genome fasta file.
 
@@ -57,45 +59,50 @@ class MityUtil:
         Returns:
             str: The path to the selected reference genome fasta file.
         """
-        if custom_reference_fa is not None and os.path.exists(custom_reference_fa):
-            res = custom_reference_fa
-        else:
-            ref_dir = os.path.join(cls.get_mity_dir(), cls.REF_DIR)
-            res = glob(f"{ref_dir}/{reference}.*.fa")
-            logging.debug(",".join(res))
-            assert len(res) == 1
-            res = res[0]
-        return res
+        if custom_reference_fa is not None:
+            if not os.path.exists(custom_reference_fa):
+                raise ValueError(
+                    f"--custom-reference-fasta file: {custom_reference_fa} cannot be found."
+                )
+            return custom_reference_fa
 
-    @classmethod
+        ref_dir = os.path.join(MityUtil.get_mity_dir(), MityUtil.REF_DIR)
+        res = glob(f"{ref_dir}/{reference}.*.fa")
+        logging.debug(",".join(res))
+        assert len(res) == 1
+
+        return res[0]
+
+    @staticmethod
     def select_reference_genome(
-        cls, reference: str, custom_reference_genome: str = None
-    ):
+        reference: str, custom_reference_genome: Optional[str] = None
+    ) -> str:
         """
         Select the reference genome .genome file.
 
         Parameters:
             reference (str): One of the inbuilt reference genomes: hs37d5, hg19, hg38, mm10.
-            custom_reference_genome (str, optional): The path to a custom reference .genome file, or None.
+            custom_reference_genome: The path to a custom reference .genome file, or None.
 
         Returns:
             str: The path to the selected reference .genome file.
         """
-        if custom_reference_genome is not None and os.path.exists(
-            custom_reference_genome
-        ):
-            res = custom_reference_genome
-        else:
-            ref_dir = os.path.join(cls.get_mity_dir(), cls.REF_DIR)
-            logging.debug("Looking for .genome file in %s", ref_dir)
-            res = glob(f"{ref_dir}/{reference}.genome")
-            logging.debug(",".join(res))
-            assert len(res) == 1
-            res = res[0]
-        return res
+        if custom_reference_genome is not None:
+            if not os.path.exists(custom_reference_genome):
+                raise ValueError(
+                    f"--custom-reference-genome file: {custom_reference_genome} cannot be found."
+                )
+            return custom_reference_genome
 
-    @classmethod
-    def vcf_get_mt_contig(cls, vcf: str):
+        ref_dir = os.path.join(MityUtil.get_mity_dir(), MityUtil.REF_DIR)
+        logging.debug("Looking for .genome file in %s", ref_dir)
+        res = glob(f"{ref_dir}/{reference}.genome")
+        logging.debug(",".join(res))
+        assert len(res) == 1
+        return res[0]
+
+    @staticmethod
+    def vcf_get_mt_contig(vcf: str) -> Tuple[str, Optional[int]]:
         """
         Get the mitochondrial contig name and length from a VCF file.
 
@@ -107,13 +114,19 @@ class MityUtil:
         """
         r = pysam.VariantFile(vcf, "r")
         chroms = r.header.contigs
-        mito_contig = set(["MT", "chrM"]).intersection(chroms)
-        assert len(mito_contig) == 1
-        mito_contig = "".join(mito_contig)
-        return r.header.contigs[mito_contig].name, r.header.contigs[mito_contig].length
+        mito_contig_intersection = set(["MT", "chrM"]).intersection(chroms)
 
-    @classmethod
-    def get_annot_file(cls, annotation_file_path: str):
+        assert len(mito_contig_intersection) == 1
+
+        mito_contig = "".join(mito_contig_intersection)
+
+        mt_contig_name = r.header.contigs[mito_contig].name
+        mt_contig_length = r.header.contigs[mito_contig].length
+
+        return (mt_contig_name, mt_contig_length)
+
+    @staticmethod
+    def get_annot_file(annotation_file_path: str):
         """
         Get the path to an annotation file.
 
@@ -123,13 +136,13 @@ class MityUtil:
         Returns:
             str: The path to the annotation file.
         """
-        mitylibdir = cls.get_mity_dir()
-        path = os.path.join(mitylibdir, cls.ANNOT_DIR, annotation_file_path)
+        mitylibdir = MityUtil.get_mity_dir()
+        path = os.path.join(mitylibdir, MityUtil.ANNOT_DIR, annotation_file_path)
         assert os.path.exists(path)
         return path
 
-    @classmethod
-    def make_prefix(cls, vcf_path: str):
+    @staticmethod
+    def make_prefix(vcf_path: str):
         """
         Make a prefix based on the input vcf path. This handles vcf files from
         previous steps of mity. e.g. from call to normalise, etc.
@@ -153,8 +166,8 @@ class MityUtil:
 
         return prefix
 
-    @classmethod
-    def gsort(cls, input_path: str, output_path: str, genome: str):
+    @staticmethod
+    def gsort(input_path: str, output_path: str, genome: str):
         """
         Run gsort.
         """
