@@ -4,6 +4,7 @@ import subprocess
 import logging
 import os.path
 import sys
+from typing import Any, Optional, Tuple
 import urllib.request
 
 import pysam
@@ -241,7 +242,9 @@ class Call:
         r = pysam.AlignmentFile(bam, "rb")
         return len(r.header["RG"]) > 0
 
-    def bam_get_mt_contig(self, bam: str, as_string: bool = False):
+    def bam_get_mt_contig(
+        self, bam: str, as_string: bool = False
+    ) -> Optional[Tuple[Any, Any] | str]:
         """
         Retrieve mitochondrial contig information from a BAM or CRAM file.
 
@@ -259,18 +262,23 @@ class Call:
         """
         r = pysam.AlignmentFile(bam, "rb")
         chroms = [str(record.get("SN")) for record in r.header["SQ"]]
-        mito_contig = {"MT", "chrM"}.intersection(chroms)
-        assert len(mito_contig) == 1
-        mito_contig = "".join(mito_contig)
+        mito_contig_intersection = {"MT", "chrM"}.intersection(chroms)
+
+        assert len(mito_contig_intersection) == 1
+        mito_contig = "".join(mito_contig_intersection)
+
         res = None
+
         for record in r.header["SQ"]:
             if mito_contig == record["SN"]:
                 res = record["SN"], record["LN"]
+
         if res is not None and as_string:
             res = res[0] + ":1-" + str(res[1])
+
         return res
 
-    def make_prefix(self, file_name: str, prefix: str = None):
+    def make_prefix(self, file_name: str, prefix: Optional[str] = None):
         """
         Generate a prefix for Mity functions if a custom prefix is not provided,
         the function uses the filename without the file extension (.vcf, .bam, .cram, .bed).
