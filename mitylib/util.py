@@ -61,7 +61,7 @@ class MityUtil:
         """
         if custom_reference_fa is not None:
             if not os.path.exists(custom_reference_fa):
-                raise ValueError(
+                raise FileNotFoundError(
                     f"--custom-reference-fasta file: {custom_reference_fa} cannot be found."
                 )
             return custom_reference_fa
@@ -89,7 +89,7 @@ class MityUtil:
         """
         if custom_reference_genome is not None:
             if not os.path.exists(custom_reference_genome):
-                raise ValueError(
+                raise FileNotFoundError(
                     f"--custom-reference-genome file: {custom_reference_genome} cannot be found."
                 )
             return custom_reference_genome
