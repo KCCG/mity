@@ -5,7 +5,7 @@ Adds annotations and generates mity excel report from VCF file.
 import logging
 import os.path
 import subprocess
-from typing import Optional
+from typing import Dict, Optional
 import pysam
 import pandas
 import yaml
@@ -192,10 +192,10 @@ class SingleReport:
         self.excel_headers = opened_report_config["excel_headers"]
         self.vcf_headers = opened_report_config["vcf_headers"]
 
-        self.excel_table = {}
+        self.excel_table: Dict[str, list[str]] = {}
         self.df = None
 
-        self.vep = None
+        self.vep: Optional[Vep] = None
 
         self.run()
 
@@ -433,6 +433,9 @@ class SingleReport:
         """
         Adds vep impacts for a variant.
         """
+        if not self.vep:
+            raise RuntimeError("Vep not initialised, something likely went wrong with vcfanno")
+
         variant_impacts = self.vep.get_vep_values(variant)
         for _ in range(cohort_count):
             for vep_header in self.vep.vep_excel_headers:
