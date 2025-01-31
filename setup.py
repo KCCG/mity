@@ -42,5 +42,5 @@ setuptools.setup(
     python_requires=">=3.10",
     package_data={"mitylib": ["annot_mt/*", "annot_chrm/*", "reference/*", "config/*"]},
     include_package_data=True,
-    scripts=["mitylib/mity"],
+    scripts=["mitylib/mity.py"],
 )

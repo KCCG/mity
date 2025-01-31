@@ -63,9 +63,7 @@ class Merge:
         self.run_bcftools_isec()
         self.run_bcftools_concat()
         self.write_merged()
-        MityUtil.gsort(
-            self.merged_unsorted_vcf_path, self.merged_sorted_vcf_path, self.genome
-        )
+        MityUtil.gsort(self.merged_unsorted_vcf_path, self.merged_sorted_vcf_path, self.genome)
         self.remove_intermediate_files()
 
     def run_checks(self):
@@ -258,9 +256,7 @@ class Merge:
                     if line.startswith("##FORMAT") or line.startswith("##INFO"):
                         section, field_id = self.get_header_line_info(line)
                         if field_id in header_dict[section]:
-                            new_line = self.make_new_line(
-                                line, header_dict[section][field_id]
-                            )
+                            new_line = self.make_new_line(line, header_dict[section][field_id])
                             merged_file.write(new_line)
                         else:
                             merged_file.write(line)
