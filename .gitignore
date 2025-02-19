@@ -170,7 +170,13 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-./vscode/*
+.vscode/*
 
+# Unzipped annotation files
 mitylib/annot_mt/*.vcf
+mitylib/annot_mt/*.bed
 mitylib/annot_chrm/*.vcf
+mitylib/annot_chrm/*.bed
+
+# Local testing
+tests-local/*
