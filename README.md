@@ -168,6 +168,17 @@ currently only supports variant annotation to the human rCRS sequence.
 `mity call`, `normalise` and `runall` support custom reference fasta and genome files with the options `--custom-reference-genome`
  and `--custom-reference-fasta`.
 
+# Annotations
+
+
+
+If you would like to see all the annotation files in it's raw form (i.e. not bgzipped), run the following:
+
+```bash
+cd tools
+bash unzip_all_annotation_files.sh
+```
+
 # Commonly asked Questions
 
 ## Base quality score recalibration (BQSR)

@@ -9,9 +9,9 @@ process_dir() {
     local DIR="$1"
     echo "Processing directory: $DIR"
 
-    find "$DIR" -type f \( -name "*.vcf.gz" -o -name "*.bed.gz" \) -print0 | while IFS= read -r -d '' file; do
-        echo "Decompressing: $file"
-        gunzip -kf "$file"
+    find "$DIR" -type f \( -name "*.vcf" -o -name "*.bed" \) -print0 | while IFS= read -r -d '' file; do
+        echo "Removing: $file"
+        rm "$file"
     done
 }
 

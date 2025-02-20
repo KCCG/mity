@@ -3,9 +3,6 @@ Script to convert mitotip scores to VCF format.
 
 From: https://www.mitomap.org/MITOMAP/MitoTipScores
 
-Mitotip scores are in the format (as of 14/2/2025):
-Position	rCRS	Alt	MitoTIP_Score	Quartile	Count	Percentage	Mitomap_Status
-
 Usage: python convert_mitotip_scores_to_vcf.py mitomap_scores.txt mitomap_scores.vcf
 """
 
@@ -15,19 +12,31 @@ import pysam
 
 
 def quartile_to_percentile(quartile):
-    return {"Q1": 0.75, "Q2": 0.50, "Q3": 0.25, "Q4": 0.10}.get(quartile, 0.0)
+    return {"Q1": "0.75-1.00", "Q2": "0.50-0.75", "Q3": "0.25-0.50", "Q4": "0.00-0.25"}.get(
+        quartile, "NOT_PRESENT"
+    )
+
+
+def quartile_to_interpretation(quartile):
+    return {
+        "Q1": "likely-pathogenic",
+        "Q2": "possibly-pathogenic",
+        "Q3": "possibly-benign",
+        "Q4": "likely-benign",
+    }.get(quartile, "NOT_PRESENT")
 
 
 def parse_tsv_to_vcf(input_tsv, output_vcf):
     # Define VCF header
     vcf_header = pysam.VariantHeader()
     vcf_header.add_line("##fileformat=VCFv4.3")
-    
+
     # Contig
     # Change between MT and chrM as needed
+    # Remember to change this below too!
     vcf_header.add_line("##contig=<ID=MT,length=16569>")
     # vcf_header.add_line("##contig=<ID=chrM,length=16569>")
-    
+
     vcf_header.add_meta(
         "INFO",
         items=[
@@ -42,10 +51,29 @@ def parse_tsv_to_vcf(input_tsv, output_vcf):
         items=[
             ("ID", "MitoTip_percentile"),
             ("Number", "1"),
-            ("Type", "Float"),
+            ("Type", "String"),
             ("Description", "MitoTip Percentile"),
         ],
     )
+    vcf_header.add_meta(
+        "INFO",
+        items=[
+            ("ID", "MitoTip_quartile"),
+            ("Number", "1"),
+            ("Type", "String"),
+            ("Description", "MitoTip Quartile"),
+        ],
+    )
+    vcf_header.add_meta(
+        "INFO",
+        items=[
+            ("ID", "MitoTip_score_interpretation"),
+            ("Number", "1"),
+            ("Type", "String"),
+            ("Description", "MitoTip Score Interpretation"),
+        ],
+    )
+
     vcf_header.add_meta(
         "INFO",
         items=[
@@ -73,9 +101,7 @@ def parse_tsv_to_vcf(input_tsv, output_vcf):
             ("Description", "Observation Percentage"),
         ],
     )
-    vcf_header.add_sample(
-        "SAMPLE"
-    )  # VCF requires at least one sample, even if not used
+    vcf_header.add_sample("SAMPLE")  # VCF requires at least one sample, even if not used
 
     # Open VCF file for writing
     with (
@@ -85,11 +111,10 @@ def parse_tsv_to_vcf(input_tsv, output_vcf):
         reader = csv.DictReader(infile, delimiter="\t")
 
         for row in reader:
-            
             # Change between MT and chrM as needed
             chrom = "MT"
             # chrom = "chrM"
-             
+
             pos = int(row["Position"])
             ref = row["rCRS"]
             alt = row["Alt"]
@@ -101,6 +126,9 @@ def parse_tsv_to_vcf(input_tsv, output_vcf):
 
             # Convert quartile to percentile
             percentile = quartile_to_percentile(quartile)
+
+            # Convert quartile to interpretation
+            interpretation = quartile_to_interpretation(quartile)
 
             # Create new record
             record = vcf_out.new_record()
@@ -115,6 +143,8 @@ def parse_tsv_to_vcf(input_tsv, output_vcf):
             record.filter.add("PASS")  # Default to PASS filter
             record.info["MitoTip_score"] = score
             record.info["MitoTip_percentile"] = percentile
+            record.info["MitoTip_quartile"] = quartile
+            record.info["MitoTip_score_interpretation"] = interpretation
             record.info["Mitomap_status"] = status
             record.info["Count"] = count
             record.info["Percentage"] = percentage
