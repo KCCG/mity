@@ -512,7 +512,7 @@ class Report:
             self.report_config = os.path.join(config_path, "report-config.yaml")
 
         xlsx_name = os.path.join(
-            self.output_dir, self.prefix + ".annotated_variants.xlsx"
+            self.output_dir, self.prefix + ".mity.report.xlsx"
         )
         with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
             for vcf in self.vcfs:

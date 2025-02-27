@@ -62,9 +62,9 @@ docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity call \
 --output-dir test_out \
 --region MT:1-500 \
 --normalise \
-test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
-test_in/HG003.hs37d5.2x250.small.MT.RG.bam \
-test_in/HG004.hs37d5.2x250.small.MT.RG.bam 
+input/HG002.hs37d5.2x250.small.MT.RG.bam \
+input/HG003.hs37d5.2x250.small.MT.RG.bam \
+input/HG004.hs37d5.2x250.small.MT.RG.bam 
 ```
 
 ## mity normalise
@@ -79,6 +79,13 @@ variants which caused problems when reporting the quality scores associated with
 Technically you can run `mity call` and `mity normalise` separately, but since `mity report` requires a normalised
 vcf file, we recommend running `mity call --normalise`.
 
+```bash
+mity normalise \
+--prefix ashkenazim \
+--output-dir output \
+output/ashkenazim.mity.call.vcf.gz
+```
+
 ## mity report
 
 We can create a `mity report` on the normalised VCF:
@@ -87,11 +94,13 @@ We can create a `mity report` on the normalised VCF:
 mity report \
 --prefix ashkenazim \
 --min_vaf 0.01 \
---output-dir test_out \
-test_out/ashkenazim.mity.vcf.gz
+--output-dir output \
+output/ashkenazim.mity.normalise.vcf.gz
 ```
 
-This will create: `test_out/ashkenazim.annotated_variants.csv` and `test_out/ashkenazim.annotated_variants.xlsx`.
+This will create: `output/ashkenazim.mity.report.xlsx`.
+
+For more information about creating custom report configurations, see [custom_report_configs](docs/custom_report_configs.md).
 
 ## mity merge
 
@@ -102,15 +111,44 @@ the calls from `mity`.
 ```bash
 mity merge \
 --prefix ashkenazim \
---mity_vcf test_out/ashkenazim.mity.vcf.gz \
---nuclear_vcf todo-create-example-nuclear.vcf.gz
+--mity_vcf output/ashkenazim.mity.vcf.gz \
+--nuclear_vcf todo-create-example-nuclear.vcf.gz \
+--output-dir output
 ```
 
 ## mity runall
 
 To run `call`, `normalise` and `report` all in one go, you can use the `mity runall` command. This command supports all the options from `call`, `normalise` and `report`.
 
+## Other usage information
+
+All commands have the options for debugging and analysis:
+
+```bash
+-k, --keep            Keep all intermediate files
+-d, --debug           Enter debug mode
+```
+
+All commands have the options for consistent naming:
+
+```bash
+--prefix PREFIX       Output files will be named with PREFIX
+--output-dir OUTPUT_DIR
+                        Output files will be saved in OUTPUT_DIR. Default: '.'
+```
+
+All commands generate output files in a structured manner:
+
+| Mity Command   | Files Generated                                   |
+| -------------- | ------------------------------------------------- |
+| mity call      | prefix.mity.call.vcf.gz                           |
+| mity normalise | prefix.mity.normalise.vcf.gz                      |
+| mity report    | prefix.mity.annotated.vcf (with --keep)<br>prefix.mity.report.xlsx |
+| mity merge     | prefix.mity.merge.vcf.gz                          |
+
 # Recommendations for interpreting the report
+
+For more information about report columns and annotation sources, see [mity_report_documentation](docs/mity_report_documentation.md).
 
 Assuming that you are looking for a pathogenic variant underlying a patient with a rare genetic disorder potentially
 caused by a Mitochondrial mutation, then we recommend the following strategy:

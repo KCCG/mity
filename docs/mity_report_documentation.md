@@ -1,4 +1,4 @@
-# Mity report documentation
+# mity report documentation
 
 | **Term**                      | **Definition/Info**                                                                                                                                                                                                                                                                                                                                                                                     |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -37,3 +37,19 @@
 | **AQR_FORMAT**                | Average base quality of the reference reads, AQR=QR/RO.                                                                                                                                                                                                                                                                                                                                                 |
 | **VAF_FORMAT**                | Allele frequency in the range (0,1] - the ratio of the number of alternate reads to reference reads.                                                                                                                                                                                                                                                                                                    |
 | **q_FORMAT**                  | Phred-scaled binomial probability of seeing AO reads from DP, assuming a noise floor of p=0.002.                                                                                                                                                                                                                                                                                                        |
+
+
+## Mitomap source links and conversions
+
+| Mitomap Annotation File                 | Source                                                                  | Python script to generate vcf                      |
+| --------------------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| mitomap_disease.vcf.gz                  | https://www.mitomap.org/foswiki/bin/view/MITOMAP/Resources              |                                                    |
+| mitomap_polymorphisms.vcf.gz            | https://www.mitomap.org/foswiki/bin/view/MITOMAP/Resources              |                                                    |
+| mitotip_scores.vcf.gz                   | https://www.mitomap.org/foswiki/bin/view/MITOMAP/MitoTipInfo            | convert_mitomap_scores_to_vcf.py                   |
+| mitomap_mutations_rna.vcf.gz            | https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsRNA           | convert_mitomap_mutations_rna_to_vcf.py            |
+| mitomap_mutations_coding_control.vcf.gz | https://www.mitomap.org/foswiki/bin/view/MITOMAP/MutationsCodingControl | convert_mitomap_mutations_coding_control_to_vcf.py |
+| mitomap_variants_control.vcf.gz         | https://www.mitomap.org/foswiki/bin/view/MITOMAP/VariantsControl        | convert_mitomap_variants_control_to_vcf.py         |
+| mitomap_variants_coding.vcf.gz          | https://www.mitomap.org/foswiki/bin/view/MITOMAP/VariantsCoding         | convert_mitomap_variants_coding_to_vcf.py          |
+| mitomap_confirmed_mutations.vcf.gz      | https://www.mitomap.org/foswiki/bin/view/MITOMAP/ConfirmedMutations     | convert_mitomap_confirmed_mutations_to_vcf.py      |
+
+Most of the mitomap sources come in other forms, e.g. `csv` or `tsv`, but we need `vcf`s to properly annotate with `vcfanno` so in `tools/` we have a series of conversion scripts unique to each mitomap source.
