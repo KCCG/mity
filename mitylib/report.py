@@ -505,6 +505,8 @@ class Report:
                     self.vcfanno_config = os.path.join(
                         config_path, "vcfanno-config-chrm.toml"
                     )
+                case _:
+                    raise ValueError("Contig not recognised, please specify a valid contig (either MT or chrM)")
 
         if self.report_config is None:
             self.report_config = os.path.join(config_path, "report-config.yaml")

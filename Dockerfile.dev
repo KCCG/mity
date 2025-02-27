@@ -22,7 +22,7 @@ RUN \
     | wget -O gsort -qi - && \
     chmod +x gsort
 
-RUN pip install pandas xlsxwriter pyfastx scipy pysam pyyaml
+RUN pip install pandas xlsxwriter pyfastx scipy pysam pyyaml vcf2pandas
 RUN pip install -i https://test.pypi.org/simple/ mitywgs==${TAG}
 
 WORKDIR /home
