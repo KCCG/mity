@@ -23,11 +23,8 @@ def tsv_to_vcf(tsv_file, vcf_file):
     info_field_headings = {
         "Locus": ("1", "String", "Locus"),
         "NucleotideChange": ("1", "String", "Nucleotide Change"),
-        "CodonNumber": ("1", "String", "Codon Number"),
-        "CodonPosition": ("1", "String", "Codon Position"),
-        "AminoAcidChange": ("1", "String", "Amino Acid Change"),
-        "GB_Freq": ("1", "String", "GenBank Frequency"),
-        "GB_Seqs": ("1", "String", "GenBank Sequences"),
+        "GB_Freq": ("1", "String", "GB_Freq"),
+        "GB_Seqs": ("1", "String", "GB_Seqs"),
         "CuratedReferences": ("1", "String", "Curated References"),
     }
 
@@ -48,8 +45,6 @@ def tsv_to_vcf(tsv_file, vcf_file):
             pos = int(row["Position"])  # Convert Position to integer
             ref, alt = parse_nucleotide_change(row["Nucleotide Change"])
             
-            print(ref, alt)
-
             record = vcfout.new_record()
             record.contig = "MT"
             record.start = pos - 1
@@ -63,11 +58,8 @@ def tsv_to_vcf(tsv_file, vcf_file):
             info_fields = {
                 "Locus": row["Locus"],
                 "NucleotideChange": row["Nucleotide Change"],
-                "CodonNumber": row["Codon Number"],
-                "CodonPosition": row["Codon Position"],
-                "AminoAcidChange": row["Amino Acid Change"],
-                "GB_Freq": row["GB Freq‡"],
-                "GB_Seqs": row["GB Seqs"],
+                "GB_Freq": row["GB FreqFL\xa0(CR)*‡"],
+                "GB_Seqs": row["GB Seqstotal\xa0(FL/CR)*"],
                 "CuratedReferences": row["Curated References"],
             }
 

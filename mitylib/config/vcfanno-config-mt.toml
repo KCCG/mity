@@ -24,43 +24,49 @@ ops = ["self","self","self","self"]
 
 [[annotation]]
 file="annot_mt/mitomap_disease.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+fields = ["AC","AF","aacgabge","homoplasmy", "heteroplasmy", "PubmedIDs", "Disease", "DiseaseStatus", "HGFL"]
+names = ["AC","AF","AACGABGE","HOMOPLASMY", "HETEROPLASMY", "PUBMED_IDS", "DISEASE", "DISEASE_STATUS", "HGFL"]
+ops = ["self","self","self","self","self","self","self","self","self"]
 
 [[annotation]]
-file="annot_mt/mgrb_variants.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+file="annot_mt/mitomap_confirmed_mutations.vcf.gz"
+fields = ["Locus", "LocusType", "AssociatedDisease", "Allele", "AminoAcidChange", "StatusMitomapClinGen", "LastUpdate"]
+names = ["LOCUS", "LOCUSTYPE", "ASSOCIATEDDISEASE", "ALLELE", "AMINOACIDCHANGE", "STATUSMITOMAPCLINGEN", "LASTUPDATE"]
+ops = ["self","self","self","self","self","self","self"]
 
 [[annotation]]
-file="annot_mt/mgrb_variants.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+file="annot_mt/mitomap_mutations_coding_control.vcf.gz"
+fields = ["Locus", "Allele", "Disease", "NucleotideChange", "AminoAcidChange", "Plasmy", "Status", "GB_Freq", "GB_Seqs", "References"]
+names = ["LOCUS", "ALLELE", "DISEASE", "NUCLEOTIDECHANGE", "AMINOACIDCHANGE", "PLASMY", "STATUS", "GB_FREQ", "GB_SEQS", "REFERENCES"]
+ops = ["self", "self", "self", "self", "self", "self", "self", "self", "self", "self"]
 
 [[annotation]]
-file="annot_mt/mgrb_variants.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+file="annot_mt/mitomap_mutations_rna.vcf.gz"
+fields = ["Locus", "Disease", "Allele", "RNA", "Homoplasmy", "Heteroplasmy", "Status", "MitoTIP", "GB_Freq", "GB_Seqs", "References"]
+names = ["LOCUS", "DISEASE", "ALLELE", "RNA", "HOMOPLASMY", "HETEROPLASMY", "STATUS", "MITOTIP", "GB_FREQ", "GB_SEQS", "REFERENCES"]
+ops = ["self", "self", "self", "self", "self", "self", "self", "self", "self", "self", "self"]
 
 [[annotation]]
-file="annot_mt/mgrb_variants.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+file="annot_mt/mitomap_polymorphisms.vcf.gz"
+fields = ["AC","AF","HGFL"]
+names = ["AC","AF","HGFL"]
+ops = ["self","self","self"]
 
 [[annotation]]
-file="annot_mt/mgrb_variants.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+file="annot_mt/mitomap_variants_coding.vcf.gz"
+fields = ["Locus", "NucleotideChange", "CodonNumber", "CodonPosition", "AminoAcidChange", "GB_Freq", "GB_Seqs", "CuratedReferences"]
+names = ["LOCUS", "NUCLEOTIDECHANGE", "CODONNUMBER", "CODONPOSITION", "AMINOACIDCHANGE", "GB_FREQ", "GB_SEQS", "CURATEDREFERENCES"]
+ops = ["self", "self", "self", "self", "self", "self", "self", "self"]
 
 [[annotation]]
-file="annot_mt/mgrb_variants.vcf.gz"
-fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
-names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
-ops = ["self","self","self","self"]
+file="annot_mt/mitomap_variants_control.vcf.gz"
+fields = ["Locus", "NucleotideChange", "GB_Freq", "GB_Seqs", "CuratedReferences"]
+names = ["LOCUS", "NUCLEOTIDECHANGE", "GB_FREQ", "GB_SEQS", "CURATEDREFERENCES"]
+ops = ["self", "self", "self", "self", "self"]
+
+[[annotation]]
+file="annot_mt/mitotip_scores.vcf.gz"
+fields = ["MitoTip_score", "MitoTip_percentile", "MitoTip_quartile", "MitoTip_score_interpretation", "Mitomap_status", "Count", "Percentage"]
+names = ["MITOTIP_SCORE", "MITOTIP_PERCENTILE", "MITOTIP_QUARTILE", "MITOTIP_SCORE_INTERPRETATION", "MITOMAP_STATUS", "COUNT", "PERCENTAGE"]
+ops = ["self", "self", "self", "self", "self", "self", "self"]
 
