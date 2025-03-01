@@ -44,12 +44,12 @@ We recommend always using `--normalise`, or `mity report` won't work:
 ```bash
 mity call \
 --prefix ashkenazim \
---output-dir test_out \
+--output-dir output \
 --region MT:1-500 \
 --normalise \
-test_in/HG002.hs37d5.2x250.small.MT.RG.bam \
-test_in/HG003.hs37d5.2x250.small.MT.RG.bam \
-test_in/HG004.hs37d5.2x250.small.MT.RG.bam 
+input/HG002.hs37d5.2x250.small.MT.RG.bam \
+input/HG003.hs37d5.2x250.small.MT.RG.bam \
+input/HG004.hs37d5.2x250.small.MT.RG.bam 
 ```
 
 This will create `test_out/normalised/ashkenazim.mity.vcf.gz` (and tbi file).
@@ -59,7 +59,7 @@ or, if using Docker:
 ```bash
 docker run -w "$PWD" -v "$PWD":"$PWD" drmjc/mity call \
 --prefix ashkenazim \
---output-dir test_out \
+--output-dir output \
 --region MT:1-500 \
 --normalise \
 input/HG002.hs37d5.2x250.small.MT.RG.bam \
@@ -119,6 +119,17 @@ mity merge \
 ## mity runall
 
 To run `call`, `normalise` and `report` all in one go, you can use the `mity runall` command. This command supports all the options from `call`, `normalise` and `report`.
+
+```bash
+mity runall \
+--prefix ashkenazim \
+--output-dir output \
+--region MT:1-500 \
+--min_vaf 0.01 \
+input/HG002.hs37d5.2x250.small.MT.RG.bam \
+input/HG003.hs37d5.2x250.small.MT.RG.bam \
+input/HG004.hs37d5.2x250.small.MT.RG.bam 
+```
 
 ## Other usage information
 

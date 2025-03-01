@@ -4,7 +4,7 @@
 """Mity
     a sensitive variant analysis pipeline optimised for WGS data
 
-Authors: Clare Puttick, Mark Cowley
+Authors: Clare Puttick, Mark Cowley, Trent Zeng, Christian Fares
 License: MIT
 """
 
@@ -12,7 +12,7 @@ import logging
 import sys
 from mitylib import commands
 
-assert sys.version_info >= (3, 7, 4)
+assert sys.version_info >= (3, 10, 0)
 
 
 def main():

@@ -23,45 +23,51 @@ names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
 ops = ["self","self","self","self"]
 
 [[annotation]]
+file="annot_mt/mito_dna_func_loc.bed.gz"
+columns=[4,7]
+names=["MAP_LOCUS", "MAP_LOCUS_DESCRIPTION"]
+ops=["self", "self"]
+
+[[annotation]]
 file="annot_mt/mitomap_disease.vcf.gz"
-fields = ["AC","AF","aacgabge","homoplasmy", "heteroplasmy", "PubmedIDs", "Disease", "DiseaseStatus", "HGFL"]
-names = ["AC","AF","AACGABGE","HOMOPLASMY", "HETEROPLASMY", "PUBMED_IDS", "DISEASE", "DISEASE_STATUS", "HGFL"]
+fields = ["AC","AF","aachange","homoplasmy", "heteroplasmy", "PubmedIDs", "Disease", "DiseaseStatus", "HGFL"]
+names = ["MITOMAP_DISEASE_AC","MITOMAP_DISEASE_AF","MITOMAP_DISEASE_AACHANGE","MITOMAP_DISEASE_HOMOPLASMY", "MITOMAP_DISEASE_HETEROPLASMY", "MITOMAP_DISEASE_PUBMED_IDS", "MITOMAP_DISEASE_DISEASE", "MITOMAP_DISEASE_DISEASE_STATUS", "MITOMAP_DISEASE_HGFL"]
 ops = ["self","self","self","self","self","self","self","self","self"]
 
 [[annotation]]
 file="annot_mt/mitomap_confirmed_mutations.vcf.gz"
 fields = ["Locus", "LocusType", "AssociatedDisease", "Allele", "AminoAcidChange", "StatusMitomapClinGen", "LastUpdate"]
-names = ["LOCUS", "LOCUSTYPE", "ASSOCIATEDDISEASE", "ALLELE", "AMINOACIDCHANGE", "STATUSMITOMAPCLINGEN", "LASTUPDATE"]
+names = ["MITOMAP_CONFIRMED_MUTATIONS_LOCUS", "MITOMAP_CONFIRMED_MUTATIONS_LOCUSTYPE", "MITOMAP_CONFIRMED_MUTATIONS_ASSOCIATEDDISEASE", "MITOMAP_CONFIRMED_MUTATIONS_ALLELE", "MITOMAP_CONFIRMED_MUTATIONS_AMINOACIDCHANGE", "MITOMAP_CONFIRMED_MUTATIONS_STATUSMITOMAPCLINGEN", "MITOMAP_CONFIRMED_MUTATIONS_LASTUPDATE"]
 ops = ["self","self","self","self","self","self","self"]
 
 [[annotation]]
 file="annot_mt/mitomap_mutations_coding_control.vcf.gz"
 fields = ["Locus", "Allele", "Disease", "NucleotideChange", "AminoAcidChange", "Plasmy", "Status", "GB_Freq", "GB_Seqs", "References"]
-names = ["LOCUS", "ALLELE", "DISEASE", "NUCLEOTIDECHANGE", "AMINOACIDCHANGE", "PLASMY", "STATUS", "GB_FREQ", "GB_SEQS", "REFERENCES"]
+names = ["MITOMAP_MUTATIONS_CODING_CONTROL_LOCUS", "MITOMAP_MUTATIONS_CODING_CONTROL_ALLELE", "MITOMAP_MUTATIONS_CODING_CONTROL_DISEASE", "MITOMAP_MUTATIONS_CODING_CONTROL_NUCLEOTIDECHANGE", "MITOMAP_MUTATIONS_CODING_CONTROL_AMINOACIDCHANGE", "MITOMAP_MUTATIONS_CODING_CONTROL_PLASMY", "MITOMAP_MUTATIONS_CODING_CONTROL_STATUS", "MITOMAP_MUTATIONS_CODING_CONTROL_GB_FREQ", "MITOMAP_MUTATIONS_CODING_CONTROL_GB_SEQS", "MITOMAP_MUTATIONS_CODING_CONTROL_REFERENCES"]
 ops = ["self", "self", "self", "self", "self", "self", "self", "self", "self", "self"]
 
 [[annotation]]
 file="annot_mt/mitomap_mutations_rna.vcf.gz"
 fields = ["Locus", "Disease", "Allele", "RNA", "Homoplasmy", "Heteroplasmy", "Status", "MitoTIP", "GB_Freq", "GB_Seqs", "References"]
-names = ["LOCUS", "DISEASE", "ALLELE", "RNA", "HOMOPLASMY", "HETEROPLASMY", "STATUS", "MITOTIP", "GB_FREQ", "GB_SEQS", "REFERENCES"]
+names = ["MITOMAP_MUTATIONS_RNA_LOCUS", "MITOMAP_MUTATIONS_RNA_DISEASE", "MITOMAP_MUTATIONS_RNA_ALLELE", "MITOMAP_MUTATIONS_RNA_RNA", "MITOMAP_MUTATIONS_RNA_HOMOPLASMY", "MITOMAP_MUTATIONS_RNA_HETEROPLASMY", "MITOMAP_MUTATIONS_RNA_STATUS", "MITOMAP_MUTATIONS_RNA_MITOTIP", "MITOMAP_MUTATIONS_RNA_GB_FREQ", "MITOMAP_MUTATIONS_RNA_GB_SEQS", "MITOMAP_MUTATIONS_RNA_REFERENCES"]
 ops = ["self", "self", "self", "self", "self", "self", "self", "self", "self", "self", "self"]
 
 [[annotation]]
 file="annot_mt/mitomap_polymorphisms.vcf.gz"
 fields = ["AC","AF","HGFL"]
-names = ["AC","AF","HGFL"]
+names = ["MITOMAP_POLYMORPHISMS_AC","MITOMAP_POLYMORPHISMS_AF","MITOMAP_POLYMORPHISMS_HGFL"]
 ops = ["self","self","self"]
 
 [[annotation]]
 file="annot_mt/mitomap_variants_coding.vcf.gz"
 fields = ["Locus", "NucleotideChange", "CodonNumber", "CodonPosition", "AminoAcidChange", "GB_Freq", "GB_Seqs", "CuratedReferences"]
-names = ["LOCUS", "NUCLEOTIDECHANGE", "CODONNUMBER", "CODONPOSITION", "AMINOACIDCHANGE", "GB_FREQ", "GB_SEQS", "CURATEDREFERENCES"]
+names = ["MITOMAP_VARIANTS_CODING_LOCUS", "MITOMAP_VARIANTS_CODING_NUCLEOTIDECHANGE", "MITOMAP_VARIANTS_CODING_CODONNUMBER", "MITOMAP_VARIANTS_CODING_CODONPOSITION", "MITOMAP_VARIANTS_CODING_AMINOACIDCHANGE", "MITOMAP_VARIANTS_CODING_GB_FREQ", "MITOMAP_VARIANTS_CODING_GB_SEQS", "MITOMAP_VARIANTS_CODING_CURATEDREFERENCES"]
 ops = ["self", "self", "self", "self", "self", "self", "self", "self"]
 
 [[annotation]]
 file="annot_mt/mitomap_variants_control.vcf.gz"
 fields = ["Locus", "NucleotideChange", "GB_Freq", "GB_Seqs", "CuratedReferences"]
-names = ["LOCUS", "NUCLEOTIDECHANGE", "GB_FREQ", "GB_SEQS", "CURATEDREFERENCES"]
+names = ["MITOMAP_VARIANTS_CONTROL_LOCUS", "MITOMAP_VARIANTS_CONTROL_NUCLEOTIDECHANGE", "MITOMAP_VARIANTS_CONTROL_GB_FREQ", "MITOMAP_VARIANTS_CONTROL_GB_SEQS", "MITOMAP_VARIANTS_CONTROL_CURATEDREFERENCES"]
 ops = ["self", "self", "self", "self", "self"]
 
 [[annotation]]
