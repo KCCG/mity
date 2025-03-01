@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="mity",
+    name="{NAME}",
     version=version,
     description="A sensitive Mitochondrial variant detection pipeline from WGS data",
     long_description=long_description,
