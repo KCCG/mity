@@ -2,9 +2,6 @@
 # Developer Guide
 
 - [Local development environment](#local-development-environment)
-  - [Venv](#venv)
-  - [Pip compile locally](#pip-compile-locally)
-  - [Local testing](#local-testing)
 - [Development Branch](#development-branch)
   - [TestPyPI Repo](#testpypi-repo)
   - [Test DockerHub Repo](#test-dockerhub-repo)
@@ -30,11 +27,13 @@
 
 ## Local development environment
 
-### Venv
-
-### Pip compile locally
-
-### Local testing
+1. Make a venv
+2. Change the version in `_version.py` from `{VERSION}` to something else, e.g. `__version__ = "2.0.0"`. You will need to change this back for prod/dev pipelines.
+3. Change the name in `setup.py` from `{NAME}` to something else, e.g. `"mity"`. Again, you will have to change this back.
+4. Activate your venv using `source venv-path/bin/activate`.
+5. In `mity/`, i.e. where `setup.py` lives, run the command `pip install -e .`. This will install the package locally.
+6. Check that you have installed it correctly by checking the version `mity version`. This should output your version that you set in step 2.
+7. When you're finished testing and want to PR to dev, make sure to change the version and name back (see steps 2, 3).
 
 ## Development Branch
 
