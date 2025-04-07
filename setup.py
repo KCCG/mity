@@ -38,7 +38,7 @@ setuptools.setup(
         "Funding": "http://garvan.org.au/kccg",
     },
     packages=setuptools.find_packages(),
-    install_requires=["pysam", "pandas", "xlsxwriter", "scipy", "pyyaml"],
+    install_requires=["pysam", "pandas", "xlsxwriter", "scipy", "pyyaml", "vcf2pandas"],
     python_requires=">=3.10",
     package_data={"mitylib": ["annot_mt/*", "annot_chrm/*", "reference/*", "config/*"]},
     include_package_data=True,
