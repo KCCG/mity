@@ -541,5 +541,5 @@ class Report:
                         "sheet_name: %s was too long and was automatically shortened",
                         sheet_name,
                     )
-                sheet_name = sheet_name[:32]
+                sheet_name = sheet_name[:31]
                 df.to_excel(writer, sheet_name=sheet_name, index=False)
