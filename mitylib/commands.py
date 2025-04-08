@@ -278,8 +278,10 @@ def _cmd_report(args):
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
         keep=args.keep,
+        vcfanno_base_path=args.vcfanno_base_path,
         vcfanno_config=args.vcfanno_config,
         report_config=args.report_config,
+        output_annotated_vcf=args.output_annotated_vcf,
     )
 
 
@@ -324,6 +326,12 @@ P_report.add_argument(
     help="Contig used for annotation purposes",
 )
 P_report.add_argument(
+    "--vcfanno-base-path",
+    action="store",
+    help="Path to the custom annotations used for vcfanno. Only required if using custom annotations.",
+    dest="vcfanno_base_path",
+)
+P_report.add_argument(
     "--custom-vcfanno-config",
     action="store",
     help="Provide a custom vcfanno-config.toml for custom annotations.",
@@ -335,6 +343,13 @@ P_report.add_argument(
     help="Provide a custom report-config.yaml for custom report generation.",
     dest="report_config",
 )
+P_report.add_argument(
+    "--output-annotated-vcf",
+    action="store_true",
+    help="Output annotated vcf file",
+    dest="output_annotated_vcf",
+)
+
 P_report.set_defaults(func=_cmd_report)
 
 
@@ -448,8 +463,10 @@ def _cmd_runall(args):
         min_vaf=args.min_vaf,
         output_dir=args.output_dir,
         keep=args.keep,
+        vcfanno_base_path=args.vcfanno_base_path,
         vcfanno_config=args.vcfanno_config,
         report_config=args.report_config,
+        output_annotated_vcf=args.output_annotated_vcf,
     )
 
 
@@ -578,6 +595,12 @@ P_runall.add_argument(
     help="Contig used for annotation purposes",
 )
 P_runall.add_argument(
+    "--vcfanno-base-path",
+    action="store",
+    help="Path to the custom annotations used for vcfanno. Only required if using custom annotations.",
+    dest="vcfanno_base_path",
+)
+P_runall.add_argument(
     "--custom-vcfanno-config",
     action="store",
     help="Provide a custom vcfanno-config.toml for custom annotations.",
@@ -600,6 +623,12 @@ P_runall.add_argument(
     action="store",
     help="Specify custom reference genome file",
     dest="custom_reference_genome"
+)
+P_runall.add_argument(
+    "--output-annotated-vcf",
+    action="store_true",
+    help="Output annotated vcf file",
+    dest="output_annotated_vcf",
 )
 P_runall.set_defaults(func=_cmd_runall)
 

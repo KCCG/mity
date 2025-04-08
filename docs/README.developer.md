@@ -20,6 +20,10 @@
     - [Vep labels](#vep-labels)
     - [Vep values](#vep-values)
   - [Pandas and Excel](#pandas-and-excel)
+- [Updating mitomap annotation sources](#updating-mitomap-annotation-sources)
+  - [Conversion scripts](#conversion-scripts)
+  - [MT and chrM](#mt-and-chrm)
+  - [Updating vcfanno config](#updating-vcfanno-config)
 
 ## Local development environment
 
@@ -44,21 +48,21 @@ Both repos will have a tag in the form (where `r` is the revision number):
 YYYY.MMDD.r
 ```
 
-## TestPyPI Repo
+### TestPyPI Repo
 
 <https://test.pypi.org/project/mitywgs-test/>
 
-## Test DockerHub Repo
+### Test DockerHub Repo
 
 The dockerhub test repo is currently private.
 
-# Pysam
+## Pysam
 
 A large part of mity uses pysam, which has quite poor documentation. So here's a guide for mity's use cases. For more details, I would highly recommend going straight to the source code and trying things out to test behaviour.
 
 <https://github.com/pysam-developers/pysam/blob/cdc0ed12fbe2d7633b8fa47534ab2c2547f66b84/pysam/libcbcf.pyx>
 
-## VariantFile
+### VariantFile
 
 ```python
 import pysam
@@ -66,7 +70,7 @@ import pysam
 variant_file_obj = pysam.VariantFile(vcf_file_name)
 ```
 
-## VariantHeader
+### VariantHeader
 
 ```python
 header_obj = variant_file_obj.header
@@ -80,13 +84,13 @@ header_obj.info.add(params)
 header_obj.formats.add(params)
 ```
 
-## VariantRecord
+### VariantRecord
 
 To loop through variants:
 
 ```python
 for variant in variant_file_obj.fetch():
-  # do something with variant
+  ## do something with variant
 ```
 
 To access fields:
@@ -95,7 +99,7 @@ To access fields:
 variant.chrom
 variant.pos
 variant.ref
-variant.alts  # note that this is a tuple of all the alts
+variant.alts  ## note that this is a tuple of all the alts
 variant.qual
 variant.filter
 ```
@@ -103,7 +107,7 @@ variant.filter
 Note that `variant.filter` is a dictionary, so it should have both keys and values, but filter names don't have a value, so the keys are the names and the values are just blank.
 
 ```python
-variant.filter.keys()   # this is a tuple/list
+variant.filter.keys()   ## this is a tuple/list
 ```
 
 To get info columns, we can use `variant.info` which is a dictionary.
@@ -118,13 +122,13 @@ Note that the dictionaries here support all the the dictionary syntax, e.g.
 for info_field_name, value in variant.info.items():
 ```
 
-## VariantRecordSamples
+### VariantRecordSamples
 
 To loop through samples:
 
 ```python
 for sample in variant.samples.values():
-  # do something with sample
+  ## do something with sample
 ```
 
 To get the sample name:
@@ -139,15 +143,21 @@ We can access sample fields like a dictionary:
 sample["field"]
 ```
 
+<<<<<<< HEAD
+## MITY call
+
+### Freebayes
+=======
 # MITY call
 
 ## Freebayes
+>>>>>>> origin/master
 
 <https://github.com/freebayes/freebayes>
 
-# MITY normalise
+## MITY normalise
 
-## Bcftools norm
+### Bcftools norm
 
 Documentation:
 <https://samtools.github.io/bcftools/bcftools.html#norm>
@@ -158,9 +168,15 @@ Bcftools command:
 pysam.bcftools.norm("-f", self.reference_fasta, "-m-both", self.vcf)
 ```
 
+<<<<<<< HEAD
+## MITY report
+
+### vcfanno
+=======
 # MITY report
 
 ## vcfanno
+>>>>>>> origin/master
 
 More information can be found here: [vcfanno](https://github.com/brentp/vcfanno)
 
@@ -171,8 +187,8 @@ Since vcfanno tends to have long, somewhat verbose warnings, we capture the `std
         vcfanno_cmd,
         shell=True,
         check=False,
-        # capture the output of the vcfanno command since it tends to produce
-        # long warning messages, output shown in --debug mode
+        ## capture the output of the vcfanno command since it tends to produce
+        ## long warning messages, output shown in --debug mode
         capture_output=True,
         text=True,
     )
@@ -181,13 +197,17 @@ Since vcfanno tends to have long, somewhat verbose warnings, we capture the `std
     logger.debug(res.stdout)
 ```
 
-## Vep annotations
+### Vep annotations
 
-### Vep labels
+#### Vep labels
 
 Example header INFO line:
 
+<<<<<<< HEAD
+```text
+=======
 ```
+>>>>>>> origin/master
 ##INFO=<ID=CSQ,Number=.,Type=String,Description=
 "Consequence annotations from Ensembl VEP. Format:
 Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
@@ -195,23 +215,31 @@ Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
 
 Returns a list of keys, i.e.
 
+<<<<<<< HEAD
+```python
+=======
 ```
+>>>>>>> origin/master
 ["Allele", "Consequence", ...]
 ```
 
 Change this line if the description text or format changes.
 
+<<<<<<< HEAD
+```python
+=======
 ```
+>>>>>>> origin/master
 description = description.replace(
     "Consequence annotations from Ensembl VEP. Format:", ""
 )
 ```
 
-### Vep values
+#### Vep values
 
 In function `get_vep_values(self, variant)`.
 
-```
+```text
 Takes a string from VEP consequences/impacts in the form:
     impact value | impact value | ... |, |||, |||
 
@@ -241,7 +269,7 @@ Example:
     }
 ```
 
-## Pandas and Excel
+### Pandas and Excel
 
 We use the table and headers created in `make_table` and `make_headers` respectively to create the pandas dataframe:
 
@@ -256,3 +284,30 @@ xlsx_name = os.path.join(out_folder_path, prefix + ".annotated_variants.xlsx")
   with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
       excel_pandasdf.to_excel(writer, sheet_name="Variants", index=False)
 ```
+<<<<<<< HEAD
+
+## Updating mitomap annotation sources
+
+### Conversion scripts
+
+Many of the tables and resources from Mitomap are not in vcf format, which we need to annotate using vcfanno.
+
+### MT and chrM
+
+To support both notations, we create two sets of the same annotation file: one with `MT` and the other with `chrM`. Aside from that, these annotation files are identical. To generate the `chrM` versions, you can simply find and replace `MT` and `chrM`.
+
+### Updating vcfanno config
+
+Vcfanno config files live in `mitylib/config/` as `vcfanno-config-chrm.toml` and `vcfanno-config-mt.toml` for `chrM` and `MT` respectively.
+
+Refer to: [brentp/vcfanno](https://github.com/brentp/vcfanno) for more detailed information about vcfanno. But as a primer, this is the basic layout of an annotation:
+
+```toml
+[[annotation]]
+file="path/to/file.vcf"
+fields=["a", "b"] # field names in the vcf file
+names=["renamed_a", "renamed_b"] # renamed field names
+ops=["self", "self"] # ops=operations, in this case self = don't do anything
+```
+=======
+>>>>>>> origin/master
