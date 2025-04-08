@@ -23,12 +23,14 @@
 
 ### 1.2.0
 
+- Added `--custom-reference-fasta` and `--custom-reference-genome` options for `mity call`, `mity normalise` and `mity runall`
 - Added new option for `mity report` to additionally output the annotated vcf file as a xlsx file.
 - Added and improved documentation including: [change_log](./change_log.md), [custom_report_configs](./custom_report_configs.md), [mity_report_documentation](./mity_report_documentation.md), [future_improvements](./future_improvements.md).
 - Fixed but in mity report when the sheet name is longer that 31 characters.
 
 ## 2.0.0
 
+- Added `--custom-reference-fasta` and `--custom-reference-genome` options for `mity call`, `mity normalise` and `mity runall`
 - Updated and added new mitomap sources (see [mity_report_documentation](./mity_report_documentation.md) for more detailed updates). Note that these changes are breaking and affect the behaviour of `mity report`.
 - Added new option for `mity report` to additionally output the annotated vcf file as a xlsx file: `--output-annotated-vcf`.
 - Fixed `mity report` output file name from `prefix.annotated_variants.xlsx -> prefix.mity.report.xlsx`.
