@@ -21,6 +21,12 @@
 - Added vcfanno as a dependency to the `Dockerfile`.
 - Added a `runall` option to run `mity call`, `mity normalise`, and `mity report` sequentially. This option supports all options from `call` and `report`.
 
+### 1.2.0
+
+- Added new option for `mity report` to additionally output the annotated vcf file as a xlsx file.
+- Added and improved documentation including: [change_log](./change_log.md), [custom_report_configs](./custom_report_configs.md), [mity_report_documentation](./mity_report_documentation.md), [future_improvements](./future_improvements.md).
+- Fixed but in mity report when the sheet name is longer that 31 characters.
+
 ## 2.0.0
 
 - Updated and added new mitomap sources (see [mity_report_documentation](./mity_report_documentation.md) for more detailed updates). Note that these changes are breaking and affect the behaviour of `mity report`.
