@@ -143,9 +143,15 @@ We can access sample fields like a dictionary:
 sample["field"]
 ```
 
+<<<<<<< HEAD
 ## MITY call
 
 ### Freebayes
+=======
+# MITY call
+
+## Freebayes
+>>>>>>> origin/master
 
 <https://github.com/freebayes/freebayes>
 
@@ -162,9 +168,15 @@ Bcftools command:
 pysam.bcftools.norm("-f", self.reference_fasta, "-m-both", self.vcf)
 ```
 
+<<<<<<< HEAD
 ## MITY report
 
 ### vcfanno
+=======
+# MITY report
+
+## vcfanno
+>>>>>>> origin/master
 
 More information can be found here: [vcfanno](https://github.com/brentp/vcfanno)
 
@@ -191,7 +203,11 @@ Since vcfanno tends to have long, somewhat verbose warnings, we capture the `std
 
 Example header INFO line:
 
+<<<<<<< HEAD
 ```text
+=======
+```
+>>>>>>> origin/master
 ##INFO=<ID=CSQ,Number=.,Type=String,Description=
 "Consequence annotations from Ensembl VEP. Format:
 Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
@@ -199,13 +215,21 @@ Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
 
 Returns a list of keys, i.e.
 
+<<<<<<< HEAD
 ```python
+=======
+```
+>>>>>>> origin/master
 ["Allele", "Consequence", ...]
 ```
 
 Change this line if the description text or format changes.
 
+<<<<<<< HEAD
 ```python
+=======
+```
+>>>>>>> origin/master
 description = description.replace(
     "Consequence annotations from Ensembl VEP. Format:", ""
 )
@@ -260,6 +284,7 @@ xlsx_name = os.path.join(out_folder_path, prefix + ".annotated_variants.xlsx")
   with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
       excel_pandasdf.to_excel(writer, sheet_name="Variants", index=False)
 ```
+<<<<<<< HEAD
 
 ## Updating mitomap annotation sources
 
@@ -284,3 +309,5 @@ fields=["a", "b"] # field names in the vcf file
 names=["renamed_a", "renamed_b"] # renamed field names
 ops=["self", "self"] # ops=operations, in this case self = don't do anything
 ```
+=======
+>>>>>>> origin/master

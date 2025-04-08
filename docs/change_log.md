@@ -37,3 +37,4 @@
 - Added and improved documentation including: [change_log](./change_log.md), [custom_report_configs](./custom_report_configs.md), [mity_report_documentation](./mity_report_documentation.md), [future_improvements](./future_improvements.md).
 - Added `ruff.toml` for formatting.
 - Removed custom calculations for `ALLELE FREQUENCY MITOMAP` which was derived from old mitomap `Genbank Frequency`. This is replaced with the new `Genbank Frequency` numbers from updated mitomap. See [mitomap sources](./mity_report_documentation.md#mitomap-source-links-and-conversions) for more details.
+- Fixed but in mity report when the sheet name is longer that 31 characters.
