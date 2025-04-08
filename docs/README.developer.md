@@ -1,6 +1,7 @@
 <!-- omit in toc -->
 # Developer Guide
 
+- [Local development environment](#local-development-environment)
 - [Development Branch](#development-branch)
   - [TestPyPI Repo](#testpypi-repo)
   - [Test DockerHub Repo](#test-dockerhub-repo)
@@ -20,15 +21,26 @@
     - [Vep values](#vep-values)
   - [Pandas and Excel](#pandas-and-excel)
 
+## Local development environment
 
-# Development Branch
+1. Make a venv
+2. Change the version in `_version.py` from `{VERSION}` to something else, e.g. `__version__ = "2.0.0"`. You will need to change this back for prod/dev pipelines.
+3. Change the name in `setup.py` from `{NAME}` to something else, e.g. `"mity"`. Again, you will have to change this back.
+4. Activate your venv using `source venv-path/bin/activate`.
+5. In `mity/`, i.e. where `setup.py` lives, run the command `pip install -e .`. This will install the package locally.
+6. Check that you have installed it correctly by checking the version `mity version`. This should output your version that you set in step 2.
+7. When you're finished testing and want to PR to dev, make sure to change the version and name back (see steps 2, 3).
+
+## Development Branch
 
 Merging into the development branch triggers an Azure pipeline which performs the following:
+
 - compiles the python package and uploads it to `TestPyPI`.
 - creates and publishes a docker image.
 
 Both repos will have a tag in the form (where `r` is the revision number):
-```
+
+```txt
 YYYY.MMDD.r
 ```
 
@@ -61,7 +73,8 @@ header_obj = variant_file_obj.header
 ```
 
 Adding headers:
-```
+
+```txt
 header_obj.filters.add(params)
 header_obj.info.add(params)
 header_obj.formats.add(params)
@@ -70,12 +83,14 @@ header_obj.formats.add(params)
 ## VariantRecord
 
 To loop through variants:
+
 ```python
 for variant in variant_file_obj.fetch():
   # do something with variant
 ```
 
 To access fields:
+
 ```python
 variant.chrom
 variant.pos
@@ -86,16 +101,19 @@ variant.filter
 ```
 
 Note that `variant.filter` is a dictionary, so it should have both keys and values, but filter names don't have a value, so the keys are the names and the values are just blank.
+
 ```python
 variant.filter.keys()   # this is a tuple/list
 ```
 
 To get info columns, we can use `variant.info` which is a dictionary.
+
 ```python
 variant.info["info column name"]
 ```
 
 Note that the dictionaries here support all the the dictionary syntax, e.g.
+
 ```python
 for info_field_name, value in variant.info.items():
 ```
@@ -103,21 +121,23 @@ for info_field_name, value in variant.info.items():
 ## VariantRecordSamples
 
 To loop through samples:
+
 ```python
 for sample in variant.samples.values():
   # do something with sample
 ```
 
 To get the sample name:
+
 ```python
 sample.name
 ```
 
 We can access sample fields like a dictionary:
+
 ```python
 sample["field"]
 ```
-
 
 # MITY call
 
@@ -133,10 +153,10 @@ Documentation:
 <https://samtools.github.io/bcftools/bcftools.html#norm>
 
 Bcftools command:
-```
+
+```python
 pysam.bcftools.norm("-f", self.reference_fasta, "-m-both", self.vcf)
 ```
-
 
 # MITY report
 
@@ -145,6 +165,7 @@ pysam.bcftools.norm("-f", self.reference_fasta, "-m-both", self.vcf)
 More information can be found here: [vcfanno](https://github.com/brentp/vcfanno)
 
 Since vcfanno tends to have long, somewhat verbose warnings, we capture the `stdout` and it's only displayed in debug mode.
+
 ```python
     res = subprocess.run(
         vcfanno_cmd,
@@ -165,18 +186,21 @@ Since vcfanno tends to have long, somewhat verbose warnings, we capture the `std
 ### Vep labels
 
 Example header INFO line:
+
 ```
 ##INFO=<ID=CSQ,Number=.,Type=String,Description=
 "Consequence annotations from Ensembl VEP. Format:
 Allele|Consequence|IMPACT|SYMBOL|Gene|Feature_type|Feature|...
 ```
 
-Returns a list of keys, i.e. 
+Returns a list of keys, i.e.
+
 ```
 ["Allele", "Consequence", ...]
 ```
 
 Change this line if the description text or format changes.
+
 ```
 description = description.replace(
     "Consequence annotations from Ensembl VEP. Format:", ""
@@ -220,10 +244,13 @@ Example:
 ## Pandas and Excel
 
 We use the table and headers created in `make_table` and `make_headers` respectively to create the pandas dataframe:
+
 ```python
 excel_pandasdf = pandas.DataFrame(excel_table, columns=excel_headers)
 ```
+
 Then simply write to an excel file:
+
 ```python
 xlsx_name = os.path.join(out_folder_path, prefix + ".annotated_variants.xlsx")
   with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
