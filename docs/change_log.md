@@ -21,11 +21,20 @@
 - Added vcfanno as a dependency to the `Dockerfile`.
 - Added a `runall` option to run `mity call`, `mity normalise`, and `mity report` sequentially. This option supports all options from `call` and `report`.
 
+### 1.2.0
+
+- Added `--custom-reference-fasta` and `--custom-reference-genome` options for `mity call`, `mity normalise` and `mity runall`
+- Added new option for `mity report` to additionally output the annotated vcf file as a xlsx file.
+- Added and improved documentation including: [change_log](./change_log.md), [custom_report_configs](./custom_report_configs.md), [mity_report_documentation](./mity_report_documentation.md), [future_improvements](./future_improvements.md).
+- Fixed but in mity report when the sheet name is longer that 31 characters.
+
 ## 2.0.0
 
+- Added `--custom-reference-fasta` and `--custom-reference-genome` options for `mity call`, `mity normalise` and `mity runall`
 - Updated and added new mitomap sources (see [mity_report_documentation](./mity_report_documentation.md) for more detailed updates). Note that these changes are breaking and affect the behaviour of `mity report`.
 - Added new option for `mity report` to additionally output the annotated vcf file as a xlsx file: `--output-annotated-vcf`.
 - Fixed `mity report` output file name from `prefix.annotated_variants.xlsx -> prefix.mity.report.xlsx`.
 - Added and improved documentation including: [change_log](./change_log.md), [custom_report_configs](./custom_report_configs.md), [mity_report_documentation](./mity_report_documentation.md), [future_improvements](./future_improvements.md).
 - Added `ruff.toml` for formatting.
 - Removed custom calculations for `ALLELE FREQUENCY MITOMAP` which was derived from old mitomap `Genbank Frequency`. This is replaced with the new `Genbank Frequency` numbers from updated mitomap. See [mitomap sources](./mity_report_documentation.md#mitomap-source-links-and-conversions) for more details.
+- Fixed but in mity report when the sheet name is longer that 31 characters.
