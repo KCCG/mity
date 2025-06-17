@@ -32,3 +32,4 @@ extends:
     imageRepository: "$(imageRepository)"
     dockerfilePath: "$(dockerfilePath)"
     vmImageName: "$(vmImageName)"
+    pypiServiceConnection: "$(pypiServiceConnection)"
