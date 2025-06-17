@@ -10,6 +10,7 @@ import pysam
 import pandas
 import yaml
 
+from vcf2pandas import vcf2pandas
 
 from mitylib.util import MityUtil
 
@@ -170,7 +171,16 @@ class SingleReport:
     """
 
     def __init__(
-        self, vcf_path, min_vaf, keep, vcfanno_base_path, vcfanno_config, report_config
+        self,
+        vcf_path: str,
+        min_vaf: str,
+        keep: bool,
+        vcfanno_base_path: str,
+        vcfanno_config: str,
+        report_config: str,
+        prefix: str,
+        output_dir: str,
+        output_annotated_vcf: bool = False,
     ) -> None:
         self.min_vaf = min_vaf
         self.keep = keep
@@ -178,12 +188,16 @@ class SingleReport:
         self.vcf_path = vcf_path
         self.vcf_obj = pysam.VariantFile(vcf_path)
 
-        self.annot_vcf_path = None
+        self.annot_vcf_path: Optional[str] = None
         self.annot_vcf_obj = None
 
         self.vcfanno_base_path = vcfanno_base_path
         self.vcfanno_config = vcfanno_config
         self.report_config = report_config
+
+        self.prefix = prefix
+        self.output_dir = output_dir
+        self.output_annotated_vcf = output_annotated_vcf
 
         # excel and vcf headers
         with open(self.report_config, "r", encoding="utf-8") as report_config_file:
@@ -207,6 +221,13 @@ class SingleReport:
         self.vcfanno_call()
         self.vep = Vep(self.annot_vcf_obj)
         self.make_table()
+
+        if self.output_annotated_vcf:
+            annotated_vcf_df = vcf2pandas(self.annot_vcf_path)
+            annotated_vcf_df.to_excel(
+                os.path.join(self.output_dir, self.prefix + ".mity.annotated.vcf.xlsx"),
+                index=False,
+            )
 
         if not self.keep:
             # remove vcfanno annotated vcf
@@ -263,12 +284,12 @@ class SingleReport:
 
         # annotated_file name
         annotated_file = self.vcf_path.replace(".vcf.gz", ".mity.annotated.vcf")
-        base_path_arg = (
-            f"-base-path {self.vcfanno_base_path}" if self.vcfanno_base_path else ""
-        )
+        base_path_arg = f"-base-path {self.vcfanno_base_path}" if self.vcfanno_base_path else ""
 
         # vcfanno call
-        vcfanno_cmd = f"vcfanno -p 4 {base_path_arg} {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
+        vcfanno_cmd = (
+            f"vcfanno -p 4 {base_path_arg} {self.vcfanno_config} {self.vcf_path} > {annotated_file}"
+        )
         res = subprocess.run(
             vcfanno_cmd,
             shell=True,
@@ -401,23 +422,9 @@ class SingleReport:
                 # vcf_headers: format
                 for vcf_header, excel_header in self.vcf_headers["format"].items():
                     if vcf_header in sample.keys():
-                        self.excel_table[excel_header].append(
-                            self.clean_string(sample[vcf_header])
-                        )
+                        self.excel_table[excel_header].append(self.clean_string(sample[vcf_header]))
                     else:
                         self.excel_table[excel_header].append(".")
-
-                # calculate ALLELE FREQUENCY MITOMAP
-                if "Genbank_frequency_mitomap" in sample.keys():
-                    allele_frequency_mitomap = round(
-                        float(sample["GenBank_frequency_mitomap"]) / 32059, 3
-                    )
-                else:
-                    allele_frequency_mitomap = "."
-
-                self.excel_table["ALLELE FREQUENCY MITOMAP"].append(
-                    allele_frequency_mitomap
-                )
 
             # fill in cohort count
             cohort_frequency = float(cohort_count / num_samples)
@@ -456,8 +463,10 @@ class Report:
         min_vaf: float = 0.0,
         output_dir: str = ".",
         keep: bool = False,
+        vcfanno_base_path: Optional[str] = None,
         vcfanno_config: Optional[str] = None,
         report_config: Optional[str] = None,
+        output_annotated_vcf: bool = False,
     ) -> None:
         self.debug = debug
         self.vcfs = vcfs[0]
@@ -466,9 +475,10 @@ class Report:
         self.min_vaf = min_vaf
         self.output_dir = output_dir
         self.keep = keep
-        self.vcfanno_base_path = None
+        self.vcfanno_base_path = vcfanno_base_path
         self.vcfanno_config = vcfanno_config
         self.report_config = report_config
+        self.output_annotated_vcf = output_annotated_vcf
 
         self.run()
 
@@ -498,20 +508,18 @@ class Report:
             self.vcfanno_base_path = MityUtil.get_mity_dir()
             match self.contig:
                 case "MT":
-                    self.vcfanno_config = os.path.join(
-                        config_path, "vcfanno-config-mt.toml"
-                    )
+                    self.vcfanno_config = os.path.join(config_path, "vcfanno-config-mt.toml")
                 case "chrM":
-                    self.vcfanno_config = os.path.join(
-                        config_path, "vcfanno-config-chrm.toml"
+                    self.vcfanno_config = os.path.join(config_path, "vcfanno-config-chrm.toml")
+                case _:
+                    raise ValueError(
+                        "Contig not recognised, please specify a valid contig (either MT or chrM)"
                     )
 
         if self.report_config is None:
             self.report_config = os.path.join(config_path, "report-config.yaml")
 
-        xlsx_name = os.path.join(
-            self.output_dir, self.prefix + ".annotated_variants.xlsx"
-        )
+        xlsx_name = os.path.join(self.output_dir, self.prefix + ".mity.report.xlsx")
         with pandas.ExcelWriter(xlsx_name, engine="xlsxwriter") as writer:
             for vcf in self.vcfs:
                 single_report = SingleReport(
@@ -521,6 +529,9 @@ class Report:
                     vcfanno_base_path=self.vcfanno_base_path,
                     vcfanno_config=self.vcfanno_config,
                     report_config=self.report_config,
+                    prefix=self.prefix,
+                    output_dir=self.output_dir,
+                    output_annotated_vcf=self.output_annotated_vcf,
                 )
                 df = single_report.get_df()
 

@@ -1,7 +1,7 @@
 [[annotation]]
 file="annot_mt/anticodon_positions.bed.gz"
 columns=[4]
-names=["anticodon"]
+names=["ANTICODON"]
 ops=["self"]
 
 [[annotation]]
@@ -13,25 +13,66 @@ ops=["self", "self"]
 [[annotation]]
 file="annot_mt/haplotype_data.vcf.gz"
 fields=["phylotree_mut","phylotree_haplotype"]
+names=["PHYLOTREE_MUT","PHYLOTREE_HAPLOTYPE"]
 ops=["self", "self"]
 
 [[annotation]]
 file="annot_mt/mgrb_variants.vcf.gz"
 fields = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_frequency"]
+names = ["MGRB_FILTER","MGRB_AN","MGRB_AC","MGRB_FREQUENCY"]
 ops = ["self","self","self","self"]
 
 [[annotation]]
 file="annot_mt/mito_dna_func_loc.bed.gz"
 columns=[4,7]
-names=["Map_Locus", "Description"]
+names=["MAP_LOCUS", "MAP_LOCUS_DESCRIPTION"]
 ops=["self", "self"]
 
 [[annotation]]
-file="annot_mt/mitomap_panel_annotations.vcf.gz"
-fields = ["locus_mitomap","num_references_mitomap","variant_amino_acid_change_mitomap","codon_position_mitomap","codon_number_mitomap","disease_mitomap","num_disease_references_mitomap","RNA_mitomap","homoplasmy_mitomap","heteroplasmy_mitomap","status_mitomap","disease_amino_acid_change_mitomap","GenBank_frequency_mitomap","commercial_panels"]
-ops=["self","self","self","self","self","self","self","self","self","self","self","self","self","self"]
+file="annot_mt/mitomap_disease.vcf.gz"
+fields = ["AC","AF","aachange","homoplasmy", "heteroplasmy", "PubmedIDs", "Disease", "DiseaseStatus", "HGFL"]
+names = ["MITOMAP_DISEASE_AC","MITOMAP_DISEASE_AF","MITOMAP_DISEASE_AACHANGE","MITOMAP_DISEASE_HOMOPLASMY", "MITOMAP_DISEASE_HETEROPLASMY", "MITOMAP_DISEASE_PUBMED_IDS", "MITOMAP_DISEASE_DISEASE", "MITOMAP_DISEASE_DISEASE_STATUS", "MITOMAP_DISEASE_HGFL"]
+ops = ["self","self","self","self","self","self","self","self","self"]
 
 [[annotation]]
-file="annot_mt/mitotip_score_fixed_del.vcf.gz"
-fields=["MitoTip_score","MitoTip_percentile","MitoTip_interpretation"]
-ops=["self","self","self"]
+file="annot_mt/mitomap_confirmed_mutations.vcf.gz"
+fields = ["Locus", "LocusType", "AssociatedDisease", "Allele", "AminoAcidChange", "StatusMitomapClinGen", "LastUpdate"]
+names = ["MITOMAP_CONFIRMED_MUTATIONS_LOCUS", "MITOMAP_CONFIRMED_MUTATIONS_LOCUSTYPE", "MITOMAP_CONFIRMED_MUTATIONS_ASSOCIATEDDISEASE", "MITOMAP_CONFIRMED_MUTATIONS_ALLELE", "MITOMAP_CONFIRMED_MUTATIONS_AMINOACIDCHANGE", "MITOMAP_CONFIRMED_MUTATIONS_STATUSMITOMAPCLINGEN", "MITOMAP_CONFIRMED_MUTATIONS_LASTUPDATE"]
+ops = ["self","self","self","self","self","self","self"]
+
+[[annotation]]
+file="annot_mt/mitomap_mutations_coding_control.vcf.gz"
+fields = ["Locus", "Allele", "Disease", "NucleotideChange", "AminoAcidChange", "Plasmy", "Status", "GB_Freq", "GB_Seqs", "References"]
+names = ["MITOMAP_MUTATIONS_CODING_CONTROL_LOCUS", "MITOMAP_MUTATIONS_CODING_CONTROL_ALLELE", "MITOMAP_MUTATIONS_CODING_CONTROL_DISEASE", "MITOMAP_MUTATIONS_CODING_CONTROL_NUCLEOTIDECHANGE", "MITOMAP_MUTATIONS_CODING_CONTROL_AMINOACIDCHANGE", "MITOMAP_MUTATIONS_CODING_CONTROL_PLASMY", "MITOMAP_MUTATIONS_CODING_CONTROL_STATUS", "MITOMAP_MUTATIONS_CODING_CONTROL_GB_FREQ", "MITOMAP_MUTATIONS_CODING_CONTROL_GB_SEQS", "MITOMAP_MUTATIONS_CODING_CONTROL_REFERENCES"]
+ops = ["self", "self", "self", "self", "self", "self", "self", "self", "self", "self"]
+
+[[annotation]]
+file="annot_mt/mitomap_mutations_rna.vcf.gz"
+fields = ["Locus", "Disease", "Allele", "RNA", "Homoplasmy", "Heteroplasmy", "Status", "MitoTIP", "GB_Freq", "GB_Seqs", "References"]
+names = ["MITOMAP_MUTATIONS_RNA_LOCUS", "MITOMAP_MUTATIONS_RNA_DISEASE", "MITOMAP_MUTATIONS_RNA_ALLELE", "MITOMAP_MUTATIONS_RNA_RNA", "MITOMAP_MUTATIONS_RNA_HOMOPLASMY", "MITOMAP_MUTATIONS_RNA_HETEROPLASMY", "MITOMAP_MUTATIONS_RNA_STATUS", "MITOMAP_MUTATIONS_RNA_MITOTIP", "MITOMAP_MUTATIONS_RNA_GB_FREQ", "MITOMAP_MUTATIONS_RNA_GB_SEQS", "MITOMAP_MUTATIONS_RNA_REFERENCES"]
+ops = ["self", "self", "self", "self", "self", "self", "self", "self", "self", "self", "self"]
+
+[[annotation]]
+file="annot_mt/mitomap_polymorphisms.vcf.gz"
+fields = ["AC","AF","HGFL"]
+names = ["MITOMAP_POLYMORPHISMS_AC","MITOMAP_POLYMORPHISMS_AF","MITOMAP_POLYMORPHISMS_HGFL"]
+ops = ["self","self","self"]
+
+[[annotation]]
+file="annot_mt/mitomap_variants_coding.vcf.gz"
+fields = ["Locus", "NucleotideChange", "CodonNumber", "CodonPosition", "AminoAcidChange", "GB_Freq", "GB_Seqs", "CuratedReferences"]
+names = ["MITOMAP_VARIANTS_CODING_LOCUS", "MITOMAP_VARIANTS_CODING_NUCLEOTIDECHANGE", "MITOMAP_VARIANTS_CODING_CODONNUMBER", "MITOMAP_VARIANTS_CODING_CODONPOSITION", "MITOMAP_VARIANTS_CODING_AMINOACIDCHANGE", "MITOMAP_VARIANTS_CODING_GB_FREQ", "MITOMAP_VARIANTS_CODING_GB_SEQS", "MITOMAP_VARIANTS_CODING_CURATEDREFERENCES"]
+ops = ["self", "self", "self", "self", "self", "self", "self", "self"]
+
+[[annotation]]
+file="annot_mt/mitomap_variants_control.vcf.gz"
+fields = ["Locus", "NucleotideChange", "GB_Freq", "GB_Seqs", "CuratedReferences"]
+names = ["MITOMAP_VARIANTS_CONTROL_LOCUS", "MITOMAP_VARIANTS_CONTROL_NUCLEOTIDECHANGE", "MITOMAP_VARIANTS_CONTROL_GB_FREQ", "MITOMAP_VARIANTS_CONTROL_GB_SEQS", "MITOMAP_VARIANTS_CONTROL_CURATEDREFERENCES"]
+ops = ["self", "self", "self", "self", "self"]
+
+[[annotation]]
+file="annot_mt/mitotip_scores.vcf.gz"
+fields = ["MitoTip_score", "MitoTip_percentile", "MitoTip_quartile", "MitoTip_score_interpretation", "Mitomap_status", "Count", "Percentage"]
+names = ["MITOTIP_SCORE", "MITOTIP_PERCENTILE", "MITOTIP_QUARTILE", "MITOTIP_SCORE_INTERPRETATION", "MITOMAP_STATUS", "COUNT", "PERCENTAGE"]
+ops = ["self", "self", "self", "self", "self", "self", "self"]
+

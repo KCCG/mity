@@ -8,17 +8,17 @@ The simplest way to run `mity` is via `docker`:
 docker run drmjc/mity -h
 ```
 
-## Installing via Pip
+## Installing via pipx
 
-If you have `freebayes` >=1.2 and Brent Pederson's `gsort` installed, then `pip` should work well.
+If you have `freebayes` >=1.2 and Brent Pederson's `gsort` installed, then `pipx` should work well.
 
 ```bash
-pip3 install mitywgs
+pipx install mitywgs
 ```
 
-## Manual Installation
+If you encounter any issues, check to see if you have all the necessary packages installed (see [Manual installation](#manual-installation) for more details).
 
-All of these commands are available as 
+## Manual installation
 
 Install homebrew (skip if you have already installed homebrew):
 ```bash
@@ -61,17 +61,7 @@ export PATH=.:$PATH
 Install mity globally with:
 
 ```bash
-export PYTHONPATH=/usr/local/lib/python3.7/dist-packages:/usr/lib/python3/dist-packages
-pip3 install mitywgs
+pipx install mitywgs
 ```
 
-Or install with a virtual environment:
-
-```bash
-sudo apt-get install python3-venv
-unset PYTHONPATH
-python3 -m venv .
-source bin/activate
-./bin/pip install wheel
-./bin/pip install mitywgs
-```
+Or install with a python virtual environment.
