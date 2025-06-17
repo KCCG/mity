@@ -1,6 +1,4 @@
 parameters:
-  - name: vmImageName
-    type: string
   - name: imageRepository
     type: string
   - name: dockerfilePath
@@ -20,8 +18,7 @@ stages:
     jobs:
     - job: PyPiPush
       displayName: Push to PyPi repo
-      pool:
-        vmImage: ${{ parameters.vmImageName }}
+      pool: Default
       steps:
       - task: CmdLine@2
         inputs:
@@ -39,8 +36,7 @@ stages:
     jobs:
     - job: Build
       displayName: Build
-      pool:
-        vmImage: ${{ parameters.vmImageName }}
+      pool: Default
       steps:
       - task: Docker@2
         displayName: Build an image

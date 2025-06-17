@@ -21,9 +21,6 @@ variables:
   # PyPi Details
   pypiServiceConnection: "$(pypi-service-connection)"
 
-  # Agent VM image name
-  vmImageName: "ubuntu-latest"
-
 extends:
   template: pipeline-stages-template.yml
   parameters:
@@ -32,5 +29,4 @@ extends:
     dockerRegistryServiceConnection: "$(dockerRegistryServiceConnection)"
     imageRepository: "$(imageRepository)"
     dockerfilePath: "$(dockerfilePath)"
-    vmImageName: "$(vmImageName)"
     pypiServiceConnection: "$(pypiServiceConnection)"
