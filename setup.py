@@ -16,6 +16,7 @@ setuptools.setup(
     author="Mark Cowley",
     author_email="mcowley@ccia.org.au",
     license="MIT",
+    license_files = ["LICEN[CS]E*"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
